@@ -30,8 +30,21 @@ import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/wind
 
 import selectn from 'selectn'
 
+import PromiseWrapper from 'views/components/Document/PromiseWrapper'
+
 import ProviderHelpers from 'common/ProviderHelpers'
 
+import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
+import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base'
+import WordListView from 'views/pages/explore/dialect/learn/words/list-view'
+
+import DialectFilterList from 'views/components/DialectFilterList'
+import AlphabetListView from 'views/components/AlphabetListView'
+
+import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
+
+import IntlService from 'views/services/intl'
+import NavigationHelpers, { appendPathArrayAfterLandmark } from 'common/NavigationHelpers'
 import SearchDialect from 'views/components/SearchDialect'
 import {
   SEARCH_SORT_DEFAULT,
@@ -39,20 +52,14 @@ import {
   SEARCH_BY_ALPHABET,
   SEARCH_BY_CATEGORY,
 } from 'views/components/SearchDialect/constants'
-import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
-import DialectFilterList from 'views/components/DialectFilterList'
-import IntlService from 'views/services/intl'
-import PromiseWrapper from 'views/components/Document/PromiseWrapper'
-import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
-import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base'
-import WordListView from 'views/pages/explore/dialect/learn/words/list-view'
-import NavigationHelpers, { appendPathArrayAfterLandmark } from 'common/NavigationHelpers'
-import AlphabetListView from 'views/components/AlphabetListView'
 // import ExportDialect from 'views/components/ExportDialect'
 
 const intl = IntlService.instance
 
 const { array, bool, func, object, string } = PropTypes
+/**
+ * Learn words
+ */
 class PageDialectLearnWords extends PageDialectLearnBase {
   static propTypes = {
     hasPagination: bool,
@@ -75,6 +82,8 @@ class PageDialectLearnWords extends PageDialectLearnBase {
     updatePageProperties: func.isRequired,
   }
 
+  DIALECT_FILTER_TYPE = 'words'
+
   componentDidMountViaPageDialectLearnBase() {
     // const category = selectn('routeParams.category', this.props)
     // if (category) {
@@ -87,8 +96,6 @@ class PageDialectLearnWords extends PageDialectLearnBase {
       this.handleAlphabetClick(letter)
     }
   }
-
-  DIALECT_FILTER_TYPE = 'words'
 
   constructor(props, context) {
     super(props, context)
@@ -105,16 +112,16 @@ class PageDialectLearnWords extends PageDialectLearnBase {
 
     const computeEntities = Immutable.fromJS([
       {
-        id: props.routeParams.dialect_path,
-        entity: props.computePortal,
+        id: this.props.routeParams.dialect_path,
+        entity: this.props.computePortal,
       },
       {
         id: `${props.routeParams.dialect_path}/Dictionary`,
         entity: props.computeDocument,
       },
       {
-        id: `/api/v1/path/FV/${props.routeParams.area}/SharedData/Shared Categories/@children`,
-        entity: props.computeCategories,
+        id: `/api/v1/path/${props.routeParams.dialect_path}/Categories/@children`,
+        entity: this.props.computeCategories,
       },
     ])
 
@@ -161,7 +168,7 @@ class PageDialectLearnWords extends PageDialectLearnBase {
       computeEntities,
       filterInfo,
       isKidsTheme,
-      searchNxqlSort,
+      searchNxqlSort, //NB not in Learn Phrases
       searchByMode,
       searchByAlphabet,
       searchingDialectFilter,
@@ -171,23 +178,24 @@ class PageDialectLearnWords extends PageDialectLearnBase {
       searchTerm,
       searchPartOfSpeech,
     } = this.state
-    const { routeParams } = this.props
+
     const computeDocument = ProviderHelpers.getEntry(
       this.props.computeDocument,
-      `${routeParams.dialect_path}/Dictionary`
+      `${this.props.routeParams.dialect_path}/Dictionary`
     )
-
-    const computePortal = ProviderHelpers.getEntry(this.props.computePortal, `${routeParams.dialect_path}/Portal`)
-
+    const computePortal = ProviderHelpers.getEntry(
+      this.props.computePortal,
+      `
+      ${this.props.routeParams.dialect_path}/Portal`
+    )
     const computeCategories = ProviderHelpers.getEntry(
       this.props.computeCategories,
-      `/api/v1/path/FV/${routeParams.area}/SharedData/Shared Categories/@children`
+      `/api/v1/path/${this.props.routeParams.dialect_path}/Categories/@children`
     )
-    const computeCategoriesSize = selectn('response.entries.length', computeCategories) || 0
 
+    const computeCategoriesSize = selectn('response.entries.length', computeCategories) || 0
     const pageTitle = `${selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) ||
       ''} ${intl.trans('words', 'Words', 'first')}`
-
     const wordListView = selectn('response.uid', computeDocument) ? (
       <WordListView
         disableClickItem={false}
@@ -229,18 +237,19 @@ class PageDialectLearnWords extends PageDialectLearnBase {
     }
 
     const dialectClassName = getDialectClassname(computePortal)
+
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <div className={classNames('row', 'row-create-wrapper')}>
           <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-8', 'text-right')}>
             <AuthorizationFilter
-              filter={{
-                entity: selectn('response', computeDocument),
-                login: this.props.computeLogin,
-                role: ['Record', 'Approve', 'Everything'],
-              }}
               hideFromSections
               routeParams={this.props.routeParams}
+              filter={{
+                role: ['Record', 'Approve', 'Everything'],
+                entity: selectn('response', computeDocument),
+                login: this.props.computeLogin,
+              }}
             >
               <button
                 type="button"
@@ -288,11 +297,11 @@ class PageDialectLearnWords extends PageDialectLearnBase {
                   'fv-word:categories',
                   this.props.routeParams.area
                 )}
+                facets={selectn('response.entries', computeCategories) || []}
+                routeParams={this.props.routeParams}
                 handleDialectFilterClick={this.handleCategoryClick}
                 handleDialectFilterList={this.handleDialectFilterList} // NOTE: Comes from PageDialectLearnBase
-                facets={selectn('response.entries', computeCategories) || []}
                 clearDialectFilter={this.clearDialectFilter}
-                routeParams={this.props.routeParams}
               />
             </div>
           </div>
@@ -397,7 +406,6 @@ class PageDialectLearnWords extends PageDialectLearnBase {
 
   // NOTE: PageDialectLearnBase calls `fetchData`
   fetchData(newProps) {
-    /*
     ProviderHelpers.fetchIfMissing(
       newProps.routeParams.dialect_path + '/Portal', // key
       newProps.fetchPortal, // action
@@ -409,16 +417,15 @@ class PageDialectLearnWords extends PageDialectLearnBase {
       newProps.computeDocument
     )
     ProviderHelpers.fetchIfMissing(
-      '/api/v1/path/FV/' + newProps.routeParams.area + '/SharedData/Shared Categories/@children', // key
+      '/api/v1/path/' + newProps.routeParams.dialect_path + '/Categories/@children', // key
       newProps.fetchCategories, // action
       newProps.computeCategories
     )
-    */
 
-    // action(key);
-    newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal')
-    newProps.fetchDocument(newProps.routeParams.dialect_path + '/Dictionary')
-    newProps.fetchCategories('/api/v1/path/FV/' + newProps.routeParams.area + '/SharedData/Shared Categories/@children')
+    // // action(key);
+    // newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal')
+    // newProps.fetchDocument(newProps.routeParams.dialect_path + '/Dictionary')
+    // newProps.fetchCategories(newProps.routeParams.dialect_path + '/Categories/@children')
   }
 
   changeFilter(href, updateUrl = true) {
