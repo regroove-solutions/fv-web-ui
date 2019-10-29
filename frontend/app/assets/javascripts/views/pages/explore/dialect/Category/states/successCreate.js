@@ -9,8 +9,8 @@ import { pushWindowPath } from 'providers/redux/reducers/windowPath'
 const { string, object, func } = PropTypes
 
 const categoryType = {
-  title: { plural: 'Phrase Books', singular: 'Phrase Book' },
-  label: { plural: 'phrasebooks', singular: 'phrasebook' },
+  title: { plural: 'Categories', singular: 'Category' },
+  label: { plural: 'categories', singular: 'category' },
 }
 
 export class CategoryStateSuccessCreate extends React.Component {

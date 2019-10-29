@@ -48,8 +48,8 @@ import '!style-loader!css-loader!./styles.css'
 const { array, element, func, number, object, string } = PropTypes
 
 const categoryType = {
-  title: { plural: 'Phrase Books', singular: 'Phrase Book' },
-  label: { plural: 'phrasebooks', singular: 'phrasebook' },
+  title: { plural: 'Categories', singular: 'Category' },
+  label: { plural: 'categories', singular: 'category' },
 }
 
 export class CategoryEdit extends React.Component {

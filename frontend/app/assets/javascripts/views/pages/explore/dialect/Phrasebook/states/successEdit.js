@@ -9,7 +9,13 @@ import { pushWindowPath } from 'providers/redux/reducers/windowPath'
 import NavigationHelpers from 'common/NavigationHelpers'
 
 const { string, object, func } = PropTypes
-export class PhrasebookStateSuccessEdit extends React.Component {
+
+const categoryType = {
+  title: { plural: 'Phrase Books', singular: 'Phrase Book' },
+  label: { plural: 'phrasebooks', singular: 'phrasebook' },
+}
+
+export class CategoryStateSuccessEdit extends React.Component {
   static propTypes = {
     className: string,
     copy: object,
@@ -22,7 +28,7 @@ export class PhrasebookStateSuccessEdit extends React.Component {
     pushWindowPath: func.isRequired,
   }
   static defaultProps = {
-    className: 'FormRecorder',
+    className: 'FormCategory',
     copy: {
       edit: {},
     },
@@ -33,32 +39,32 @@ export class PhrasebookStateSuccessEdit extends React.Component {
 
     const name = formData['dc:title']
     const description = formData['dc:description']
-    const phrasebookDetailUrl = `/${siteTheme}${dialect_path}/phrasebook/${itemUid || ''}`
-    const phrasebookCreateUrl = `/${siteTheme}${dialect_path}/create/phrasebook`
-    const phrasebookEditUrl = `/${siteTheme}${dialect_path}/edit/phrasebook/${itemUid || ''}`
-    const phrasebookBrowseUrl = `/${siteTheme}${dialect_path}/phrasebooks/10/1`
+    const categoryDetailUrl = `/${siteTheme}${dialect_path}/${categoryType.label.singular}/${itemUid || ''}`
+    const categoryCreateUrl = `/${siteTheme}${dialect_path}/create/${categoryType.label.singular}`
+    const categoryEditUrl = `/${siteTheme}${dialect_path}/edit/${categoryType.label.singular}/${itemUid || ''}`
+    const categoryBrowseUrl = `/${siteTheme}${dialect_path}/${categoryType.label.plural}/10/1`
     return (
-      <div className={`${className} Phrasebook Phrasebook--successEdit`}>
-        <h1 className="Phrasebook__heading">{copy.edit.success.title}</h1>
+      <div className={`${className} Category Category--successEdit`}>
+        <h1 className="Category__heading">{copy.edit.success.title}</h1>
 
         <p>{copy.edit.success.thanks}</p>
 
-        <div className="Phrasebook__successContent">
-          <div className="Phrasebook__successReview">
+        <div className="Category__successContent">
+          <div className="Category__successReview">
             <dl className="">
               <dt>
                 <a
-                  href={phrasebookDetailUrl}
+                  href={categoryDetailUrl}
                   onClick={(e) => {
                     e.preventDefault()
-                    NavigationHelpers.navigate(phrasebookDetailUrl, this.props.pushWindowPath, false)
+                    NavigationHelpers.navigate(categoryDetailUrl, this.props.pushWindowPath, false)
                   }}
                 >
                   {name}
                 </a>{' '}
                 -{' '}
                 <a
-                  href={phrasebookEditUrl}
+                  href={categoryEditUrl}
                   onClick={(e) => {
                     e.preventDefault()
                     // NavigationHelpers.navigate(phrasebookEditUrl, this.props.pushWindowPath, false)
@@ -73,15 +79,15 @@ export class PhrasebookStateSuccessEdit extends React.Component {
               </dd>
             </dl>
           </div>
-          <div className="Phrasebook__successMore">
-            <ul className="Phrasebook__successLinks">
+          <div className="Category__successMore">
+            <ul className="Category__successLinks">
               {/* CREATE ANOTHER ------------- */}
               <li>
                 <a
-                  href={phrasebookCreateUrl}
+                  href={categoryCreateUrl}
                   onClick={(e) => {
                     e.preventDefault()
-                    NavigationHelpers.navigate(phrasebookCreateUrl, this.props.pushWindowPath, false)
+                    NavigationHelpers.navigate(categoryCreateUrl, this.props.pushWindowPath, false)
                   }}
                 >
                   {copy.edit.success.linkCreateAnother}
@@ -91,10 +97,10 @@ export class PhrasebookStateSuccessEdit extends React.Component {
               {/* BROWSE ------------- */}
               <li>
                 <a
-                  href={phrasebookBrowseUrl}
+                  href={categoryBrowseUrl}
                   onClick={(e) => {
                     e.preventDefault()
-                    NavigationHelpers.navigate(phrasebookBrowseUrl, this.props.pushWindowPath, false)
+                    NavigationHelpers.navigate(categoryBrowseUrl, this.props.pushWindowPath, false)
                   }}
                 >
                   {copy.create.success.browseView}
@@ -125,4 +131,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(PhrasebookStateSuccessEdit)
+)(CategoryStateSuccessEdit)

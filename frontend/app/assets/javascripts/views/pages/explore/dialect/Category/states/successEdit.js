@@ -1,50 +1,53 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import NavigationHelpers from 'common/NavigationHelpers'
 
 // REDUX
 import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
 import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
+import NavigationHelpers from 'common/NavigationHelpers'
 
 const { string, object, func } = PropTypes
 
 const categoryType = {
-  title: { plural: 'Phrase Books', singular: 'Phrase Book' },
-  label: { plural: 'phrasebooks', singular: 'phrasebook' },
+  title: { plural: 'Categories', singular: 'Category' },
+  label: { plural: 'categories', singular: 'category' },
 }
 
-export class CategoryStateSuccessCreate extends React.Component {
+export class CategoryStateSuccessEdit extends React.Component {
   static propTypes = {
     className: string,
     copy: object,
     formData: object,
-    itemUid: string,
     handleClick: func,
+
+    // REDUX: reducers/state
+    routeParams: object.isRequired,
+    // REDUX: actions/dispatch/func
+    pushWindowPath: func.isRequired,
   }
   static defaultProps = {
     className: 'FormCategory',
-    formData: {
-      'dc:title': '-',
-      'dc:description': '-',
-    },
     copy: {
-      default: {},
+      edit: {},
     },
   }
   render() {
-    const { className, copy, formData, handleClick, routeParams, itemUid } = this.props
+    const { className, copy, formData, routeParams, itemUid } = this.props
     const { siteTheme, dialect_path } = routeParams
+
     const name = formData['dc:title']
     const description = formData['dc:description']
-    // const photo = formData['fvcontributor:profile_picture'] ? formData['fvcontributor:profile_picture'][0] : {}
-    const categoryDetailUrl = `/${siteTheme}${dialect_path}/${categoryType.label.singular}/${itemUid}`
-    const categoryEditUrl = `/${siteTheme}${dialect_path}/edit/${categoryType.label.singular}/${itemUid}`
+    const categoryDetailUrl = `/${siteTheme}${dialect_path}/${categoryType.label.singular}/${itemUid || ''}`
+    const categoryCreateUrl = `/${siteTheme}${dialect_path}/create/${categoryType.label.singular}`
+    const categoryEditUrl = `/${siteTheme}${dialect_path}/edit/${categoryType.label.singular}/${itemUid || ''}`
     const categoryBrowseUrl = `/${siteTheme}${dialect_path}/${categoryType.label.plural}/10/1`
     return (
-      <div className={`${className} Category Category--successCreate`}>
-        <h1 className="Category__heading">{copy.create.success.title}</h1>
+      <div className={`${className} Category Category--successEdit`}>
+        <h1 className="Category__heading">{copy.edit.success.title}</h1>
 
-        <p>{copy.create.success.thanks}</p>
+        <p>{copy.edit.success.thanks}</p>
 
         <div className="Category__successContent">
           <div className="Category__successReview">
@@ -64,7 +67,8 @@ export class CategoryStateSuccessCreate extends React.Component {
                   href={categoryEditUrl}
                   onClick={(e) => {
                     e.preventDefault()
-                    NavigationHelpers.navigate(categoryEditUrl, this.props.pushWindowPath, false)
+                    // NavigationHelpers.navigate(phrasebookEditUrl, this.props.pushWindowPath, false)
+                    this.props.handleClick()
                   }}
                 >
                   {copy.create.success.editView}
@@ -80,19 +84,27 @@ export class CategoryStateSuccessCreate extends React.Component {
               {/* CREATE ANOTHER ------------- */}
               <li>
                 <a
-                  href={window.location.pathname}
+                  href={categoryCreateUrl}
                   onClick={(e) => {
                     e.preventDefault()
-                    handleClick()
+                    NavigationHelpers.navigate(categoryCreateUrl, this.props.pushWindowPath, false)
                   }}
                 >
-                  {copy.create.success.linkCreateAnother}
+                  {copy.edit.success.linkCreateAnother}
                 </a>
               </li>
 
               {/* BROWSE ------------- */}
               <li>
-                <a href={categoryBrowseUrl}>{copy.create.success.browseView}</a>
+                <a
+                  href={categoryBrowseUrl}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    NavigationHelpers.navigate(categoryBrowseUrl, this.props.pushWindowPath, false)
+                  }}
+                >
+                  {copy.create.success.browseView}
+                </a>
               </li>
             </ul>
           </div>
@@ -112,13 +124,11 @@ const mapStateToProps = (state /*, ownProps*/) => {
     routeParams: route.routeParams,
   }
 }
-
 // REDUX: actions/dispatch/func
 const mapDispatchToProps = {
   pushWindowPath,
 }
-
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(CategoryStateSuccessCreate)
+)(CategoryStateSuccessEdit)

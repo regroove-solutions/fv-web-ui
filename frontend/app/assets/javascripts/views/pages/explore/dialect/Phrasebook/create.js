@@ -34,12 +34,17 @@ import {
   DEFAULT_SORT_TYPE,
 } from 'common/Constants'
 
-import '!style-loader!css-loader!./Phrasebook.css'
+import '!style-loader!css-loader!./styles.css'
 
 const { array, element, func, number, object, string } = PropTypes
 
+const categoryType = {
+  title: { plural: 'Phrase Books', singular: 'Phrase Book' },
+  label: { plural: 'phrasebooks', singular: 'phrasebook' },
+}
+
 let categoriesPath = undefined
-export class Phrasebook extends React.Component {
+export class Category extends React.Component {
   static propTypes = {
     className: string,
     copy: object,
@@ -66,7 +71,7 @@ export class Phrasebook extends React.Component {
     pushWindowPath: func.isRequired,
   }
   static defaultProps = {
-    className: 'FormPhrasebook',
+    className: 'FormCategory',
     groupName: '',
     breadcrumb: null,
     DEFAULT_PAGE,
@@ -98,13 +103,11 @@ export class Phrasebook extends React.Component {
 
     const copy = this.props.copy
       ? this.props.copy
-      : await import(/* webpackChunkName: "PhrasebookInternationalization" */ './internationalization').then(
-        (_copy) => {
+      : await import(/* webpackChunkName: "CategoryInternationalization" */ './internationalization').then((_copy) => {
           return _copy.default
-        }
-      )
+        })
 
-    categoriesPath = `${routeParams.dialect_path}/Phrase Books/`
+    categoriesPath = `${routeParams.dialect_path}/${categoryType.title.plural}/`
 
     // Get data for computeDialect
     await this.props.fetchDialect('/' + this.props.routeParams.dialect_path)
@@ -132,9 +135,9 @@ export class Phrasebook extends React.Component {
 
     const validator = this.props.validator
       ? this.props.validator
-      : await import(/* webpackChunkName: "PhrasebookValidator" */ './validator').then((_validator) => {
-        return _validator.default
-      })
+      : await import(/* webpackChunkName: "CategoryValidator" */ './validator').then((_validator) => {
+          return _validator.default
+        })
 
     // Flip to ready state...
     this.setState({
@@ -239,13 +242,13 @@ export class Phrasebook extends React.Component {
     )
   }
 
-  _handleCreateItemSubmit = async(formData) => {
+  _handleCreateItemSubmit = async (formData) => {
     // Submit here
     const now = Date.now()
     const name = formData['dc:title']
 
     const results = await this.props.createCategory(
-      `${this.props.routeParams.dialect_path}/Phrase Books`, // parentDoc:
+      `${this.props.routeParams.dialect_path}/${categoryType.title.plural}`, // parentDoc:
       {
         // docParams:
         type: 'FVCategory',
@@ -282,7 +285,7 @@ export class Phrasebook extends React.Component {
       })
     }
   }
-  _onRequestSaveForm = async() => {
+  _onRequestSaveForm = async () => {
     const formData = getFormData({
       formReference: this.form,
     })
@@ -343,4 +346,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Phrasebook)
+)(Category)
