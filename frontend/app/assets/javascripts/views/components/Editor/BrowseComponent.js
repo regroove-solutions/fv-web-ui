@@ -82,8 +82,8 @@ export class BrowseComponent extends Component {
     const providedTitleFilter = selectn('otherContext.providedFilter', this.props.dialect)
     const appliedParams = providedTitleFilter
       ? Object.assign({}, DefaultFetcherParams, {
-        filters: { 'properties.dc:title': { appliedFilter: providedTitleFilter } },
-      })
+          filters: { 'properties.dc:title': { appliedFilter: providedTitleFilter } },
+        })
       : DefaultFetcherParams
 
     this.state = {
@@ -133,9 +133,7 @@ export class BrowseComponent extends Component {
             useDatatable
             dialect={dialect}
             categoriesPath={
-              this.props.containerType === 'FVWord'
-                ? '/FV/Workspaces/SharedData/Shared Categories/'
-                : dialectPath + '/Phrase Books/'
+              this.props.containerType === 'FVWord' ? dialectPath + '/Categories/' : dialectPath + '/Phrase Books/'
             }
             routeParams={{
               siteTheme: 'explore',
