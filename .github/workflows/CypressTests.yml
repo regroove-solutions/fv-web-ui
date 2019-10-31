@@ -1,28 +1,26 @@
-# Disabled workflow until ability to queue workflows is added.
+name: Cypress Tests
 
-# name: Cypress Tests
+on: 
+  pull_request:
+    branches: 
+      - master
 
-# on: 
-#   pull_request:
-#     branches: 
-#       - master
+jobs:
+  test:
 
-# jobs:
-#   test:
+    runs-on: ubuntu-latest
 
-#     runs-on: ubuntu-latest
-
-#     steps:
-#     - uses: actions/checkout@v1
+    steps:
+    - uses: actions/checkout@v1
     
-#     - name: Setup Node.js for use with actions
-#       uses: actions/setup-node@v1.1.0
-#       with:
-#         node-version: '8.x'
+    - name: Setup Node.js for use with actions
+      uses: actions/setup-node@v1.1.0
+      with:
+        node-version: '8.x'
     
-#     - name: Install Dependencies
-#       run: |
-#         npm install
+    - name: Install Dependencies
+      run: |
+        npm install
     
 #     - name: Run Cypress tests
 #       run: npm run test:e2e:dev:headless
