@@ -2,7 +2,7 @@ name: Build
 
 on:
   schedule:
-    - cron: '0 21 * * *'
+    - cron: '12 21 * * *'
   pull_request:
     branches: 
       - master
