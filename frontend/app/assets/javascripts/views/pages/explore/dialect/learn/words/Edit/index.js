@@ -76,6 +76,7 @@ export class WordsEdit extends Component {
     formValue: null,
     componentState: STATE_LOADING,
     copy: {},
+    is403: false,
   }
 
   // Fetch data on initial render
@@ -197,6 +198,8 @@ export class WordsEdit extends Component {
     if (_computeDialect2.isError) {
       this.setState({
         componentState: STATE_DEFAULT,
+        // Note: Intentional == comparison
+        is403: _computeDialect2.message == '403',
         errorMessage: _computeDialect2.message,
         ...addToState,
       })
@@ -304,6 +307,7 @@ export class WordsEdit extends Component {
       <AuthenticationFilter
         login={this.props.computeLogin}
         anon={false}
+        is403={this.state.is403}
         routeParams={this.props.routeParams}
         notAuthenticatedComponent={<StateErrorBoundary copy={this.state.copy} errorMessage={this.state.errorMessage} />}
       >

@@ -67,6 +67,7 @@ export class ExploreDialectEdit extends Component {
   }
   state = {
     componentState: STATE_LOADING,
+    is403: false,
   }
   // Fetch data on initial render
   async componentDidMount() {
@@ -110,6 +111,8 @@ export class ExploreDialectEdit extends Component {
     if (_computeDialect2.isError) {
       this.setState({
         componentState: STATE_DEFAULT,
+        // Note: Intentional == comparison
+        is403: _computeDialect2.message == '403',
         errorMessage: _computeDialect2.message,
         ...addToState,
       })
@@ -202,6 +205,7 @@ export class ExploreDialectEdit extends Component {
     }
     return (
       <AuthenticationFilter
+        is403={this.state.is403}
         login={this.props.computeLogin}
         anon={false}
         routeParams={this.props.routeParams}
