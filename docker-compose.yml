@@ -16,7 +16,7 @@ services:
             - '8787:8787'
             - '3002:3001'
         environment:
-            - NUXEO_PACKAGES=nuxeo-dam
+            - NUXEO_PACKAGES=nuxeo-dam nuxeo-jsf-ui
             - NUXEO_AUTOMATION_TRACE=true
             - NUXEO_DEV_MODE=true
             - NUXEO_DATA=/opt/nuxeo/ext_data

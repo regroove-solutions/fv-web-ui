@@ -26,12 +26,13 @@ The `run` command below assumes the following volumes on the host (change to mat
 
 ### Step 4:
 
-```docker run --name nuxeo-dev --rm -ti -v ~/Dev/Dependencies/nuxeo_dev_docker2:/opt/nuxeo/server/nxserver/tmp -p 8080:8080 -p 8787:8787 -e NUXEO_PACKAGES="nuxeo-jsf-ui nuxeo-dam" -e NUXEO_URL="TEST" -d me/nuxeo-dev```
+```docker run --name nuxeo-dev --rm -ti -p 8080:8080 -v ~/Dev/Dependencies/nuxeo_dev_docker2:/opt/nuxeo/server/nxserver/tmp -e NUXEO_PACKAGES="nuxeo-dam nuxeo-jsf-ui" -e NUXEO_URL="http://localhost:8080" me/nuxeo-dev```
 
-
-Run the image:
-
-```docker run --name nuxeo-dev --rm -ti -v ~/Dev/Dependencies/nuxeo_dev_docker2:/opt/nuxeo/server/nxserver/tmp -v ~/Dev/Dependencies/nuxeo_dev_docker2/data:/opt/nuxeo/ext_data -v ~/Dev/Dependencies/nuxeo_dev_docker2/logs:/var/log/nuxeo -p 8080:8080 -p 8787:8787 -e NUXEO_PACKAGES="nuxeo-dam" -e NUXEO_AUTOMATION_TRACE="true" -e NUXEO_DEV_MODE="true" -e NUXEO_DATA="/opt/nuxeo/ext_data" -d me/nuxeo-dev```
+Note: Try to add the following:
+To expose Debug port: ```-p 8787:8787```
+To include automation traces: ```-e NUXEO_AUTOMATION_TRACE="true"```
+To enable Dev mode: ```-e NUXEO_DEV_MODE="true"```
+To change the data folder: ```-e NUXEO_DATA="/opt/nuxeo/ext_data"```
 
 ### Step 5:
 
@@ -64,7 +65,7 @@ docker build -t me/nuxeo-dev .
 ## Run the Docker container:
 
 ```
-docker run --name nuxeo-dev --rm -ti -v ~/Dev/Dependencies/nuxeo_dev_docker:/opt/nuxeo/server/nxserver/tmp -v ~/Dev/Dependencies/nuxeo_dev_docker/data:/opt/nuxeo/ext_data -v ~/Dev/Dependencies/nuxeo_dev_docker/logs:/var/log/nuxeo -p 8080:8080 -p 8787:8787 -p 3002:3001 -e NUXEO_PACKAGES="nuxeo-dam" -e NUXEO_AUTOMATION_TRACE="true" -e NUXEO_DEV_MODE="true" -e NUXEO_DATA="/opt/nuxeo/ext_data" -e NUXEO_CLID=$(vault kv get -field=clid secret/nuxeo) -d me/nuxeo-dev
+docker run --name nuxeo-dev --rm -ti -v ~/Dev/Dependencies/nuxeo_dev_docker:/opt/nuxeo/server/nxserver/tmp -v ~/Dev/Dependencies/nuxeo_dev_docker/data:/opt/nuxeo/ext_data -v ~/Dev/Dependencies/nuxeo_dev_docker/logs:/var/log/nuxeo -p 8080:8080 -p 8787:8787 -p 3002:3001 -e NUXEO_PACKAGES="nuxeo-dam " -e NUXEO_AUTOMATION_TRACE="true" -e NUXEO_DEV_MODE="true" -e NUXEO_DATA="/opt/nuxeo/ext_data" -e NUXEO_CLID=$(vault kv get -field=clid secret/nuxeo) -d me/nuxeo-dev
 ```
 
 Explanation

@@ -1,5 +1,6 @@
 FROM nuxeo:10.10
 MAINTAINER FPCC <support@fpcc.ca>
+
 COPY nuxeo.conf /docker-entrypoint-initnuxeo.d/nuxeo.conf
 COPY setup.sh /docker-entrypoint-initnuxeo.d/setup.sh
 
