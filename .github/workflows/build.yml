@@ -19,7 +19,5 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - name: Copy settings.xml 
-      run: cp sample.settings.xml $HOME/.m2/settings.xml
     - name: Build with Maven
-      run: mvn clean install
+      run: mvn -s sample.settings.xml clean install
