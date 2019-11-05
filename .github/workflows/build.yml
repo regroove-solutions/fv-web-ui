@@ -1,10 +1,13 @@
 name: Build
 
 on:
-  # Every day at 2:30am pst
+  # Every day at 9:30 UTC
   schedule:
     - cron: '30 9 * * *'
   pull_request:
+    branches: 
+      - master
+  push:
     branches: 
       - master
 
