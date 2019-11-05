@@ -358,6 +358,7 @@ export class Phrasebooks extends Component {
           const phrasebookDetailUrl = `/${siteTheme}${dialect_path}/phrasebook/${data.uid || ''}`
           return (
             <a
+              className="DictionaryList__link"
               href={phrasebookDetailUrl}
               onClick={(e) => {
                 e.preventDefault()

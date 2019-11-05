@@ -352,6 +352,7 @@ export class Contributors extends Component {
 
           return (
             <a
+              className="DictionaryList__link"
               href={url}
               onClick={(e) => {
                 e.preventDefault()
