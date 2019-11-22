@@ -55,6 +55,7 @@ After you've made changes to a FirstVoices module or modules, you can copy that 
 2. Basic knowledge of Docker, Nuxeo and bash.
 3. A valid CLID for the Nuxeo server registration for your DEV instance.
 4. (Recommended) Vault server installed on local machine with the CLID configured (https://www.vaultproject.io/)
+5. Ensure you have the two environment variables set for CYPRESS_FV_USERNAME and CYPRESS_FV_PASSWORD which will be passed into the container and used to create an admin account during the initial setup.
 
 Navigate to the folder with your Dockerfile and build this image locally:
 
@@ -65,11 +66,14 @@ docker build -t me/nuxeo-dev .
 ## Run the Docker container:
 
 ```
-docker run --name nuxeo-dev --rm -ti -v ~/Dev/Dependencies/nuxeo_dev_docker:/opt/nuxeo/server/nxserver/tmp -v ~/Dev/Dependencies/nuxeo_dev_docker/data:/opt/nuxeo/ext_data -v ~/Dev/Dependencies/nuxeo_dev_docker/logs:/var/log/nuxeo -p 8080:8080 -p 8787:8787 -p 3002:3001 -e NUXEO_PACKAGES="nuxeo-dam " -e NUXEO_AUTOMATION_TRACE="true" -e NUXEO_DEV_MODE="true" -e NUXEO_DATA="/opt/nuxeo/ext_data" -e NUXEO_CLID=$(vault kv get -field=clid secret/nuxeo) -d me/nuxeo-dev
+docker run --name nuxeo-dev --rm -ti -v ~/Dev/Dependencies/nuxeo_dev_docker:/opt/nuxeo/server/nxserver/tmp -v ~/Dev/Dependencies/nuxeo_dev_docker/data:/opt/nuxeo/ext_data -v ~/Dev/Dependencies/nuxeo_dev_docker/logs:/var/log/nuxeo -p 8080:8080 -p 8787:8787 -p 3002:3001 -e NUXEO_PACKAGES="nuxeo-dam " -e NUXEO_AUTOMATION_TRACE="true" -e NUXEO_DEV_MODE="true" -e NUXEO_DATA="/opt/nuxeo/ext_data" -e NUXEO_CLID=$(vault kv get -field=clid secret/nuxeo) -e CYPRESS_FV_USERNAME -e CYPRESS_FV_PASSWORD -d me/nuxeo-dev
 ```
+Run the initial backend setup script in a new terminal once the backend server has started:
 
-Explanation
-
+```
+bash ./initialsetup.sh
+```
+Explanation:
 
 1. At this point, you should be able to access http://localhost:8080/nuxeo
 2. You can run your UI locally (will point to localhost:8080 by default), or access the UI within the Docker container here: http://localhost:3002/
