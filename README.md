@@ -28,13 +28,22 @@ The `run` command below assumes the following volumes on the host (change to mat
 
 ```docker run --name nuxeo-dev --rm -ti -p 8080:8080 -v ~/Dev/Dependencies/nuxeo_dev_docker2:/opt/nuxeo/server/nxserver/tmp -e NUXEO_PACKAGES="nuxeo-dam nuxeo-jsf-ui" -e NUXEO_URL="http://localhost:8080" me/nuxeo-dev```
 
-Note: Try to add the following:
-To expose Debug port: ```-p 8787:8787```
-To include automation traces: ```-e NUXEO_AUTOMATION_TRACE="true"```
-To enable Dev mode: ```-e NUXEO_DEV_MODE="true"```
-To change the data folder: ```-e NUXEO_DATA="/opt/nuxeo/ext_data"```
+Note: Try to add the following:\
+To expose Debug port: ```-p 8787:8787```\
+To include automation traces: ```-e NUXEO_AUTOMATION_TRACE="true"```\
+To enable Dev mode: ```-e NUXEO_DEV_MODE="true"```\
+To change the data folder: ```-e NUXEO_DATA="/opt/nuxeo/ext_data"```\
+To pass in environment variables for the creation of an administrator: ```-e CYPRESS_FV_USERNAME -e CYPRESS_FV_PASSWORD```
 
 ### Step 5:
+
+Run the initial backend setup script in a new terminal once the backend server has started:
+
+```
+bash ./initialsetup.sh
+```
+
+### Step 6:
 
 Go to localhost:8080, or run the UI locally via NPM and point it to http://localhost:8080
 This may take a few minutes as Nuxeo starts up.
