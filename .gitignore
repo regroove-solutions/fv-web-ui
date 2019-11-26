@@ -25,3 +25,4 @@ nashorn_code_cache
 /frontend/cypress/screenshots/
 /docker/First-Voices-LATEST.zip
 /docker/First-Voices-marketplace-package-LATEST.zip
+/docker/nuxeo_dev_docker/
