@@ -23,3 +23,5 @@ nashorn_code_cache
 *.iml
 /frontend/cypress/videos/
 /frontend/cypress/screenshots/
+/docker/First-Voices-LATEST.zip
+/docker/First-Voices-marketplace-package-LATEST.zip
