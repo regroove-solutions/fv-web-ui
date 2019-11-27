@@ -5,7 +5,7 @@ This environment is setup for localhost work. It includes an embedded database (
 # Method 1:
 ## Prerequisites
 
-1. You must have Docker installed and running.
+1. You must have Docker installed and running, as well as git installed.
 2. Basic knowledge of Docker, Nuxeo and bash.
 3. Ensure you have the two environment variables set for CYPRESS_FV_USERNAME and CYPRESS_FV_PASSWORD which will be passed into the container and used to create an admin account during the initial setup.
 
@@ -15,6 +15,10 @@ This environment is setup for localhost work. It includes an embedded database (
 ### Step 1:
 
 Clone the fv-web-ui repository and navigate into fv-web-ui/docker/
+```
+git clone https://github.com/First-Peoples-Cultural-Council/fv-web-ui.git
+cd ./fv-web-ui/docker
+```
 
 ### Step 2:
 #### There are now two options:
@@ -23,7 +27,7 @@ Clone the fv-web-ui repository and navigate into fv-web-ui/docker/
 ```
 ./setup_docker.sh
 ```
-You may have to give the script execute permission:
+You may have to give the script execute permission first:
 ```
 chmod +x setup_docker.sh
 ```
@@ -72,7 +76,7 @@ Run the initial backend setup script in a new terminal once the backend server h
 ```
 ./initialsetup.sh
 ```
-You may have to give the script execute permission:
+You may have to give the script execute permission first:
 ```
 chmod +x initialsetup.sh
 ```
