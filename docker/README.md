@@ -2,33 +2,63 @@
 
 This environment is setup for localhost work. It includes an embedded database (Derby), and embedded Elasticsearch.
 
+#Method 1:
+## Prerequisites
+
+1. You must have Docker installed and running.
+2. Basic knowledge of Docker, Nuxeo and bash.
+3. Ensure you have the two environment variables set for CYPRESS_FV_USERNAME and CYPRESS_FV_PASSWORD which will be passed into the container and used to create an admin account during the initial setup.
+
+
 ## Initial Setup
 
 ### Step 1:
 
-Clone this repository.
+Clone the fv-web-ui repository and navigate into fv-web-ui/docker/
 
-### Step 2:
-
+###Step 2:
+####There are now two options:
+####Option A - Run the setup script (easier but less control - recommended):
+#####A-1:
+```
+./setup_docker.sh
+```
+You may have to give the script execute permission:
+```
+chmod +x setup_docker.sh
+```
+####Option B - Run the commands individually:
+#####B-1:
 Navigate to the cloned folder and build this image locally:
 ```docker build -t me/nuxeo-dev .```
 
-### Step 3:
+#####B-2::
 Setup a folder on your local machine to store some persistant data from within the container (e.g. Nuxeo data), and a built package of FirstVoices, for example: `~/Dev/Dependencies/nuxeo_dev_docker`
 
+#####B-3:
 In the `fv-web-ui` project (cloned from https://github.com/First-Peoples-Cultural-Council/fv-web-ui), run `mvn clean install`, then copy the package `FirstVoices-marketplace/target/FirstVoices-marketplace-package-latest.zip` into the `nuxeo_dev_docker` folder. It is best to build the application outside of the docker container to make use of Maven and Node caching.
 
-The `run` command below assumes the following volumes on the host (change to match your file structure):
+The Option B `run` command below assumes the following volumes on the host (change to match your file structure):
 
 `~/Dev/Dependencies/nuxeo_dev_docker` = Directory on host mapped to /tmp/ directory. Useful for storing data you want to persist in the container.
 `~/Dev/Dependencies/nuxeo_dev_docker/data` = Directory where Nuxeo data will be stored persisted.
 `~/Dev/Dependencies/nuxeo_dev_docker/logs` = Directory where log files will be mapped.
 
-### Step 4:
+### Step 3:
+#####Startup the docker container
+If you used Option A and are in the fv-web-ui/docker/ directory:
+```
+docker run --name nuxeo-dev --rm -ti -p 8080:8080 -v ${PWD}/nuxeo_dev_docker:/opt/nuxeo/server/nxserver/tmp -v ${PWD}/nuxeo_dev_docker/data:/opt/nuxeo/ext_data -v ${PWD}/nuxeo_dev_docker/logs:/var/log/nuxeo -e NUXEO_PACKAGES="nuxeo-dam nuxeo-jsf-ui" -e NUXEO_URL="http://localhost:8080" me/nuxeo-dev
+```
 
-```docker run --name nuxeo-dev --rm -ti -p 8080:8080 -v ~/Dev/Dependencies/nuxeo_dev_docker2:/opt/nuxeo/server/nxserver/tmp -e NUXEO_PACKAGES="nuxeo-dam nuxeo-jsf-ui" -e NUXEO_URL="http://localhost:8080" me/nuxeo-dev```
+If you used Option B:
+```
+docker run --name nuxeo-dev --rm -ti -p 8080:8080 -v ~/Dev/Dependencies/nuxeo_dev_docker:/opt/nuxeo/server/nxserver/tmp -v ~/Dev/Dependencies/nuxeo_dev_docker/data:/opt/nuxeo/ext_data -v ~/Dev/Dependencies/nuxeo_dev_docker/logs:/var/log/nuxeo -e NUXEO_PACKAGES="nuxeo-dam nuxeo-jsf-ui" -e NUXEO_URL="http://localhost:8080" me/nuxeo-dev
+```
 
-Note: Try to add the following:\
+This may take a few minutes as Nuxeo starts up.
+
+Note:\
 To expose Debug port: ```-p 8787:8787```\
 To include automation traces: ```-e NUXEO_AUTOMATION_TRACE="true"```\
 To enable Dev mode: ```-e NUXEO_DEV_MODE="true"```\
@@ -40,14 +70,17 @@ To pass in environment variables for the creation of an administrator: ```-e CYP
 Run the initial backend setup script in a new terminal once the backend server has started:
 
 ```
-bash ./initialsetup.sh
+./initialsetup.sh
+```
+You may have to give the script execute permission:
+```
+chmod +x initialsetup.sh
 ```
 
 ### Step 6:
 
-Go to localhost:8080, or run the UI locally via NPM and point it to http://localhost:8080
-This may take a few minutes as Nuxeo starts up.
-
+Go to localhost:8080, or run the UI locally via NPM and point it to http://localhost:8080\
+The backend should be up and accessible.
 ## Pushing Changes
 
 After you've made changes to a FirstVoices module or modules, you can copy that module (JAR or ZIP) into your container and test the changes.
@@ -56,7 +89,8 @@ After you've made changes to a FirstVoices module or modules, you can copy that 
 ##########
 
 
-### Using Docker
+#Method 2:
+## Using Docker
 
 ## Prerequisites
 
@@ -66,17 +100,19 @@ After you've made changes to a FirstVoices module or modules, you can copy that 
 4. (Recommended) Vault server installed on local machine with the CLID configured (https://www.vaultproject.io/)
 5. Ensure you have the two environment variables set for CYPRESS_FV_USERNAME and CYPRESS_FV_PASSWORD which will be passed into the container and used to create an admin account during the initial setup.
 
+###Step 1:
 Navigate to the folder with your Dockerfile and build this image locally:
 
 ```
 docker build -t me/nuxeo-dev .
 ```
-
-## Run the Docker container:
+###Step 2:
+Run the Docker container:
 
 ```
 docker run --name nuxeo-dev --rm -ti -v ~/Dev/Dependencies/nuxeo_dev_docker:/opt/nuxeo/server/nxserver/tmp -v ~/Dev/Dependencies/nuxeo_dev_docker/data:/opt/nuxeo/ext_data -v ~/Dev/Dependencies/nuxeo_dev_docker/logs:/var/log/nuxeo -p 8080:8080 -p 8787:8787 -p 3002:3001 -e NUXEO_PACKAGES="nuxeo-dam " -e NUXEO_AUTOMATION_TRACE="true" -e NUXEO_DEV_MODE="true" -e NUXEO_DATA="/opt/nuxeo/ext_data" -e NUXEO_CLID=$(vault kv get -field=clid secret/nuxeo) -e CYPRESS_FV_USERNAME -e CYPRESS_FV_PASSWORD -d me/nuxeo-dev
 ```
+###Step 3:
 Run the initial backend setup script in a new terminal once the backend server has started:
 
 ```
@@ -88,13 +124,17 @@ Explanation:
 2. You can run your UI locally (will point to localhost:8080 by default), or access the UI within the Docker container here: http://localhost:3002/
 
 
-## Useful commands/common tasks
+##########
 
-# List running containers:
+
+
+# Useful commands/common tasks
+
+### List running containers:
 
 ```docker ps```
 
-# Log into the container:
+### Log into the container:
 
 ```docker exec -it nuxeo-dev /bin/bash```
 
