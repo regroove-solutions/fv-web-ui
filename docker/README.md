@@ -2,7 +2,7 @@
 
 This environment is setup for localhost work. It includes an embedded database (Derby), and embedded Elasticsearch.
 
-#Method 1:
+# Method 1:
 ## Prerequisites
 
 1. You must have Docker installed and running.
@@ -16,10 +16,10 @@ This environment is setup for localhost work. It includes an embedded database (
 
 Clone the fv-web-ui repository and navigate into fv-web-ui/docker/
 
-###Step 2:
-####There are now two options:
-####Option A - Run the setup script (easier but less control - recommended):
-#####A-1:
+### Step 2:
+#### There are now two options:
+#### Option A - Run the setup script (easier but less control - recommended):
+##### A-1:
 ```
 ./setup_docker.sh
 ```
@@ -27,15 +27,15 @@ You may have to give the script execute permission:
 ```
 chmod +x setup_docker.sh
 ```
-####Option B - Run the commands individually:
-#####B-1:
+#### Option B - Run the commands individually:
+##### B-1:
 Navigate to the cloned folder and build this image locally:
 ```docker build -t me/nuxeo-dev .```
 
-#####B-2::
+##### B-2::
 Setup a folder on your local machine to store some persistant data from within the container (e.g. Nuxeo data), and a built package of FirstVoices, for example: `~/Dev/Dependencies/nuxeo_dev_docker`
 
-#####B-3:
+##### B-3:
 In the `fv-web-ui` project (cloned from https://github.com/First-Peoples-Cultural-Council/fv-web-ui), run `mvn clean install`, then copy the package `FirstVoices-marketplace/target/FirstVoices-marketplace-package-latest.zip` into the `nuxeo_dev_docker` folder. It is best to build the application outside of the docker container to make use of Maven and Node caching.
 
 The Option B `run` command below assumes the following volumes on the host (change to match your file structure):
@@ -45,7 +45,7 @@ The Option B `run` command below assumes the following volumes on the host (chan
 `~/Dev/Dependencies/nuxeo_dev_docker/logs` = Directory where log files will be mapped.
 
 ### Step 3:
-#####Startup the docker container
+##### Startup the docker container
 If you used Option A and are in the fv-web-ui/docker/ directory:
 ```
 docker run --name nuxeo-dev --rm -ti -p 8080:8080 -v ${PWD}/nuxeo_dev_docker:/opt/nuxeo/server/nxserver/tmp -v ${PWD}/nuxeo_dev_docker/data:/opt/nuxeo/ext_data -v ${PWD}/nuxeo_dev_docker/logs:/var/log/nuxeo -e NUXEO_PACKAGES="nuxeo-dam nuxeo-jsf-ui" -e NUXEO_URL="http://localhost:8080" me/nuxeo-dev
@@ -89,7 +89,7 @@ After you've made changes to a FirstVoices module or modules, you can copy that 
 ##########
 
 
-#Method 2:
+# Method 2:
 ## Using Docker
 
 ## Prerequisites
@@ -100,19 +100,19 @@ After you've made changes to a FirstVoices module or modules, you can copy that 
 4. (Recommended) Vault server installed on local machine with the CLID configured (https://www.vaultproject.io/)
 5. Ensure you have the two environment variables set for CYPRESS_FV_USERNAME and CYPRESS_FV_PASSWORD which will be passed into the container and used to create an admin account during the initial setup.
 
-###Step 1:
+### Step 1:
 Navigate to the folder with your Dockerfile and build this image locally:
 
 ```
 docker build -t me/nuxeo-dev .
 ```
-###Step 2:
+### Step 2:
 Run the Docker container:
 
 ```
 docker run --name nuxeo-dev --rm -ti -v ~/Dev/Dependencies/nuxeo_dev_docker:/opt/nuxeo/server/nxserver/tmp -v ~/Dev/Dependencies/nuxeo_dev_docker/data:/opt/nuxeo/ext_data -v ~/Dev/Dependencies/nuxeo_dev_docker/logs:/var/log/nuxeo -p 8080:8080 -p 8787:8787 -p 3002:3001 -e NUXEO_PACKAGES="nuxeo-dam " -e NUXEO_AUTOMATION_TRACE="true" -e NUXEO_DEV_MODE="true" -e NUXEO_DATA="/opt/nuxeo/ext_data" -e NUXEO_CLID=$(vault kv get -field=clid secret/nuxeo) -e CYPRESS_FV_USERNAME -e CYPRESS_FV_PASSWORD -d me/nuxeo-dev
 ```
-###Step 3:
+### Step 3:
 Run the initial backend setup script in a new terminal once the backend server has started:
 
 ```
