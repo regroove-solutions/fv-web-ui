@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List } from 'immutable'
+import Immutable, { List, is } from 'immutable'
 
 // REDUX
 import { connect } from 'react-redux'
@@ -126,6 +126,24 @@ export class PageDialectBookEdit extends Component {
   // Fetch data on initial render
   componentDidMount() {
     this.fetchData()
+  }
+
+  // NOTE: Fixes FW-692
+  // When clicking most tcomb-form buttons a rerender is triggered for some reason.
+  // If the rerender is allowed to continue, the outcome of the click will never be realized.
+  // When that happens we end up with buttons appearing to not be responsive and dialogs never being displayed.
+  //
+  // That's why we are preventing unnecessary renders from happening below
+  shouldComponentUpdate(newProps, newState) {
+    const isSameComputeBook = is(newProps.computeBook, this.props.computeBook)
+    const isSameComputeDialect = is(newProps.computeDialect2, this.props.computeDialect2)
+    const isSameComputeBookEntries = is(newProps.computeBookEntries, this.props.computeBookEntries)
+    const isSameState = is(newState, this.state)
+
+    if (isSameComputeBook && isSameComputeDialect && isSameComputeBookEntries && isSameState) {
+      return false
+    }
+    return true
   }
 
   render() {
