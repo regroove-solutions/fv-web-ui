@@ -153,10 +153,33 @@ We use BroswerStack in order to ensure our UI functions in the latest version of
 
 Via [Cypress](https://www.cypress.io/)
 
-Launch the Cypress app:
+Launch the Cypress app (GUI) where you can run tests individually:
 
 ```
-$ npm run test:e2e
+$ npm run test:e2e:dev
+```
+
+Launch the full Cypress test suite headlessly:
+```
+$ npm run test:e2e:dev:headless
+```
+With debugging output enabled:
+```
+$ npm run test:e2e:dev:headless:debug
+```
+
+These Cypress tests require that you have java and maven installed as well as the correct environment variables set for the following:
+
+For the database setup scripts:
+```
+CYPRESS_FV_USERNAME
+CYPRESS_FV_PASSWORD
+```
+
+For recording runs (optional):
+```
+CYPRESS_PROJECT_ID
+CYPRESS_RECORD_KEY
 ```
 
 ### Frontend: Unit testing

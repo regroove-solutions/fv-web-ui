@@ -315,6 +315,11 @@ const routes = [
     breadcrumbs: false,
   },
   {
+    path: ['debug', 'typography'],
+    page: <Pages.PageDebugTypography />,
+    breadcrumbs: false,
+  },
+  {
     path: [new paramMatch('siteTheme', new RegExp('kids'))],
     frontpage: true,
     title: intl.translate({ key: 'kids_home', default: 'Kids Home', case: 'words' }),
@@ -929,12 +934,12 @@ const routes = [
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
       'play',
-      'hangman',
+      'parachute',
     ],
     title:
       intl.translate({
-        key: 'hangman',
-        default: 'Hangman',
+        key: 'parachute',
+        default: 'Parachute',
         case: 'words',
       }) +
       ' | ' +

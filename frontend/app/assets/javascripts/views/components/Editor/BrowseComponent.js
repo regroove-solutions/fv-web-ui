@@ -30,7 +30,7 @@ import selectn from 'selectn'
 
 import { WORKSPACES } from 'common/Constants'
 
-import Button from '@material-ui/core/Button'
+import FVButton from 'views/components/FVButton'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
@@ -211,9 +211,9 @@ export class BrowseComponent extends Component {
     return (
       <div style={{ display: 'inline' }}>
         {/* Dialog Button */}
-        <Button variant="outlined" onClick={this._handleOpen}>
+        <FVButton variant="outlined" onClick={this._handleOpen}>
           {this.props.label}
-        </Button>
+        </FVButton>
 
         {/* Dialog */}
         <Dialog actions={actions} fullWidth maxWidth="md" open={this.state.open}>
@@ -226,9 +226,9 @@ export class BrowseComponent extends Component {
             })()}
           </DialogContent>
           <DialogActions>
-            <Button variant="contained" color="secondary" onClick={this._handleClose}>
+            <FVButton variant="contained" color="secondary" onClick={this._handleClose}>
               {intl.trans('cancel', 'Cancel', 'first')}
-            </Button>
+            </FVButton>
           </DialogActions>
         </Dialog>
       </div>
