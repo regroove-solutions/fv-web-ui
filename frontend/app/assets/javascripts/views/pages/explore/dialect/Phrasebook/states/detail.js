@@ -1,7 +1,17 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import FVButton from 'views/components/FVButton'
+import NavigationHelpers from 'common/NavigationHelpers'
 
-const { bool, string, element, object } = PropTypes
+// REDUX
+import { connect } from 'react-redux'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
+const { bool, string, element, object, func } = PropTypes
+const categoryType = {
+  title: { plural: 'Phrase Books', singular: 'Phrase Book' },
+  label: { plural: 'phrasebooks', singular: 'phrasebook' },
+}
 export class CategoryStateDetail extends React.Component {
   static propTypes = {
     className: string,
@@ -10,6 +20,10 @@ export class CategoryStateDetail extends React.Component {
     isTrashed: bool,
     valueName: string,
     valueDescription: string,
+    // REDUX: reducers/state
+    routeParams: object.isRequired,
+    // REDUX: actions/dispatch/func
+    pushWindowPath: func.isRequired,
   }
   static defaultProps = {
     className: '',
@@ -22,9 +36,11 @@ export class CategoryStateDetail extends React.Component {
     },
   }
   render() {
-    const { className, copy, isTrashed, valueName, valueDescription, breadcrumb } = this.props
+    const { className, copy, isTrashed, valueName, valueDescription, breadcrumb, routeParams } = this.props
+    const { siteTheme, dialect_path, itemId } = routeParams
     const _copy = copy.detail
     const itemDeleted = isTrashed ? <div className="alert alert-danger">{_copy.isTrashed}</div> : null
+    const categoryEditUrl = `/${siteTheme}${dialect_path}/edit/${categoryType.label.singular}/${itemId || ''}`
     return (
       <div className={`${className} Category Category--detail`}>
         <div className="Category__content">
@@ -45,9 +61,34 @@ export class CategoryStateDetail extends React.Component {
             </div>
           </div>
         </div>
+        <FVButton
+          href={categoryEditUrl}
+          onClick={(e) => {
+            e.preventDefault()
+            NavigationHelpers.navigate(categoryEditUrl, this.props.pushWindowPath, false)
+          }}
+        >
+          {copy.create.success.editView}
+        </FVButton>
       </div>
     )
   }
 }
 
-export default CategoryStateDetail
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { navigation } = state
+
+  const { route } = navigation
+
+  return {
+    routeParams: route.routeParams,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  pushWindowPath,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CategoryStateDetail)

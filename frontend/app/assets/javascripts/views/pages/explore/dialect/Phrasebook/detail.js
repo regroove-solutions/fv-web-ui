@@ -161,7 +161,4 @@ const mapDispatchToProps = {
   fetchCategories,
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(CategoryDetail)
+export default connect(mapStateToProps, mapDispatchToProps)(CategoryDetail)

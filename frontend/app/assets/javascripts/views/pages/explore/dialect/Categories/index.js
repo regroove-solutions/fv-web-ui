@@ -127,7 +127,7 @@ export class Categories extends Component {
   async componentDidMount() {
     const copy = this.props.copy
       ? this.props.copy
-      : await import(/* webpackChunkName: "PhrasebooksInternationalization" */ './internationalization').then(
+      : await import(/* webpackChunkName: "CategoriesInternationalization" */ './internationalization').then(
           (_copy) => {
             return _copy.default
           }
@@ -572,7 +572,4 @@ const mapDispatchToProps = {
   pushWindowPath,
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Categories)
+export default connect(mapStateToProps, mapDispatchToProps)(Categories)
