@@ -14,7 +14,6 @@
 .Category .Textarea {
   margin-bottom: 3.5rem;
 }
-
 .Category__btn-container {
   display: flex;
 }
@@ -28,9 +27,6 @@
 }
 .Category__btnHeader .delete {
   margin-left: auto;
-}
-.Category__btn-container {
-  display: flex;
 }
 .Category__delete {
   margin-left: auto;

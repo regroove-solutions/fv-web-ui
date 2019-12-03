@@ -113,10 +113,13 @@ export class Categories extends Component {
         select: '',
         deselect: '',
       },
-      title: {
+      parentcategory: {
         th: '',
       },
       description: {
+        th: '',
+      },
+      category: {
         th: '',
       },
     },
@@ -151,23 +154,9 @@ export class Categories extends Component {
     const { dialect_path, pageSize, page, siteTheme } = routeParams
     return (
       <div>
-        {/* <a
-          className="_btn _btn--primary Contributors__btnCreate"
-          href={`/${siteTheme}${dialect_path}/create/phrasebook`}
-          onClick={(e) => {
-            e.preventDefault()
-            NavigationHelpers.navigate(
-              `/${siteTheme}${dialect_path}/create/phrasebook`,
-              this.props.pushWindowPath,
-              false
-            )
-          }}
-        >
-          Create a new {categoryType.title.singular}
-        </a> */}
         <Button
           variant="contained"
-          className="Contributors__btnCreate"
+          className="Categories__btnCreate"
           onClick={(e) => {
             e.preventDefault()
             NavigationHelpers.navigate(
@@ -260,6 +249,19 @@ export class Categories extends Component {
     return _computeCategories
   }
 
+  _categoryTitles = () => {
+    if (_computeCategories && _computeCategories.isFetching === false && _computeCategories.success) {
+      const entries = _computeCategories.response.entries
+      const categoryTitles = {}
+      // eslint-disable-next-line func-names
+      entries.forEach(function(entry) {
+        categoryTitles[entry.uid] = entry.title
+      })
+      return categoryTitles
+    }
+    return _computeCategories
+  }
+
   _filterDeletedUids = () => {
     const { deletedUids } = this.state
     if (_computeCategories && _computeCategories.isFetching === false && _computeCategories.success) {
@@ -340,7 +342,7 @@ export class Categories extends Component {
         },
       },
       {
-        name: 'title',
+        name: 'category',
         title: () => {
           return (
             <button
@@ -355,21 +357,59 @@ export class Categories extends Component {
             >
               {/* {this._getIcon('fv:custom_order')} */}
               {this._getIcon('dc:title')}
-              <span>{copy.title.th}</span>
+              <span>{copy.category.th}</span>
             </button>
           )
         },
-        render: (v, data /*, cellProps*/) => {
-          const phrasebookDetailUrl = `/${siteTheme}${dialect_path}/${categoryType.label.singular}/${data.uid || ''}`
+        render: (value, data /*, cellProps*/) => {
+          const categoryDetailUrl = `/${siteTheme}${dialect_path}/${categoryType.label.singular}/${data.uid || ''}`
           return (
             <a
-              href={phrasebookDetailUrl}
+              href={categoryDetailUrl}
               onClick={(e) => {
                 e.preventDefault()
-                NavigationHelpers.navigate(phrasebookDetailUrl, this.props.pushWindowPath, false)
+                NavigationHelpers.navigate(categoryDetailUrl, this.props.pushWindowPath, false)
               }}
             >
-              {v}
+              {data.title}
+            </a>
+          )
+        },
+      },
+      {
+        name: 'parentcategory',
+        title: () => {
+          return (
+            <button
+              type="button"
+              className="Categories__colSort"
+              onClick={() => {
+                this._sortCol({
+                  // sortBy: 'fv:custom_order',
+                  sortBy: 'parentRef',
+                })
+              }}
+            >
+              {/* {this._getIcon('fv:custom_order')} */}
+              {this._getIcon('parentRef')}
+              <span>{copy.parentcategory.th}</span>
+            </button>
+          )
+        },
+        render: (value, data /*, cellProps*/) => {
+          const categoryDetailUrl = `/${siteTheme}${dialect_path}/${categoryType.label.singular}/${data.parentRef ||
+            ''}`
+          const parentCategories = this._categoryTitles()
+          const parentCategory = parentCategories[data.parentRef] ? parentCategories[data.parentRef] : data.title
+          return (
+            <a
+              href={categoryDetailUrl}
+              onClick={(e) => {
+                e.preventDefault()
+                NavigationHelpers.navigate(categoryDetailUrl, this.props.pushWindowPath, false)
+              }}
+            >
+              {parentCategory}
             </a>
           )
         },
@@ -391,7 +431,7 @@ export class Categories extends Component {
             </button>
           )
         },
-        render: (v, data /*, cellProps*/) => {
+        render: (value, data /*, cellProps*/) => {
           const bio = selectn('properties.dc:description', data) || '-'
           return <div dangerouslySetInnerHTML={{ __html: bio }} />
         },

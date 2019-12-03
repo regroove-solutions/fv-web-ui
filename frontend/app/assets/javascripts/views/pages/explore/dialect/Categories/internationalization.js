@@ -13,8 +13,8 @@ const copy = {
     th: '',
     edit: 'Edit',
   },
-  title: {
-    th: 'Title',
+  parentcategory: {
+    th: 'Parent Category',
   },
   description: {
     th: 'Description',
@@ -22,6 +22,9 @@ const copy = {
   batch: {
     select: 'Select all',
     deselect: 'Deselect all',
+  },
+  category: {
+    th: 'Category Title',
   },
 }
 export default copy
