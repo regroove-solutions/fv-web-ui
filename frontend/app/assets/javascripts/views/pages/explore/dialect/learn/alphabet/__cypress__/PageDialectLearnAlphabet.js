@@ -52,6 +52,7 @@ describe('PageDialectLearnAlphabet', () => {
     cy.getByText('save', { exact: false }).click()
 
     cy.visit('/explore/FV/Workspaces/Data/Cypress/Cypress/Cypress/learn/alphabet/FW-333')
+    cy.wait(500)
     cy.getByText('audio 1', { exact: false }).should('exist')
   })
 })

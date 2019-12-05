@@ -16,12 +16,14 @@ describe('RecApprovalCreateDelete-Phrase.js > RecApprovalCreateDelete-Phrase', (
       userName: 'TESTLANGUAGETHREE_RECORDER_APPROVER',
     })
     cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageThree/learn/phrases')
+    cy.wait(500)
     cy.getByText('No results found.', { exact: true }).should('be.visible')
 
     /*
                 Going through the steps to create a phrase
             */
     cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageThree')
+    cy.wait(500)
     cy.getByText('Learn our Language', { exact: false }).click()
     cy.get('div.Header.row').within(() => {
       cy.getByText('Phrases', { exact: true }).click()

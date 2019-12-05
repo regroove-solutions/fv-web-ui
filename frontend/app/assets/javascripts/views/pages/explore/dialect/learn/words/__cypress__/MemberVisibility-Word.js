@@ -23,6 +23,7 @@ describe('MemberVisibility-Word.js > MemberVisibility-Word', () => {
     cy.wait(500)
     cy.queryByText('Edit Portal').should('not.exist')
     cy.get('[title="More Options"]').click()
+    cy.wait(500)
     cy.getByText('Reports', { exact: true }).click()
     /*
             Check that no results exist in "Words in New Status" page

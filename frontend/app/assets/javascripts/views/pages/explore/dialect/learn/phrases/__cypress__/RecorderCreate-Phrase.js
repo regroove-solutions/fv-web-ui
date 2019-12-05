@@ -10,6 +10,7 @@ describe('RecorderCreate-Phrase.js > RecorderCreate-Phrase', () => {
       userName: 'TESTLANGUAGEFOUR_RECORDER',
     })
     cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageFour')
+    cy.wait(500)
     cy.getByText('Learn our Language', { exact: true }).click()
     cy.get('div.Header.row').within(() => {
       cy.getByText('Phrases', { exact: true }).click()
@@ -90,6 +91,7 @@ describe('RecorderCreate-Phrase.js > RecorderCreate-Phrase', () => {
             Check that the phrase now exists
          */
     cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageFour/learn/phrases')
+    cy.wait(500)
     cy.getByTestId('DictionaryList__row').within(() => {
       cy.getByText('TestPhrase').should('exist')
       cy.getByText('TestTranslation').should('exist')
@@ -108,6 +110,7 @@ describe('RecorderCreate-Phrase.js > RecorderCreate-Phrase', () => {
       userName: 'TESTLANGUAGEFOUR_MEMBER',
     })
     cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageFour/learn/phrases')
+    cy.wait(500)
     cy.queryByText('TestPhrase').should('not.exist')
     cy.getByText('No results found.').should('exist')
 
@@ -139,6 +142,7 @@ describe('RecorderCreate-Phrase.js > RecorderCreate-Phrase', () => {
       userName: 'TESTLANGUAGEFOUR_MEMBER',
     })
     cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageFour/learn/phrases')
+    cy.wait(500)
     cy.getByTestId('DictionaryList__row').within(() => {
       cy.getByText('TestPhrase').should('exist')
       cy.getByText('TestTranslation').should('exist')

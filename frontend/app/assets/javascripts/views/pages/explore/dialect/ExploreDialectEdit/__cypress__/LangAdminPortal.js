@@ -10,6 +10,7 @@ describe('LangAdminPortal.js > LangAdminPortal', () => {
       userName: 'TESTLANGUAGETWO_ADMIN',
     })
     cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageTwo')
+    cy.wait(500)
 
     /*
             Test that the default images are showing and not the new ones already.
@@ -151,6 +152,7 @@ describe('LangAdminPortal.js > LangAdminPortal', () => {
         Test that if a user clicks cancel when editing, the changes don't save.
      */
     cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageTwo')
+    cy.wait(500)
     cy.getByText('Edit Portal').click()
     cy.wait(500)
 

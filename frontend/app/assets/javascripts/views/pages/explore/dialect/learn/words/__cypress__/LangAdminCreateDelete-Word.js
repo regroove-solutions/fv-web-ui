@@ -16,12 +16,14 @@ describe('LangAdminCreateDelete-Word.js > LangAdminCreateDelete-Word', () => {
       userName: 'TESTLANGUAGEONE_ADMIN',
     })
     cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageOne/learn/words')
+    cy.wait(500)
     cy.getByText('No results found.', { exact: true }).should('be.visible')
 
     /*
             Going through the steps to create a word
         */
     cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageOne')
+    cy.wait(500)
     cy.getByText('Learn our Language', { exact: false }).click()
     cy.wait(500)
     cy.getByText('Words', { exact: true }).click()
@@ -100,6 +102,7 @@ describe('LangAdminCreateDelete-Word.js > LangAdminCreateDelete-Word', () => {
             Checking to see if the word now exists.
         */
     cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageOne/learn/words')
+    cy.wait(500)
     cy.getByTestId('DictionaryList__row').within(() => {
       cy.getByText('TestWord').should('exist')
       cy.getByText('TestTranslation').should('exist')

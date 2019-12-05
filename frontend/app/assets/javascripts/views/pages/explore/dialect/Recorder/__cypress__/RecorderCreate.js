@@ -27,6 +27,7 @@ describe('RecorderCreate.js > RecorderCreate', () => {
     cy.login()
 
     cy.visit('/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/create/recorder')
+    cy.wait(500)
     cy.queryByText(copy.create.title).should('exist')
 
     // Submit w/no data

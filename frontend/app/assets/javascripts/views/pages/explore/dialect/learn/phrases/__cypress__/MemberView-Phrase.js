@@ -22,6 +22,7 @@ describe('MemberView-Phrase.js > MemberView-Phrase', () => {
     cy.get('div.Header.row').within(() => {
       cy.getByText('Phrases', { exact: true }).click()
     })
+    cy.wait(500)
     cy.getByTestId('DictionaryList__row').within(() => {
       cy.getByText('TestTranslation').should('exist')
       cy.getByText('Enabled').should('exist')
@@ -41,6 +42,7 @@ describe('MemberView-Phrase.js > MemberView-Phrase', () => {
         */
     cy.wait(500)
     cy.get('[title="More Options"]').click()
+    cy.wait(500)
     cy.getByText('Reports', { exact: true }).click()
     cy.getByText('Phrases in New Status', { exact: true }).click()
     cy.wait(500)
