@@ -259,9 +259,14 @@ export class Category extends React.Component {
   }
 
   _dialectCategories = () => {
+    const dialectCategories = [
+      {
+        uid: `${this.props.routeParams.dialect_path}/${categoryType.title.plural}`,
+        title: 'None',
+      },
+    ]
     if (_computeCategories && _computeCategories.isFetching === false && _computeCategories.success) {
       const entries = _computeCategories.response.entries
-      const dialectCategories = []
       let obj = {}
       // eslint-disable-next-line func-names
       entries.forEach(function(entry) {
@@ -271,9 +276,8 @@ export class Category extends React.Component {
         }
         dialectCategories.push(obj)
       })
-      return dialectCategories
     }
-    return _computeCategories
+    return dialectCategories
   }
 
   _handleCreateItemSubmit = async (formData) => {
@@ -282,7 +286,7 @@ export class Category extends React.Component {
     const name = formData['dc:title']
 
     const results = await this.props.createCategory(
-      `${this.props.routeParams.dialect_path}/${categoryType.title.plural}`, // parentDoc:
+      formData.parentRef, // parentDoc:
       {
         // docParams:
         type: 'FVCategory',
@@ -290,7 +294,6 @@ export class Category extends React.Component {
         properties: {
           'dc:description': formData['dc:description'],
           'dc:title': formData['dc:title'],
-          parentRef: formData.parentRef,
         },
       },
       null,

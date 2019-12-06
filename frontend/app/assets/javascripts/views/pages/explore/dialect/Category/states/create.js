@@ -2,10 +2,11 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import Button from '@material-ui/core/Button'
-import MenuItem from '@material-ui/core/MenuItem'
+import InputLabel from '@material-ui/core/InputLabel'
+import option from '@material-ui/core/MenuItem'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import FormControl from '@material-ui/core/FormControl'
-import Select from '@material-ui/core/Select'
+import NativeSelect from '@material-ui/core/NativeSelect'
 
 import Text from 'views/components/Form/Common/Text'
 import Textarea from 'views/components/Form/Common/Textarea'
@@ -29,7 +30,6 @@ export class CategoryStateCreate extends React.Component {
     onRequestSaveForm: func,
     setFormRef: func,
     valueName: string,
-    valueParentName: string,
     valueDescription: string,
     dialectCategories: array,
     valuePhotoName: string,
@@ -48,7 +48,6 @@ export class CategoryStateCreate extends React.Component {
     onRequestSaveForm: () => {},
     setFormRef: () => {},
     valueName: '',
-    valueParentName: '',
     valueDescription: '',
     dialectCategories: [],
     valuePhotoName: '',
@@ -59,6 +58,7 @@ export class CategoryStateCreate extends React.Component {
   }
   state = {
     deleting: false,
+    parentRef: '',
   }
   // NOTE: Using callback refs since on old React
   // https://reactjs.org/docs/refs-and-the-dom.html#callback-refs
@@ -71,7 +71,6 @@ export class CategoryStateCreate extends React.Component {
       copy,
       groupName,
       valueName,
-      valueParentName,
       valueDescription,
       dialectCategories,
       breadcrumb,
@@ -138,33 +137,26 @@ export class CategoryStateCreate extends React.Component {
         />
 
         {/* Parent Category ------------- */}
-        {/* <Text
-          className={groupName}
-          id={this._clean('parentRef')}
-          labelText={_copy.parent}
-          name="parentRef"
-          value={valueParentName}
-          error={getError({ errors, fieldName: 'parentRef' })}
-          disabled={isTrashed}
-          dialectCategories={this.props.dialectCategories}
-        /> */}
-        <FormControl
-          className={groupName}
-          id={this._clean('parentRef')}
-          labelText={_copy.parent}
-          error={getError({ errors, fieldName: 'parentRef' })}
-          disabled={isTrashed}
-          // onChange={this._handleChange()}
-          dialectCategories={dialectCategories}
-        >
-          <Select value={valueParentName} displayEmpty className={groupName}>
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            {/* {dialectCategories.map((category, index) => {
-              return <MenuItem key={index} value={category.uid}>{category.title}</MenuItem>
-            })} */}
-          </Select>
+        <FormControl className={groupName} id={this._clean('parentRef')} disabled={isTrashed}>
+          <InputLabel shrink htmlFor="parentRef-native-simple">
+            {_copy.parent}
+          </InputLabel>
+          <NativeSelect
+            value={this.state.parentRef}
+            onChange={this._handleChange('parentRef')}
+            inputProps={{
+              name: 'parentRef',
+              id: 'parentRef-native-simple',
+            }}
+          >
+            {dialectCategories.map((category, index) => {
+              return (
+                <option key={index} value={category.uid}>
+                  {category.title}
+                </option>
+              )
+            })}
+          </NativeSelect>
           <FormHelperText>Select Parent Category if desired</FormHelperText>
         </FormControl>
 
@@ -202,9 +194,11 @@ export class CategoryStateCreate extends React.Component {
     return StringHelpers.clean(name, 'CLEAN_ID')
   }
 
-  // _handleChange= (event) => {
-
-  // }
+  _handleChange = (name) => (event) => {
+    this.setState({
+      [name]: event.target.value,
+    })
+  }
 }
 
 export default CategoryStateCreate
