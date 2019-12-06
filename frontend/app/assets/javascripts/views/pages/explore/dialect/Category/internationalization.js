@@ -8,6 +8,7 @@ const copy = {
   create: {
     btnBack: '< Back',
     description: 'Category description',
+    parent: 'Parent category',
     name: 'Category name *',
     requiredNotice: 'All fields with an asterisk are required',
     submit: 'Create new category',
