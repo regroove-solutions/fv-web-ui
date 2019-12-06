@@ -18,8 +18,8 @@ describe('ReportViewFilter.js > ReportViewFilter', () => {
     cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageFive')
     cy.wait(500)
     cy.get('[title="More Options"]', { exact: true }).click()
-    cy.wait(500)
-    cy.getByText('Reports', { exact: true }).click({ force: true })
+    cy.wait(800)
+    cy.getByText('Reports', { exact: false }).click({ force: true })
 
     /*
             Check that the 52 different reports appear.
