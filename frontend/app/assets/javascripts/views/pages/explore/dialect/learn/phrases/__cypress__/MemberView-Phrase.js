@@ -43,7 +43,7 @@ describe('MemberView-Phrase.js > MemberView-Phrase', () => {
     cy.wait(500)
     cy.get('[title="More Options"]').click()
     cy.wait(500)
-    cy.getByText('Reports', { exact: true }).click()
+    cy.getByText('Reports', { exact: true }).click({ force: true })
     cy.getByText('Phrases in New Status', { exact: true }).click()
     cy.wait(500)
     cy.getByText('No results found.', { exact: true }).should('exist')

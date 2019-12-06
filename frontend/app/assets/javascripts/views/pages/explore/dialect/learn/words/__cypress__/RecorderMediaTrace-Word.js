@@ -45,7 +45,7 @@ describe('RecorderMediaTrace-Word.js > RecorderMediaTrace-Word', () => {
       cy.getByText('Noun').should('exist')
     })
     cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageTwo/media')
-    cy.wait(500)
+    cy.wait(1000)
     cy.getByText('TestWordVideo').click()
     cy.getByText('Linked Words').click()
     cy.getByTestId('DictionaryList__row').within(() => {

@@ -42,9 +42,8 @@ describe('LangAdminViewEdit-Phrase.js > LangAdminViewEdit-Phrase', () => {
     cy.getByTestId('DictionaryList__row').within(() => {
       cy.getByText('TestTranslation').should('exist')
       cy.getByText('New').should('exist')
-      cy.getByText('TestPhrase')
-        .should('exist')
-        .click()
+      cy.getByText('TestPhrase').should('exist')
+      cy.getByText('TestPhrase').click()
     })
 
     /*
