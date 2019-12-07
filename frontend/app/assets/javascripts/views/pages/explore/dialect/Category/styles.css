@@ -11,11 +11,12 @@
   font-size: 3rem;
 }
 .Category .Text,
-.Category .Textarea {
+.Category .Textarea .FormControl {
   margin-bottom: 3.5rem;
 }
 .Category__btn-container {
   display: flex;
+  padding-left: 3.2rem;
 }
 .Category__btnBack {
   border-top-left-radius: 0;
