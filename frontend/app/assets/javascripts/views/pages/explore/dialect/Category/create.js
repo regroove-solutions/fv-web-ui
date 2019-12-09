@@ -291,6 +291,7 @@ export class Category extends React.Component {
         // docParams:
         type: 'FVCategory',
         name: name,
+        parentRef: formData.parentRef,
         properties: {
           'dc:description': formData['dc:description'],
           'dc:title': formData['dc:title'],
