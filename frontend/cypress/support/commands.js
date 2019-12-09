@@ -357,7 +357,7 @@ Cypress.Commands.add('createContributor', () => {
   cy.log('--- Running createContributor ---')
   return cy.request({
     method: 'POST',
-    url: 'https://preprod.firstvoices.com/nuxeo/api/v1/path/FV/Workspaces/Data/Athabascan/Dene/Dene/Contributors',
+    url: 'http://127.0.0.1:3001/nuxeo/api/v1/path/FV/Workspaces/Data/TEst/Test/TestLanguageTwo/Contributors',
     body: {
       'entity-type': 'document',
       'type': 'FVContributor',
@@ -371,7 +371,7 @@ Cypress.Commands.add('deleteContributor', (uid) => {
   cy.log('--- Running deleteContributor ---')
   return cy.request({
     method: 'POST',
-    url: 'https://preprod.firstvoices.com/nuxeo/api/v1/automation/Document.Trash',
+    url: 'http://127.0.0.1:3001/nuxeo/api/v1/automation/Document.Trash',
     body: {
       'params': {},
       'context': {},

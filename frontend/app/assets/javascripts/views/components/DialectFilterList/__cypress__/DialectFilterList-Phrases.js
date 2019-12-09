@@ -1,4 +1,3 @@
-import 'cypress-testing-library/add-commands'
 describe('DialectFilterList-Phrases.js > DialectFilterList', () => {
   it('Select category with enough results for pagination, confirm has data, navigate to next page, confirm has data', () => {
     /*
