@@ -386,7 +386,7 @@ export class Categories extends Component {
               onClick={() => {
                 this._sortCol({
                   // sortBy: 'fv:custom_order',
-                  sortBy: 'parentRef',
+                  sortBy: 'ecm:parentId',
                 })
               }}
             >
@@ -400,18 +400,21 @@ export class Categories extends Component {
           const categoryDetailUrl = `/${siteTheme}${dialect_path}/${categoryType.label.singular}/${data.parentRef ||
             ''}`
           const parentCategories = this._categoryTitles()
-          const parentCategory = parentCategories[data.parentRef] ? parentCategories[data.parentRef] : data.title
-          return (
-            <a
-              href={categoryDetailUrl}
-              onClick={(e) => {
-                e.preventDefault()
-                NavigationHelpers.navigate(categoryDetailUrl, this.props.pushWindowPath, false)
-              }}
-            >
-              {parentCategory}
-            </a>
-          )
+          const parentCategory = parentCategories[data.parentRef] ? parentCategories[data.parentRef] : false
+          if (parentCategory) {
+            return (
+              <a
+                href={categoryDetailUrl}
+                onClick={(e) => {
+                  e.preventDefault()
+                  NavigationHelpers.navigate(categoryDetailUrl, this.props.pushWindowPath, false)
+                }}
+              >
+                {parentCategory}
+              </a>
+            )
+          }
+          return <div>-</div>
         },
       },
       {
