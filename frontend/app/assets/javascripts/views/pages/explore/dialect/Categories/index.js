@@ -113,7 +113,7 @@ export class Categories extends Component {
         select: '',
         deselect: '',
       },
-      parentcategory: {
+      parentCategory: {
         th: '',
       },
       description: {
@@ -377,7 +377,7 @@ export class Categories extends Component {
         },
       },
       {
-        name: 'parentcategory',
+        name: 'parentCategory',
         title: () => {
           return (
             <button
@@ -392,7 +392,7 @@ export class Categories extends Component {
             >
               {/* {this._getIcon('fv:custom_order')} */}
               {this._getIcon('parentRef')}
-              <span>{copy.parentcategory.th}</span>
+              <span>{copy.parentCategory.th}</span>
             </button>
           )
         },

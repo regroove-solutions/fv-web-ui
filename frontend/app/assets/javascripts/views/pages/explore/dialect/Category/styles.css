@@ -10,8 +10,12 @@
 .Category__heading {
   font-size: 3rem;
 }
+.Category__select {
+  font-size: 3rem;
+}
 .Category .Text,
-.Category .Textarea .FormControl {
+.Category .Textarea,
+.Category .FormControl {
   margin-bottom: 3.5rem;
 }
 .Category__btn-container {

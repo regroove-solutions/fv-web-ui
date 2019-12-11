@@ -13,7 +13,7 @@ const copy = {
     th: '',
     edit: 'Edit',
   },
-  parentcategory: {
+  parentCategory: {
     th: 'Parent Category',
   },
   description: {
