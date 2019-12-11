@@ -336,11 +336,11 @@ const options = {
           type: 'FVCategory',
           attrs: {
             containerType: 'FVWord',
+            allowEdit: true,
             page_provider: {
               name: 'category_suggestion',
               folder: 'Categories',
             },
-            hideCreate: true,
           },
           locals: {
             labelBrowseComponent: intl.trans('categories_browse', 'Browse categories', 'first'),
@@ -908,6 +908,7 @@ const options = {
         factory: SelectSuggestFactory,
         type: 'FVCategory',
         attrs: {
+          containerType: 'FVWord',
           page_provider: {
             name: 'category_suggestion',
             folder: 'Categories',
