@@ -217,7 +217,7 @@ if [[ "$?" -ne 0 ]]; then
 fi
 # Import Alphabet using fv-batch-import
 cd $DIRECTORY/scripts/batch_jarfiles/
-java -jar fv-batch-import-alphabet.jar -url "$TARGET/nuxeo" -username $CYPRESS_FV_USERNAME -password $CYPRESS_FV_PASSWORD -domain FV -csv-file $DIRECTORY/scripts/files/alphabet.csv -dialect-id fillerID -language-path TEst/Test/TestLanguageSix
+java -jar fv-batch-import-alphabet.jar -url "$TARGET/nuxeo" -username $CYPRESS_FV_USERNAME -password $CYPRESS_FV_PASSWORD -domain FV -csv-file $DIRECTORY/scripts/files/alphabet.csv -data-path $DIRECTORY/scripts/files/testLangTwoMedia/ -dialect-id fillerID -language-path TEst/Test/TestLanguageSix
 if [[ "$?" -ne 0 ]]; then
   echo -e 'fv-batch-import TestLanguageSix Alphabet batch failed \n'; exit 1
   echo

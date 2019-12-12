@@ -8,11 +8,11 @@ describe('Navigation.js > Navigation', () => {
     /*
     Temporary line to force the test to fail until it is updated.
    */
-    cy.log('Forcing the test to fail until it is updated for dev.').then(() => {
+    cy.log('Forcing the test to fail until Site resources files are added.').then(() => {
       cy.expect(true).to.equal(false)
     })
 
-    cy.visit('/')
+    cy.visit('/home')
     cy.getByText('menu open', { exact: false }).click({ force: true })
     cy.getByText('get started', { exact: false }).click()
     cy.getByTestId('pageContainer').within(() => {
@@ -26,18 +26,12 @@ describe('Navigation.js > Navigation', () => {
     })
   })
   it('FW-280 Workspace switcher not switching from Public to Workspace in word and phrase detail views', () => {
-    /*
-    Temporary line to force the test to fail until it is updated.
-   */
-    cy.log('Forcing the test to fail until it is updated for dev.').then(() => {
-      cy.expect(true).to.equal(false)
-    })
-
     cy.login({
-      url: 'https://dev.firstvoices.com/nuxeo/startup',
+      userName: 'TESTLANGUAGESIX_ADMIN',
     })
-    // cy.visit('/explore/FV/sections/Data/Cypress/Cypress/Cypress/learn/words/7144f7e7-b7e3-470b-8bba-34f128b16555')
-    cy.visit('/explore/FV/sections/Data/Cypress/Cypress/Cypress/learn/words/e4afa849-b6c6-4111-b42a-7fb2081e0576')
+    cy.visit('/explore/FV/sections/Data/TEst/Test/TestLanguageSix/learn/words/')
+    cy.getByText('Dog').click()
+    cy.wait(500)
     cy.getByTestId('pageContainer').within(() => {
       // should not be color
       cy.getByText('workspace', { exact: false })

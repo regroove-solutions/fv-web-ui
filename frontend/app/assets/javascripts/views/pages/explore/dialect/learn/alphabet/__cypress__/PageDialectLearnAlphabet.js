@@ -8,14 +8,16 @@ describe('PageDialectLearnAlphabet', () => {
     /*
       Temporary line to force the test to fail until it is updated.
     */
-    cy.log('Forcing the test to fail until it is updated for dev.').then(() => {
+    cy.log('Forcing the test to fail until alphabet batch audio is working.').then(() => {
       cy.expect(true).to.equal(false)
     })
 
     // Login
-    cy.login({ url: 'https://dev.firstvoices.com/nuxeo/startup' })
+    cy.login({
+      userName: 'TESTLANGUAGESIX_ADMIN',
+    })
 
-    cy.visit('/explore/FV/Workspaces/Data/Cypress/Cypress/Cypress/learn/alphabet/FW-333/edit')
+    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageSix/learn/alphabet/z/edit')
 
     cy.wait(500)
 
