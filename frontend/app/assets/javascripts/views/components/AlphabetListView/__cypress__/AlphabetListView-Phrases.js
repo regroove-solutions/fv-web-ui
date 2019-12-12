@@ -4,11 +4,11 @@ describe('AlphabetListView-Phrases.js > AlphabetListView', () => {
     /*
     Temporary line to force the test to fail until it is updated.
    */
-    cy.log('Forcing the test to fail until it is updated for dev.').then(() => {
+    cy.log('Forcing the test to fail until FW-707 is fixed.').then(() => {
       cy.expect(true).to.equal(false)
     })
 
-    cy.visit('/explore/FV/sections/Data/Athabascan/Dene/Dene/learn/phrases')
+    cy.visit('/explore/FV/sections/Data/TEst/Test/TestLanguageSix/learn/phrases')
 
     const letter = 'b'
     const unselectedColor = 'rgb(60, 52, 52)'
@@ -66,7 +66,7 @@ describe('AlphabetListView-Phrases.js > AlphabetListView', () => {
     /*
       Temporary line to force the test to fail until it is updated.
      */
-    cy.log('Forcing the test to fail until it is updated for dev.').then(() => {
+    cy.log('Forcing the test to fail until FW-707 is fixed.').then(() => {
       cy.expect(true).to.equal(false)
     })
 

@@ -215,6 +215,13 @@ if [[ "$?" -ne 0 ]]; then
   echo -e 'fv-batch-import TestLanguageSix Phrases batch failed \n'; exit 1
   echo
 fi
+# Import Alphabet using fv-batch-import
+cd $DIRECTORY/scripts/batch_jarfiles/
+java -jar fv-batch-import-alphabet.jar -url "$TARGET/nuxeo" -username $CYPRESS_FV_USERNAME -password $CYPRESS_FV_PASSWORD -domain FV -csv-file $DIRECTORY/scripts/files/alphabet.csv -dialect-id fillerID -language-path TEst/Test/TestLanguageSix
+if [[ "$?" -ne 0 ]]; then
+  echo -e 'fv-batch-import TestLanguageSix Alphabet batch failed \n'; exit 1
+  echo
+fi
 # Publish the language TestLanguageSix
 echo "Publishing language TestLanguageSix"
 response=$(curl -o /dev/null -s -w "%{response_code}\n" -X POST ${TARGET}'/nuxeo/site/automation/javascript.FVPublishOrRepublish' -H 'Nuxeo-Transaction-Timeout: 10' -H 'X-NXproperties: *' -H 'X-NXRepository: default' -H 'X-NXVoidOperation: false' -H 'content-type: application/json' -d '{"params":{},"input":"/FV/Workspaces/Data/TEst/Test/TestLanguageSix","context":{}}' -u $CYPRESS_FV_USERNAME:$CYPRESS_FV_PASSWORD)
