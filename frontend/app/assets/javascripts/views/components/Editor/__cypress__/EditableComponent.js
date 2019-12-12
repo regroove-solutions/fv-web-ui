@@ -5,23 +5,16 @@ import 'cypress-testing-library/add-commands'
 
 describe('EditableComponent.js > EditableComponent', () => {
   it('FW-212: Drop AlloyEditor for Quill', () => {
-    /*
-      Temporary line to force the test to fail until it is updated.
-    */
-    cy.log('Forcing the test to fail until it is updated for dev.').then(() => {
-      cy.expect(true).to.equal(false)
-    })
-
     const updateMessage = `EditableComponent.js > EditableComponent @ ${new Date()}`
     const updateMessage1 = `${updateMessage} 1`
     const updateMessage2 = `${updateMessage} 2`
     const updateMessage3 = `${updateMessage} 3`
     cy.login({
-      url: 'https://dev.firstvoices.com/nuxeo/startup',
+      userName: 'TESTLANGUAGESIX_ADMIN',
     })
 
     cy.log('■□□□ 1/5')
-    cy.visit('/explore/FV/Workspaces/Data/Athabascan/Dene/Dene')
+    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageSix')
 
     cy.getByTestId('EditableComponent__fv-portal-about').within(() => {
       cy.getByTestId('EditableComponent__edit').click()
@@ -29,33 +22,46 @@ describe('EditableComponent.js > EditableComponent', () => {
       // Note: need to wait for WYSIWYG editor to init
       cy.wait(500)
 
-      cy.contains('EditableComponent.js > EditableComponent')
-        .clear()
-        .type(updateMessage1)
+      cy.getByTestId('wysiwyg-fv-portal_about').within(() => {
+        cy.get('.ql-editor')
+          .clear()
+          .type(updateMessage1)
+      })
 
       cy.getByText('Save', { exact: false }).click()
 
       cy.wait(500)
+    })
+    cy.reload()
+    cy.wait(500)
+    cy.getByTestId('EditableComponent__fv-portal-about').within(() => {
       cy.getByText(updateMessage1).should('exist')
     })
+
     cy.getByTestId('EditableComponent__fv-portal-news').within(() => {
       cy.getByTestId('EditableComponent__edit').click()
 
       // Note: need to wait for WYSIWYG editor to init
       cy.wait(500)
 
-      cy.contains('EditableComponent.js > EditableComponent')
-        .clear()
-        .type(updateMessage2)
+      cy.getByTestId('wysiwyg-fv-portal_news').within(() => {
+        cy.get('.ql-editor')
+          .clear()
+          .type(updateMessage2)
+      })
 
       cy.getByText('Save', { exact: false }).click()
 
       cy.wait(500)
+    })
+    cy.reload()
+    cy.wait(500)
+    cy.getByTestId('EditableComponent__fv-portal-news').within(() => {
       cy.getByText(updateMessage2).should('exist')
     })
 
     cy.log('■■□□□ 2/5')
-    cy.visit('/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/learn')
+    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageSix/learn')
 
     cy.getByTestId('EditableComponent__dc-description').within(() => {
       cy.getByTestId('EditableComponent__edit').click()
@@ -63,7 +69,7 @@ describe('EditableComponent.js > EditableComponent', () => {
       // Note: need to wait for WYSIWYG editor to init
       cy.wait(500)
 
-      cy.contains('EditableComponent.js > EditableComponent')
+      cy.get('.ql-editor')
         .clear()
         .type(updateMessage)
     })
@@ -73,7 +79,7 @@ describe('EditableComponent.js > EditableComponent', () => {
     cy.getByText(updateMessage).should('exist')
 
     cy.log('■■■□□ 3/5')
-    cy.visit('/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/edit')
+    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageSix/edit')
 
     /*
       Portal introduction
@@ -101,7 +107,7 @@ describe('EditableComponent.js > EditableComponent', () => {
     cy.getByText(updateMessage2).should('exist')
 
     cy.log('■■■■□ 4/5')
-    cy.visit('/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/learn/stories')
+    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageSix/learn/stories')
     cy.getByText('Create Story Book', { exact: false }).click()
 
     cy.wait(500)
