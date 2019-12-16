@@ -35,6 +35,7 @@ import ProviderHelpers from 'common/ProviderHelpers'
 import DocumentListView from 'views/components/Document/DocumentListView'
 
 import CategoryDelete from 'views/components/Confirmation'
+import FVButton from 'views/components/FVButton/index.js'
 import CategoriesSelected from 'views/pages/explore/dialect/Contributors/ContributorsSelected'
 import Checkbox from 'views/components/Form/Common/Checkbox'
 
@@ -249,19 +250,6 @@ export class Categories extends Component {
     return _computeCategories
   }
 
-  _categoryTitles = () => {
-    if (_computeCategories && _computeCategories.isFetching === false && _computeCategories.success) {
-      const entries = _computeCategories.response.entries
-      const categoryTitles = {}
-      // eslint-disable-next-line func-names
-      entries.forEach(function(entry) {
-        categoryTitles[entry.uid] = entry.title
-      })
-      return categoryTitles
-    }
-    return _computeCategories
-  }
-
   _filterDeletedUids = () => {
     const { deletedUids } = this.state
     if (_computeCategories && _computeCategories.isFetching === false && _computeCategories.success) {
@@ -399,8 +387,8 @@ export class Categories extends Component {
         render: (value, data /*, cellProps*/) => {
           const categoryDetailUrl = `/${siteTheme}${dialect_path}/${categoryType.label.singular}/${data.parentRef ||
             ''}`
-          const parentCategories = this._categoryTitles()
-          const parentCategory = parentCategories[data.parentRef] ? parentCategories[data.parentRef] : false
+          const parentCategory =
+            data.contextParameters.parentDoc.title == 'Categories' ? false : data.contextParameters.parentDoc.title
           if (parentCategory) {
             return (
               <a
@@ -466,7 +454,7 @@ export class Categories extends Component {
                 />
               </li>
               <li className="Categories__actionContainer">
-                <a
+                <FVButton
                   href={url}
                   onClick={(e) => {
                     e.preventDefault()
@@ -474,7 +462,7 @@ export class Categories extends Component {
                   }}
                 >
                   {copy.actions.edit}
-                </a>
+                </FVButton>
               </li>
             </ul>
           )
