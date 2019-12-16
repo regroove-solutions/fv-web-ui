@@ -5,13 +5,6 @@ import 'cypress-testing-library/add-commands'
 
 describe('PageDialectLearnAlphabet', () => {
   it('FW-333: Can\'t "Edit Character" from alphabet', () => {
-    /*
-      Temporary line to force the test to fail until it is updated.
-    */
-    cy.log('Forcing the test to fail until alphabet batch audio is working.').then(() => {
-      cy.expect(true).to.equal(false)
-    })
-
     // Login
     cy.login({
       userName: 'TESTLANGUAGESIX_ADMIN',
@@ -45,16 +38,14 @@ describe('PageDialectLearnAlphabet', () => {
 
     cy.wait(500)
 
-    cy.getByText('Select existing audio', { exact: false })
-      .parent()
-      .within(() => {
-        cy.getByText('Audio 1', { exact: false }).click()
-      })
+    cy.get('.media-list').within(() => {
+      cy.getByText('Audio 1', { exact: false }).click()
+    })
 
     cy.getByText('save', { exact: false }).click()
 
-    cy.visit('/explore/FV/Workspaces/Data/Cypress/Cypress/Cypress/learn/alphabet/FW-333')
+    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageSix/learn/alphabet/z')
     cy.wait(500)
-    cy.getByText('audio 1', { exact: false }).should('exist')
+    cy.getByText('Audio 1', { exact: false }).should('exist')
   })
 })
