@@ -7,7 +7,7 @@ describe('phrase_crud.js > PageDialectPhrasesCreate', () => {
     /*
         Temporary line to force the test to fail until it is updated.
     */
-    cy.log('Forcing the test to fail until it is updated for dev.').then(() => {
+    cy.log('Forcing the test to fail until FW-719 is completed.').then(() => {
       cy.expect(true).to.equal(false)
     })
 
@@ -16,7 +16,9 @@ describe('phrase_crud.js > PageDialectPhrasesCreate', () => {
     // export ADMIN_PASSWORD='THE_PASSWORD'
 
     // Login
-    cy.login()
+    cy.login({
+      userName: 'TESTLANGUAGEONE_ADMIN',
+    })
 
     // Create
     cy.log('--- CREATE ---')
@@ -26,9 +28,9 @@ describe('phrase_crud.js > PageDialectPhrasesCreate', () => {
     const titleCreate = `${testPrefix} > CREATE: Phrase (${nowCreate})`
     const titleUpdate = `${testPrefix} > UPDATE: Phrase (${nowCreate})`
 
-    cy.visit('/nuxeo/app/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/learn/phrases')
+    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageOne/learn/phrases')
     cy.getByText('create new phrase', { exact: false }).click()
-    cy.getByText('Add New Phrase to Dene').should('exist')
+    cy.getByText('Add New Phrase to TestLanguageOne').should('exist')
 
     // CREATE > Phrase Title
     cy.getByLabelText('Phrase').type(titleCreate)

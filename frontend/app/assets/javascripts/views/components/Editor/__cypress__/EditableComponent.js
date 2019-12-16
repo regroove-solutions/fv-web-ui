@@ -10,11 +10,11 @@ describe('EditableComponent.js > EditableComponent', () => {
     const updateMessage2 = `${updateMessage} 2`
     const updateMessage3 = `${updateMessage} 3`
     cy.login({
-      userName: 'TESTLANGUAGESIX_ADMIN',
+      userName: 'TESTLANGUAGEFOUR_ADMIN',
     })
 
     cy.log('■□□□ 1/5')
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageSix')
+    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageFour')
 
     cy.getByTestId('EditableComponent__fv-portal-about').within(() => {
       cy.getByTestId('EditableComponent__edit').click()
@@ -61,7 +61,7 @@ describe('EditableComponent.js > EditableComponent', () => {
     })
 
     cy.log('■■□□□ 2/5')
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageSix/learn')
+    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageFour/learn')
 
     cy.getByTestId('EditableComponent__dc-description').within(() => {
       cy.getByTestId('EditableComponent__edit').click()
@@ -79,7 +79,7 @@ describe('EditableComponent.js > EditableComponent', () => {
     cy.getByText(updateMessage).should('exist')
 
     cy.log('■■■□□ 3/5')
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageSix/edit')
+    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageFour/edit')
 
     /*
       Portal introduction
@@ -107,7 +107,7 @@ describe('EditableComponent.js > EditableComponent', () => {
     cy.getByText(updateMessage2).should('exist')
 
     cy.log('■■■■□ 4/5')
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageSix/learn/stories')
+    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageFour/learn/stories')
     cy.getByText('Create Story Book', { exact: false }).click()
 
     cy.wait(500)
@@ -124,6 +124,7 @@ describe('EditableComponent.js > EditableComponent', () => {
     cy.getByTestId('PageDialectStoriesAndSongsCreate__btnGroup').within(() => {
       cy.getByText('SAVE', { exact: false }).click()
     })
+    cy.wait(500)
 
     cy.log('■■■■■ 5/5')
     cy.getByText(updateMessage).should('exist')
@@ -141,6 +142,7 @@ describe('EditableComponent.js > EditableComponent', () => {
     cy.getByTestId('PageDialectStoriesAndSongsBookEntryCreate__btnGroup').within(() => {
       cy.getByText('SAVE', { exact: false }).click()
     })
+    cy.wait(500)
 
     cy.getByText('open book', { exact: false }).click()
 

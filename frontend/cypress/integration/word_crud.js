@@ -1,6 +1,6 @@
 describe('word_crud.js > PageDialectWordsCreate', () => {
   const create =
-    'https://preprod.firstvoices.com/nuxeo/api/v1/path/FV/Workspaces/Data/Athabascan/Dene/Dene/Dictionary'
+    'http://127.0.0.1:8080/nuxeo/api/v1/path/FV/Workspaces/Data/TEst/Test/TestLanguageOne/Dictionary'
   // const waitLong = 5000
   const waitMedium = 2000
   const waitShort = 50
@@ -9,7 +9,7 @@ describe('word_crud.js > PageDialectWordsCreate', () => {
     /*
       Temporary line to force the test to fail until it is updated.
     */
-    cy.log('Forcing the test to fail until it is updated for dev.').then(() => {
+    cy.log('Forcing the test to fail until more test ID selectors are added.').then(() => {
       cy.expect(true).to.equal(false)
     })
 
@@ -18,7 +18,9 @@ describe('word_crud.js > PageDialectWordsCreate', () => {
     // export ADMIN_PASSWORD='THE_PASSWORD'
 
     // Login
-    cy.login()
+    cy.login({
+      userName: 'TESTLANGUAGEONE_ADMIN',
+    })
 
     // Create
     cy.log('--- CREATE ---')
@@ -40,7 +42,7 @@ describe('word_crud.js > PageDialectWordsCreate', () => {
       url: create,
       body: word,
     }).then((response) => {
-      cy.visit(`/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/learn/words/${response.body.uid}`)
+      cy.visit(`/explore/FV/Workspaces/Data/TEst/Test/TestLanguageOne/learn/words/${response.body.uid}`)
 
       // Read
       cy.log('--- READ ---')
@@ -79,8 +81,11 @@ describe('word_crud.js > PageDialectWordsCreate', () => {
         .click()
 
       cy.getByText('upload audio', { exact: false }).click()
+      cy.wait(500)
 
-      cy.getByText('Create new audio in the dene dialect', { exact: false })
+      cy.get('[id="AddMediaComponent"]')
+        .parent()
+        .parent()
         .parent()
         .within(() => {
           cy.getByLabelText('name', { exact: false }).type('UPDATE > AUDIO > NAME')
@@ -105,7 +110,7 @@ describe('word_crud.js > PageDialectWordsCreate', () => {
 
       cy.getByText('upload picture', { exact: false }).click()
 
-      cy.getByText('Create new picture in the dene dialect', { exact: false })
+      cy.getByText('Create new picture in the testlanguageone dialect', { exact: false })
         .parent()
         .within(() => {
           cy.getByLabelText('name', { exact: false }).type('UPDATE > PICTURE > NAME')
@@ -128,7 +133,7 @@ describe('word_crud.js > PageDialectWordsCreate', () => {
 
       cy.getByText('upload video', { exact: false }).click()
 
-      cy.getByText('Create new video in the dene dialect', { exact: false })
+      cy.getByText('Create new video in the testlanguageone dialect', { exact: false })
         .parent()
         .within(() => {
           cy.getByLabelText('name', { exact: false }).type('UPDATE > VIDEO > NAME')
@@ -149,7 +154,7 @@ describe('word_crud.js > PageDialectWordsCreate', () => {
 
       cy.getByText('create new phrase', { exact: false }).click()
 
-      cy.getByText('Add New Phrase to Dene', { exact: false })
+      cy.getByText('Add New Phrase to testlanguageone', { exact: false })
         .parent()
         .parent()
         .parent()
