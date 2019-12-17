@@ -230,6 +230,14 @@ if [[ "$response" -ne 200 ]]; then
     echo
 fi
 
+cd $DIRECTORY/fv-utils/target/
+# Create a fresh TestLanguageSeven directory and all files
+java -jar fv-nuxeo-utils-*.jar create-language -username $CYPRESS_FV_USERNAME -password $CYPRESS_FV_PASSWORD -url $TARGET/nuxeo -language-directory TEst/Test/ -language-name TestLanguageSeven
+if [[ "$?" -ne 0 ]]; then
+  echo -e 'fv-utils TestLanguageSeven creation failed \n'; exit 1
+  echo
+fi
+
 # Remove generated batch files
 cd $DIRECTORY/scripts/files/
 count='find *_errors.csv | wc -l'

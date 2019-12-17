@@ -104,6 +104,13 @@ if [[ "$?" -ne 0 ]]; then
   echo
 fi
 
+# Delete existing TestLanguageSix directory and all files
+java -jar fv-nuxeo-utils-*.jar delete-language -username $CYPRESS_FV_USERNAME -password $CYPRESS_FV_PASSWORD -url $TARGET/nuxeo -language-directory TEst/Test/ -language-name TestLanguageSeven
+if [[ "$?" -ne 0 ]]; then
+  echo -e 'fv-utils TestLanguageSeven teardown failed \n'; exit 1
+  echo
+fi
+
 echo
 # Delete shared category
 echo "Deleting TestLanguageSix category"
