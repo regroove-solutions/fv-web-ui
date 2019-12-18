@@ -331,16 +331,27 @@ const options = {
       },
       'fv-word:categories': {
         label: intl.trans('categories', 'Categories', 'first'),
+        help: (
+          <i>
+            {intl.trans(
+              'models.category_list_link',
+              'Categories for your archive can be added and edited from your language homepage',
+              'first'
+            )}
+            .
+          </i>
+        ),
         item: {
           factory: SelectSuggestFactory,
           type: 'FVCategory',
           attrs: {
             containerType: 'FVWord',
-            allowEdit: true,
+            allowEdit: false,
             page_provider: {
               name: 'category_suggestion',
               folder: 'Categories',
             },
+            hideCreate: true,
           },
           locals: {
             labelBrowseComponent: intl.trans('categories_browse', 'Browse categories', 'first'),
@@ -418,7 +429,9 @@ const options = {
       'fv-word:acknowledgement': {
         label: intl.trans('acknowledgement', 'Acknowledgement', 'first'),
         help: <i>{intl.trans('models.acknowledgement', 'Acknowledgement or Data Usage', 'first')}.</i>,
-        factory: VirtualKeyboardFactory,
+        item: {
+          factory: VirtualKeyboardFactory,
+        },
       },
       'fv:source': {
         label: intl.trans('source', 'Source', 'first'),
