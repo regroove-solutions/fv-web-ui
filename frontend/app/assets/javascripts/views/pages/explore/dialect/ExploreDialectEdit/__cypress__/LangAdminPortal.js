@@ -21,7 +21,7 @@ describe('LangAdminPortal.js > LangAdminPortal', () => {
     cy.get('div.Header.row').should(
       'have.css',
       'background-image',
-      'url("http://127.0.0.1:3001/explore/FV/Workspaces/Data/TEst/Test/assets/images/cover.png")'
+      'url("http://127.0.0.1:3001/explore/FV/Workspaces/Data/Test/Test/assets/images/cover.png")'
     )
 
     cy.getByText('Edit Portal').click()
@@ -143,7 +143,7 @@ describe('LangAdminPortal.js > LangAdminPortal', () => {
     cy.get('div.Header.row').should(
       'not.have.css',
       'background-image',
-      'url("http://127.0.0.1:3001/explore/FV/Workspaces/Data/TEst/Test/assets/images/cover.png")'
+      'url("http://127.0.0.1:3001/explore/FV/Workspaces/Data/Test/Test/assets/images/cover.png")'
     )
 
     /*
@@ -179,7 +179,7 @@ describe('LangAdminPortal.js > LangAdminPortal', () => {
     cy.get('div.Header.row').should(
       'not.have.css',
       'background-image',
-      'url("http://127.0.0.1:3001/explore/FV/Workspaces/Data/TEst/Test/assets/images/cover.png")'
+      'url("http://127.0.0.1:3001/explore/FV/Workspaces/Data/Test/Test/assets/images/cover.png")'
     )
   })
 })

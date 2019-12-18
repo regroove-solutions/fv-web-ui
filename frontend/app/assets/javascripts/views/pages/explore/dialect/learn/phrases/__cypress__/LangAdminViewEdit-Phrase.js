@@ -49,7 +49,7 @@ describe('LangAdminViewEdit-Phrase.js > LangAdminViewEdit-Phrase', () => {
     /*
             Check for edit phrase button and then enable the phrase.
          */
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageTwo/learn/phrases')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageTwo/learn/phrases')
     cy.wait(800)
     cy.getByText('TestPhrase', { exact: false }).click()
     cy.queryByText('Edit phrase', { exact: true }).should('exist')
@@ -88,7 +88,7 @@ describe('LangAdminViewEdit-Phrase.js > LangAdminViewEdit-Phrase', () => {
     cy.login({
       userName: 'TESTLANGUAGETWO_ADMIN',
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageTwo/learn/phrases')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageTwo/learn/phrases')
     cy.wait(800)
     cy.getByText('TestPhrase', { exact: false }).click()
     cy.get('div.hidden-xs').within(() => {

@@ -16,7 +16,7 @@ describe('RecorderEnable-Word.js > RecorderEnable-Word', () => {
     /*
       Checking to make sure a word currently exists.
     */
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageFive/learn/words')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageFive/learn/words')
     cy.wait(500)
     cy.getByTestId('DictionaryList__row').within(() => {
       cy.getByText('TestWord').should('exist')
@@ -43,7 +43,7 @@ describe('RecorderEnable-Word.js > RecorderEnable-Word', () => {
     cy.login({
       userName: 'TESTLANGUAGEFIVE_ADMIN',
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageFive/')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageFive/')
     cy.wait(500)
     cy.getByText('View My Tasks', { exact: false }).click()
     cy.getByText('Reject', { exact: true }).click()
@@ -76,7 +76,7 @@ describe('RecorderEnable-Word.js > RecorderEnable-Word', () => {
     cy.login({
       userName: 'TESTLANGUAGEFIVE_ADMIN',
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageFive/learn/words')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageFive/learn/words')
     cy.wait(500)
     cy.getByText('View My Tasks', { exact: true }).click()
     cy.getByText('Approve', { exact: true }).click()
@@ -90,7 +90,7 @@ describe('RecorderEnable-Word.js > RecorderEnable-Word', () => {
     cy.login({
       userName: 'TESTLANGUAGEFIVE_MEMBER',
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageFive/learn/words')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageFive/learn/words')
     cy.wait(500)
     cy.getByTestId('DictionaryList__row').within(() => {
       cy.getByText('TestWord').should('exist')

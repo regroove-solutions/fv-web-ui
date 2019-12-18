@@ -9,7 +9,7 @@ describe('RecApprovalCreateDelete-Song.js > RecApprovalCreateDelete-Song', () =>
     cy.login({
       userName: 'TESTLANGUAGETHREE_RECORDER_APPROVER',
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageThree/learn/songs')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageThree/learn/songs')
     cy.wait(500)
     cy.queryByText('TestSongTitle').should('not.exist')
     cy.queryByText('Continue to song').should('not.exist')
@@ -157,7 +157,7 @@ describe('RecApprovalCreateDelete-Song.js > RecApprovalCreateDelete-Song', () =>
                     Check that edit book button is visible and functional.
                     Check that the cancel button when editing song works.
                 */
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageThree/learn/songs')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageThree/learn/songs')
     cy.wait(800)
     cy.getByText('TestSongTitle').click()
     cy.getByText('Edit book')

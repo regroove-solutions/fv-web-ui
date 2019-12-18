@@ -19,7 +19,7 @@ describe('RecorderMediaTrace-Word.js > RecorderMediaTrace-Word', () => {
       cy.getByText('TestTranslation').should('exist')
       cy.getByText('Noun').should('exist')
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageTwo')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageTwo')
     cy.wait(500)
 
     /*
@@ -35,7 +35,7 @@ describe('RecorderMediaTrace-Word.js > RecorderMediaTrace-Word', () => {
       cy.getByText('TestTranslation').should('exist')
       cy.getByText('Noun').should('exist')
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageTwo/media')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageTwo/media')
     cy.wait(500)
     cy.getByText('TestWordImage').click()
     cy.getByText('Linked Words').click()

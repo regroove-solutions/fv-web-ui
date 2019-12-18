@@ -9,7 +9,7 @@ describe('RecApprovalCreateDelete-Story.js > RecApprovalCreateDelete-Stories', (
     cy.login({
       userName: 'TESTLANGUAGETHREE_RECORDER_APPROVER',
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageThree/learn/stories')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageThree/learn/stories')
     cy.wait(500)
     cy.queryByText('TestStoryTitle').should('not.exist')
     cy.queryByText('Continue to story').should('not.exist')
@@ -157,7 +157,7 @@ describe('RecApprovalCreateDelete-Story.js > RecApprovalCreateDelete-Stories', (
                         Check that edit book button is visible and functional.
                         Check that the cancel button when editing story works.
                     */
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageThree/learn/stories')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageThree/learn/stories')
     cy.wait(800)
     cy.getByText('TestStoryTitle').click()
     cy.getByText('Edit book')

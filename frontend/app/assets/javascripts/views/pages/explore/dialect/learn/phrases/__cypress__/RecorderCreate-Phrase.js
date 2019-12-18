@@ -125,7 +125,7 @@ describe('RecorderCreate-Phrase.js > RecorderCreate-Phrase', () => {
     cy.login({
       userName: 'TESTLANGUAGEFOUR_ADMIN',
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageFour/learn/phrases')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageFour/learn/phrases')
     cy.wait(800)
     cy.getByText('TestPhrase', { exact: false }).click()
     cy.get('div.hidden-xs').within(() => {
@@ -157,7 +157,7 @@ describe('RecorderCreate-Phrase.js > RecorderCreate-Phrase', () => {
     cy.login({
       userName: 'TESTLANGUAGEFOUR_ADMIN',
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageFour/learn/phrases')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageFour/learn/phrases')
     cy.wait(500)
     cy.queryByText('TestPhrase')
       .should('exist')
