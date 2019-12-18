@@ -9,7 +9,7 @@ describe('LangAdminCreateDelete-Song.js > LangAdminCreateDelete-Song', () => {
     cy.login({
       userName: 'TESTLANGUAGEONE_ADMIN',
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageOne/learn/songs')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageOne/learn/songs')
     cy.wait(500)
     cy.queryByText('TestSongTitle').should('not.exist')
     cy.queryByText('Continue to song').should('not.exist')
@@ -111,7 +111,7 @@ describe('LangAdminCreateDelete-Song.js > LangAdminCreateDelete-Song', () => {
     /*
                     Checking to see if the song now exists.
                 */
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageOne/learn/songs')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageOne/learn/songs')
     cy.wait(500)
     cy.getByTestId('pageContainer').within(() => {
       cy.getByText('TestSongTitle').should('exist')
@@ -150,7 +150,7 @@ describe('LangAdminCreateDelete-Song.js > LangAdminCreateDelete-Song', () => {
     cy.getByTestId('withForm__btnGroup1').within(() => {
       cy.getByText('Save').click()
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageOne/learn/songs')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageOne/learn/songs')
     cy.wait(500)
     cy.getByText('TestSongTitleTestSongTitle1', { exact: true })
       .should('exist')
@@ -167,7 +167,7 @@ describe('LangAdminCreateDelete-Song.js > LangAdminCreateDelete-Song', () => {
     cy.getByText('Return To Previous Page').click()
     cy.wait(500)
 
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageOne/learn/songs')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageOne/learn/songs')
     cy.wait(500)
 
     cy.queryByText('TestSongTitleTestSongTitle1').should('not.exist')

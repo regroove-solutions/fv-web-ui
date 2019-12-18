@@ -112,7 +112,7 @@ if [[ "$?" -ne 0 ]]; then
 fi
 # Publish the language TestLanguageTwo
 echo "Publishing language TestLanguageTwo"
-response=$(curl -o /dev/null -s -w "%{response_code}\n" -X POST ${TARGET}'/nuxeo/site/automation/javascript.FVPublishOrRepublish' -H 'Nuxeo-Transaction-Timeout: 10' -H 'X-NXproperties: *' -H 'X-NXRepository: default' -H 'X-NXVoidOperation: false' -H 'content-type: application/json' -d '{"params":{},"input":"/FV/Workspaces/Data/TEst/Test/TestLanguageTwo","context":{}}' -u $CYPRESS_FV_USERNAME:$CYPRESS_FV_PASSWORD)
+response=$(curl -o /dev/null -s -w "%{response_code}\n" -X POST ${TARGET}'/nuxeo/site/automation/javascript.FVPublishOrRepublish' -H 'Nuxeo-Transaction-Timeout: 10' -H 'X-NXproperties: *' -H 'X-NXRepository: default' -H 'X-NXVoidOperation: false' -H 'content-type: application/json' -d '{"params":{},"input":"/FV/Workspaces/Data/Test/Test/TestLanguageTwo","context":{}}' -u $CYPRESS_FV_USERNAME:$CYPRESS_FV_PASSWORD)
 if [[ "$response" -ne 200 ]]; then
     echo -e 'TestLanguageTwo publish failed: Error ' $response ' \n'; exit 1
     echo
@@ -165,7 +165,7 @@ if [[ "$?" -ne 0 ]]; then
 fi
 # Publish the language TestLanguageFive
 echo "Publishing language TestLanguageFive"
-response=$(curl -o /dev/null -s -w "%{response_code}\n" -X POST ${TARGET}'/nuxeo/site/automation/javascript.FVPublishOrRepublish' -H 'Nuxeo-Transaction-Timeout: 10' -H 'X-NXproperties: *' -H 'X-NXRepository: default' -H 'X-NXVoidOperation: false' -H 'content-type: application/json' -d '{"params":{},"input":"/FV/Workspaces/Data/TEst/Test/TestLanguageFive","context":{}}' -u $CYPRESS_FV_USERNAME:$CYPRESS_FV_PASSWORD)
+response=$(curl -o /dev/null -s -w "%{response_code}\n" -X POST ${TARGET}'/nuxeo/site/automation/javascript.FVPublishOrRepublish' -H 'Nuxeo-Transaction-Timeout: 10' -H 'X-NXproperties: *' -H 'X-NXRepository: default' -H 'X-NXVoidOperation: false' -H 'content-type: application/json' -d '{"params":{},"input":"/FV/Workspaces/Data/Test/Test/TestLanguageFive","context":{}}' -u $CYPRESS_FV_USERNAME:$CYPRESS_FV_PASSWORD)
 if [[ "$response" -ne 200 ]]; then
     echo -e 'TestLanguageFive publish failed: Error ' $response ' \n'; exit 1
     echo
@@ -188,7 +188,7 @@ echo
 
 cd $DIRECTORY/fv-utils/target/
 # Create a fresh TestLanguageSix directory and all files
-java -jar fv-nuxeo-utils-*.jar create-language -username $CYPRESS_FV_USERNAME -password $CYPRESS_FV_PASSWORD -url $TARGET/nuxeo -language-directory TEst/Test/ -language-name TestLanguageSix
+java -jar fv-nuxeo-utils-*.jar create-language -username $CYPRESS_FV_USERNAME -password $CYPRESS_FV_PASSWORD -url $TARGET/nuxeo -language-directory Test/Test/ -language-name TestLanguageSix
 if [[ "$?" -ne 0 ]]; then
   echo -e 'fv-utils TestLanguageSix creation failed \n'; exit 1
   echo
@@ -209,42 +209,42 @@ if [[ "$response" -ne 200 ]]; then
 fi
 # Create a phrasebook to group the phrases
 echo "Creating TestLanguageSix phrasebook"
-response=$(curl -o /dev/null -s -w "%{response_code}\n" -X POST ${TARGET}'/nuxeo/site/automation/Document.Create' -H 'Nuxeo-Transaction-Timeout: 3' -H 'X-NXproperties: *' -H 'X-NXRepository: default' -H 'X-NXVoidOperation: false' -H 'content-type: application/json' -d '{"params":{"type":"FVCategory","name":"TestPhraseBook","properties":"dc:title=TestPhraseBook"},"input":"/FV/Workspaces/Data/TEst/Test/TestLanguageSix/Phrase Books","context":{}}' -u $CYPRESS_FV_USERNAME:$CYPRESS_FV_PASSWORD)
+response=$(curl -o /dev/null -s -w "%{response_code}\n" -X POST ${TARGET}'/nuxeo/site/automation/Document.Create' -H 'Nuxeo-Transaction-Timeout: 3' -H 'X-NXproperties: *' -H 'X-NXRepository: default' -H 'X-NXVoidOperation: false' -H 'content-type: application/json' -d '{"params":{"type":"FVCategory","name":"TestPhraseBook","properties":"dc:title=TestPhraseBook"},"input":"/FV/Workspaces/Data/Test/Test/TestLanguageSix/Phrase Books","context":{}}' -u $CYPRESS_FV_USERNAME:$CYPRESS_FV_PASSWORD)
 if [[ "$response" -ne 200 ]]; then
     echo -e 'TestLanguageSix phrasebook creation failed: Error ' $response ' \n'; exit 1
     echo
 fi
 # Publish the phrasebook
 echo "Publishing TestLanguageSix phrasebook"
-response=$(curl -o /dev/null -s -w "%{response_code}\n" -X POST ${TARGET}'/nuxeo/site/automation/FVPublishParents' -H 'Nuxeo-Transaction-Timeout: 3' -H 'X-NXproperties: *' -H 'X-NXRepository: default' -H 'X-NXVoidOperation: false' -H 'content-type: application/json' -d '{"params":{"stopDocumentType":"FVCategories"},"input":"/FV/Workspaces/Data/TEst/Test/TestLanguageSix/Phrase Books/TestPhraseBook","context":{}}' -u $CYPRESS_FV_USERNAME:$CYPRESS_FV_PASSWORD)
+response=$(curl -o /dev/null -s -w "%{response_code}\n" -X POST ${TARGET}'/nuxeo/site/automation/FVPublishParents' -H 'Nuxeo-Transaction-Timeout: 3' -H 'X-NXproperties: *' -H 'X-NXRepository: default' -H 'X-NXVoidOperation: false' -H 'content-type: application/json' -d '{"params":{"stopDocumentType":"FVCategories"},"input":"/FV/Workspaces/Data/Test/Test/TestLanguageSix/Phrase Books/TestPhraseBook","context":{}}' -u $CYPRESS_FV_USERNAME:$CYPRESS_FV_PASSWORD)
 if [[ "$response" -ne 200 ]]; then
     echo -e 'TestLanguageSix phrasebook publish failed: Error ' $response ' \n'; exit 1
     echo
 fi
 # Import Words using fv-batch-import
 cd $DIRECTORY/fv-batch-import/target
-java -jar fv-batch-import-*.jar -url "$TARGET/nuxeo" -username $CYPRESS_FV_USERNAME -password $CYPRESS_FV_PASSWORD -domain FV -csv-file $DIRECTORY/scripts/files/testLangSixWord.csv -data-path $DIRECTORY/scripts/files/testLangTwoMedia/ -dialect-id fillerID -language-path TEst/Test/TestLanguageSix
+java -jar fv-batch-import-*.jar -url "$TARGET/nuxeo" -username $CYPRESS_FV_USERNAME -password $CYPRESS_FV_PASSWORD -domain FV -csv-file $DIRECTORY/scripts/files/testLangSixWord.csv -data-path $DIRECTORY/scripts/files/testLangTwoMedia/ -dialect-id fillerID -language-path Test/Test/TestLanguageSix
 if [[ "$?" -ne 0 ]]; then
   echo -e 'fv-batch-import TestLanguageSix Words batch failed \n'; exit 1
   echo
 fi
 # Import Phrases using fv-batch-import
 cd $DIRECTORY/scripts/batch_jarfiles/
-java -jar fv-batch-import-phrases.jar -url "$TARGET/nuxeo" -username $CYPRESS_FV_USERNAME -password $CYPRESS_FV_PASSWORD -domain FV -csv-file $DIRECTORY/scripts/files/testLangSixPhrase.csv -data-path $DIRECTORY/scripts/files/testLangTwoMedia/ -dialect-id fillerID -language-path TEst/Test/TestLanguageSix
+java -jar fv-batch-import-phrases.jar -url "$TARGET/nuxeo" -username $CYPRESS_FV_USERNAME -password $CYPRESS_FV_PASSWORD -domain FV -csv-file $DIRECTORY/scripts/files/testLangSixPhrase.csv -data-path $DIRECTORY/scripts/files/testLangTwoMedia/ -dialect-id fillerID -language-path Test/Test/TestLanguageSix
 if [[ "$?" -ne 0 ]]; then
   echo -e 'fv-batch-import TestLanguageSix Phrases batch failed \n'; exit 1
   echo
 fi
 # Import Alphabet using fv-batch-import
 cd $DIRECTORY/scripts/batch_jarfiles/
-java -jar fv-batch-import-alphabet.jar -url "$TARGET/nuxeo" -username $CYPRESS_FV_USERNAME -password $CYPRESS_FV_PASSWORD -domain FV -csv-file $DIRECTORY/scripts/files/alphabet.csv -data-path $DIRECTORY/scripts/files/testLangTwoMedia/ -dialect-id fillerID -language-path TEst/Test/TestLanguageSix
+java -jar fv-batch-import-alphabet.jar -url "$TARGET/nuxeo" -username $CYPRESS_FV_USERNAME -password $CYPRESS_FV_PASSWORD -domain FV -csv-file $DIRECTORY/scripts/files/alphabet.csv -data-path $DIRECTORY/scripts/files/testLangTwoMedia/ -dialect-id fillerID -language-path Test/Test/TestLanguageSix
 if [[ "$?" -ne 0 ]]; then
   echo -e 'fv-batch-import TestLanguageSix Alphabet batch failed \n'; exit 1
   echo
 fi
 # Publish the language TestLanguageSix
 echo "Publishing language TestLanguageSix"
-response=$(curl -o /dev/null -s -w "%{response_code}\n" -X POST ${TARGET}'/nuxeo/site/automation/javascript.FVPublishOrRepublish' -H 'Nuxeo-Transaction-Timeout: 10' -H 'X-NXproperties: *' -H 'X-NXRepository: default' -H 'X-NXVoidOperation: false' -H 'content-type: application/json' -d '{"params":{},"input":"/FV/Workspaces/Data/TEst/Test/TestLanguageSix","context":{}}' -u $CYPRESS_FV_USERNAME:$CYPRESS_FV_PASSWORD)
+response=$(curl -o /dev/null -s -w "%{response_code}\n" -X POST ${TARGET}'/nuxeo/site/automation/javascript.FVPublishOrRepublish' -H 'Nuxeo-Transaction-Timeout: 10' -H 'X-NXproperties: *' -H 'X-NXRepository: default' -H 'X-NXVoidOperation: false' -H 'content-type: application/json' -d '{"params":{},"input":"/FV/Workspaces/Data/Test/Test/TestLanguageSix","context":{}}' -u $CYPRESS_FV_USERNAME:$CYPRESS_FV_PASSWORD)
 if [[ "$response" -ne 200 ]]; then
     echo -e 'TestLanguageSix publish failed: Error ' $response ' \n'; exit 1
     echo
@@ -252,7 +252,7 @@ fi
 
 cd $DIRECTORY/fv-utils/target/
 # Create a fresh TestLanguageSeven directory and all files
-java -jar fv-nuxeo-utils-*.jar create-language -username $CYPRESS_FV_USERNAME -password $CYPRESS_FV_PASSWORD -url $TARGET/nuxeo -language-directory TEst/Test/ -language-name TestLanguageSeven
+java -jar fv-nuxeo-utils-*.jar create-language -username $CYPRESS_FV_USERNAME -password $CYPRESS_FV_PASSWORD -url $TARGET/nuxeo -language-directory Test/Test/ -language-name TestLanguageSeven
 if [[ "$?" -ne 0 ]]; then
   echo -e 'fv-utils TestLanguageSeven creation failed \n'; exit 1
   echo

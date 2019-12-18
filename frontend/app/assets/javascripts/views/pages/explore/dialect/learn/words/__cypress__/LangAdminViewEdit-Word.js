@@ -15,7 +15,7 @@ describe('LangAdminViewEdit-Word.js > LangAdminViewEdit-Word', () => {
     cy.login({
       userName: 'TESTLANGUAGETWO_MEMBER',
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageTwo')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageTwo')
     cy.wait(500)
     cy.getByText('Learn our Language', { exact: true }).click()
     cy.getByText('Words', { exact: true }).click()
@@ -31,7 +31,7 @@ describe('LangAdminViewEdit-Word.js > LangAdminViewEdit-Word', () => {
     cy.login({
       userName: 'TESTLANGUAGETWO_ADMIN',
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageTwo')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageTwo')
     cy.wait(500)
     cy.getByText('Learn our Language', { exact: true }).click()
     cy.get('div.Header.row').within(() => {
@@ -67,7 +67,7 @@ describe('LangAdminViewEdit-Word.js > LangAdminViewEdit-Word', () => {
     cy.login({
       userName: 'TESTLANGUAGETWO_MEMBER',
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageTwo')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageTwo')
     cy.wait(500)
     cy.getByText('Learn our Language', { exact: true }).click()
     cy.get('div.Header.row').within(() => {

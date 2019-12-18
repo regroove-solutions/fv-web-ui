@@ -10,7 +10,7 @@ describe('FW-301: Some buttons need to be clicked twice to submit', () => {
       userName: 'TESTLANGUAGESIX_ADMIN',
     })
 
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageSix/learn/words')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageSix/learn/words')
     cy.getByText('Dog', { exact: false }).click()
     cy.wait(500)
 

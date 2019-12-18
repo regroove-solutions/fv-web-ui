@@ -1,6 +1,6 @@
 describe('DialectFilterList-Words.js > DialectFilterList', () => {
   it('Select category with enough results for pagination, confirm has data, navigate to next page, confirm has data', () => {
-    cy.visit('/explore/FV/sections/Data/TEst/Test/TestLanguageSix/learn/words')
+    cy.visit('/explore/FV/sections/Data/Test/Test/TestLanguageSix/learn/words')
     cy.wait(500)
 
     const category = 'TestCategory'
@@ -15,7 +15,7 @@ describe('DialectFilterList-Words.js > DialectFilterList', () => {
     cy.login({
       userName: 'TESTLANGUAGESIX_ADMIN',
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageSix/learn/words')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageSix/learn/words')
     cy.wait(500)
 
     const category = 'TestCategory'

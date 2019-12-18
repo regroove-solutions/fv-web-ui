@@ -1,7 +1,7 @@
 import 'cypress-testing-library/add-commands'
 describe('AlphabetListView-Words.js > AlphabetListView', () => {
   it('Select letter with enough results for pagination, confirm has data, navigate to next page, confirm has data', () => {
-    cy.visit('/explore/FV/sections/Data/TEst/Test/TestLanguageSix/learn/words')
+    cy.visit('/explore/FV/sections/Data/Test/Test/TestLanguageSix/learn/words')
 
     const letter = 't'
     const unselectedColor = 'rgb(60, 52, 52)'
@@ -57,7 +57,7 @@ describe('AlphabetListView-Words.js > AlphabetListView', () => {
 
   it('Direct link: displays message, selected letter, & stop browsing buton', () => {
     cy.log('Direct visit a url with a letter selected')
-    cy.visit('/explore/FV/sections/Data/TEst/Test/TestLanguageSix/learn/words/alphabet/t')
+    cy.visit('/explore/FV/sections/Data/Test/Test/TestLanguageSix/learn/words/alphabet/t')
     // Message & "Stop Browsing" button displayed; a letter is selected
     cy.log('Ensure message & "Stop Browsing" button is displayed and a letter is selected')
     cy.getByText(/showing words that start with the letter/i).should('exist')
@@ -71,7 +71,7 @@ describe('AlphabetListView-Words.js > AlphabetListView', () => {
 
   it('Clicking on a letter should filter out the words that start with that letter', () => {
     // Visit words page
-    cy.visit('/explore/FV/sections/Data/TEst/Test/TestLanguageSix/learn/words')
+    cy.visit('/explore/FV/sections/Data/Test/Test/TestLanguageSix/learn/words')
 
     // Filter by the letter r
     cy.wait(500)

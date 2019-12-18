@@ -6,7 +6,7 @@ describe('PageDialectLearnStoriesAndSongs.js > PageDialectLearnStoriesAndSongs',
     cy.login({
       userName: 'TESTLANGUAGESIX_ADMIN',
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageSix/learn/songs')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageSix/learn/songs')
 
     cy.getByText('create song book', { exact: false }).click()
     cy.getByText('Add new song book to', { exact: false }).should('exist')
@@ -16,7 +16,7 @@ describe('PageDialectLearnStoriesAndSongs.js > PageDialectLearnStoriesAndSongs',
     cy.login({
       userName: 'TESTLANGUAGESIX_ADMIN',
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageSix/learn/stories')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageSix/learn/stories')
 
     cy.getByText('create story book', { exact: false }).click()
     cy.getByText('Add new story book to', { exact: false }).should('exist')

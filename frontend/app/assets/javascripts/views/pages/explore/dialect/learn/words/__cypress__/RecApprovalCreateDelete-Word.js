@@ -15,14 +15,14 @@ describe('RecApprovalCreateDelete-Word.js > RecApprovalCreateDelete-Word', () =>
     cy.login({
       userName: 'TESTLANGUAGETHREE_RECORDER_APPROVER',
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageThree/learn/words')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageThree/learn/words')
     cy.wait(500)
     cy.getByText('No results found.', { exact: true }).should('be.visible')
 
     /*
                 Going through the steps to create a word
             */
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageThree')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageThree')
     cy.wait(500)
     cy.getByText('Learn our Language', { exact: false }).click()
     cy.getByText('Words', { exact: true }).click()

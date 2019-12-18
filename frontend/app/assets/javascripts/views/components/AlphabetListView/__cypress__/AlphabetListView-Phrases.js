@@ -8,7 +8,7 @@ describe('AlphabetListView-Phrases.js > AlphabetListView', () => {
       cy.expect(true).to.equal(false)
     })
 
-    cy.visit('/explore/FV/sections/Data/TEst/Test/TestLanguageSix/learn/phrases')
+    cy.visit('/explore/FV/sections/Data/Test/Test/TestLanguageSix/learn/phrases')
 
     const letter = 'b'
     const unselectedColor = 'rgb(60, 52, 52)'

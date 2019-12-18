@@ -10,7 +10,7 @@ describe('PageDialectLearnAlphabet', () => {
       userName: 'TESTLANGUAGESIX_ADMIN',
     })
 
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageSix/learn/alphabet/z/edit')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageSix/learn/alphabet/z/edit')
 
     cy.wait(500)
 
@@ -44,7 +44,7 @@ describe('PageDialectLearnAlphabet', () => {
 
     cy.getByText('save', { exact: false }).click()
 
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageSix/learn/alphabet/z')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageSix/learn/alphabet/z')
     cy.wait(500)
     cy.getByText('Audio 1', { exact: false }).should('exist')
   })

@@ -17,7 +17,7 @@ describe('RecApprovalCreateDelete-Story.js > RecApprovalCreateDelete-Stories', (
     /*
                         Going through the steps to create a phrase
                     */
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageThree')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageThree')
     cy.wait(500)
     cy.getByText('Learn our Language', { exact: false }).click()
     cy.get('div.Header.row').within(() => {
@@ -122,7 +122,7 @@ describe('RecApprovalCreateDelete-Story.js > RecApprovalCreateDelete-Stories', (
     /*
                         Checking to see if the story now exists.
                     */
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageThree/learn/stories')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageThree/learn/stories')
     cy.wait(500)
     cy.getByTestId('pageContainer').within(() => {
       cy.getByText('TestStoryTitle').should('exist')
@@ -186,7 +186,7 @@ describe('RecApprovalCreateDelete-Story.js > RecApprovalCreateDelete-Stories', (
     cy.getByTestId('withForm__btnGroup1').within(() => {
       cy.getByText('Save').click()
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageThree/learn/stories')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageThree/learn/stories')
     cy.wait(500)
     cy.getByText('TestStoryTitleTestStoryTitle1', { exact: true })
       .should('exist')

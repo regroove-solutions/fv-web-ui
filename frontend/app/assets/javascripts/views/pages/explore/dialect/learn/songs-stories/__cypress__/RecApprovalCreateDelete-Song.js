@@ -17,7 +17,7 @@ describe('RecApprovalCreateDelete-Song.js > RecApprovalCreateDelete-Song', () =>
     /*
                     Going through the steps to create a phrase
                 */
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageThree')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageThree')
     cy.wait(500)
     cy.getByText('Learn our Language', { exact: false }).click()
     cy.get('div.Header.row').within(() => {
@@ -122,7 +122,7 @@ describe('RecApprovalCreateDelete-Song.js > RecApprovalCreateDelete-Song', () =>
     /*
                     Checking to see if the song now exists.
                 */
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageThree/learn/songs')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageThree/learn/songs')
     cy.wait(500)
     cy.getByTestId('pageContainer').within(() => {
       cy.getByText('TestSongTitle').should('exist')
@@ -186,7 +186,7 @@ describe('RecApprovalCreateDelete-Song.js > RecApprovalCreateDelete-Song', () =>
     cy.getByTestId('withForm__btnGroup1').within(() => {
       cy.getByText('Save').click()
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageThree/learn/songs')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageThree/learn/songs')
     cy.wait(500)
     cy.getByText('TestSongTitleTestSongTitle1', { exact: true })
       .should('exist')

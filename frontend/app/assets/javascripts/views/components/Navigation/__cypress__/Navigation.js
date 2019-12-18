@@ -29,7 +29,7 @@ describe('Navigation.js > Navigation', () => {
     cy.login({
       userName: 'TESTLANGUAGESIX_ADMIN',
     })
-    cy.visit('/explore/FV/sections/Data/TEst/Test/TestLanguageSix/learn/words/')
+    cy.visit('/explore/FV/sections/Data/Test/Test/TestLanguageSix/learn/words/')
     cy.getByText('Dog').click()
     cy.wait(500)
     cy.getByTestId('pageContainer').within(() => {

@@ -5,7 +5,7 @@ import testSearchPhrases from '../../../app/assets/javascripts/views/components/
 
 describe('SearchDialectPhrases-Public.js > SearchDialect', () => {
   it('Select letter with enough results for pagination, confirm has data, navigate to next page, confirm has data', () => {
-    cy.visit('/explore/FV/sections/Data/TEst/Test/TestLanguageSix/learn/phrases')
+    cy.visit('/explore/FV/sections/Data/Test/Test/TestLanguageSix/learn/phrases')
     testSearchPhrases()
   })
 })

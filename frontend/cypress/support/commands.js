@@ -357,7 +357,7 @@ Cypress.Commands.add('createContributor', () => {
   cy.log('--- Running createContributor ---')
   return cy.request({
     method: 'POST',
-    url: 'http://127.0.0.1:3001/nuxeo/api/v1/path/FV/Workspaces/Data/TEst/Test/TestLanguageTwo/Contributors',
+    url: 'http://127.0.0.1:3001/nuxeo/api/v1/path/FV/Workspaces/Data/Test/Test/TestLanguageTwo/Contributors',
     body: {
       'entity-type': 'document',
       'type': 'FVContributor',

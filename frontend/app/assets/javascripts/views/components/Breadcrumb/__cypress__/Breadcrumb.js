@@ -3,7 +3,7 @@
 
 describe('Breadcrumb.js > Breadcrumb', () => {
   it('FW-235: Breadcrumb link to home page from Photo Gallery broken', () => {
-    cy.visit('/explore/FV/sections/Data/TEst/Test/TestLanguageTwo/gallery')
+    cy.visit('/explore/FV/sections/Data/Test/Test/TestLanguageTwo/gallery')
     cy.getByTestId('pageContainer').within(() => {
       cy.log('Confirm on gallery page')
       cy.queryByText('Testlanguagetwo galleries', { exact: false }).should('exist')

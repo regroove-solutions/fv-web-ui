@@ -11,7 +11,7 @@ describe('ContributorCreateDelete.js > Contributor', () => {
     cy.login({
       userName: 'TESTLANGUAGETWO_ADMIN',
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageTwo/create/contributor')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageTwo/create/contributor')
     cy.queryByText(copy.create.title).should('exist')
 
     // Submit w/no data

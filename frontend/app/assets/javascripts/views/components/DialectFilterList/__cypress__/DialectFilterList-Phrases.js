@@ -4,7 +4,7 @@ describe('DialectFilterList-Phrases.js > DialectFilterList', () => {
       cy.expect(true).to.equal(false)
     })
 
-    cy.visit('/explore/FV/sections/Data/TEst/Test/TestLanguageSix/learn/phrases')
+    cy.visit('/explore/FV/sections/Data/Test/Test/TestLanguageSix/learn/phrases')
 
     const category = 'TestPhraseBook'
     cy.DialectFilterList({
@@ -19,7 +19,7 @@ describe('DialectFilterList-Phrases.js > DialectFilterList', () => {
     cy.login({
       userName: 'TESTLANGUAGESIX_ADMIN',
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageSix/learn/phrases')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageSix/learn/phrases')
 
     const category = 'TestPhraseBook'
 

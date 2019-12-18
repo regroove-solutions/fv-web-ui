@@ -14,7 +14,7 @@ describe('RecorderCreate.js > RecorderCreate', () => {
       userName: 'TESTLANGUAGESIX_ADMIN',
     })
 
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageSix/create/recorder')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageSix/create/recorder')
     cy.wait(500)
     cy.queryByText(copy.create.title).should('exist')
 

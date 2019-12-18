@@ -28,7 +28,7 @@ describe('phrase_crud.js > PageDialectPhrasesCreate', () => {
     const titleCreate = `${testPrefix} > CREATE: Phrase (${nowCreate})`
     const titleUpdate = `${testPrefix} > UPDATE: Phrase (${nowCreate})`
 
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageOne/learn/phrases')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageOne/learn/phrases')
     cy.getByText('create new phrase', { exact: false }).click()
     cy.getByText('Add New Phrase to TestLanguageOne').should('exist')
 

@@ -9,7 +9,7 @@ describe('LangAdminCreateDelete-Story.js > LangAdminCreateDelete-Story', () => {
     cy.login({
       userName: 'TESTLANGUAGEONE_ADMIN',
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageOne/learn/stories')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageOne/learn/stories')
     cy.wait(500)
     cy.queryByText('TestStoryTitle').should('not.exist')
     cy.queryByText('Continue to story').should('not.exist')
@@ -111,7 +111,7 @@ describe('LangAdminCreateDelete-Story.js > LangAdminCreateDelete-Story', () => {
     /*
                         Checking to see if the story now exists.
                     */
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageOne/learn/stories')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageOne/learn/stories')
     cy.wait(500)
     cy.getByTestId('pageContainer').within(() => {
       cy.getByText('TestStoryTitle').should('exist')
@@ -150,7 +150,7 @@ describe('LangAdminCreateDelete-Story.js > LangAdminCreateDelete-Story', () => {
     cy.getByTestId('withForm__btnGroup1').within(() => {
       cy.getByText('Save').click()
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageOne/learn/stories')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageOne/learn/stories')
     cy.wait(500)
     cy.getByText('TestStoryTitleTestStoryTitle1', { exact: true })
       .should('exist')
@@ -166,7 +166,7 @@ describe('LangAdminCreateDelete-Story.js > LangAdminCreateDelete-Story', () => {
 
     cy.getByText('Return To Previous Page').click()
     cy.wait(500)
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageOne/learn/stories')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageOne/learn/stories')
     cy.wait(500)
 
     cy.queryByText('TestStoryTitleTestStoryTitle1').should('not.exist')

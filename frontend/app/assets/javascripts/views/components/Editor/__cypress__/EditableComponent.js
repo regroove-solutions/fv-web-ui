@@ -14,7 +14,7 @@ describe('EditableComponent.js > EditableComponent', () => {
     })
 
     cy.log('■□□□ 1/5')
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageSeven')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageSeven')
     cy.wait(500)
 
     cy.getByTestId('EditableComponent__fv-portal-about').within(() => {
@@ -62,7 +62,7 @@ describe('EditableComponent.js > EditableComponent', () => {
     })
 
     cy.log('■■□□□ 2/5')
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageSeven/learn')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageSeven/learn')
     cy.wait(500)
 
     cy.getByTestId('EditableComponent__dc-description').within(() => {
@@ -81,7 +81,7 @@ describe('EditableComponent.js > EditableComponent', () => {
     cy.getByText(updateMessage).should('exist')
 
     cy.log('■■■□□ 3/5')
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageSeven/edit')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageSeven/edit')
     cy.wait(500)
 
     /*
@@ -110,7 +110,7 @@ describe('EditableComponent.js > EditableComponent', () => {
     cy.getByText(updateMessage2).should('exist')
 
     cy.log('■■■■□ 4/5')
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageSeven/learn/stories')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageSeven/learn/stories')
     cy.wait(500)
     cy.getByText('Create Story Book', { exact: false }).click()
 

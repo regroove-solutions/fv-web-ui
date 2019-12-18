@@ -8,7 +8,7 @@ describe('Recorder/Create.js > RecorderCreate', () => {
       userName: 'TESTLANGUAGEONE_ADMIN',
     })
 
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageOne/create/recorder')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageOne/create/recorder')
     cy.queryByText(copy.create.title).should('exist')
 
     // Submit w/no data

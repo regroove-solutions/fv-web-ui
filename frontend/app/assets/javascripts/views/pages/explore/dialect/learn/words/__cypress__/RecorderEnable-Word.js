@@ -58,7 +58,7 @@ describe('RecorderEnable-Word.js > RecorderEnable-Word', () => {
       userName: 'TESTLANGUAGEFIVE_RECORDER',
     })
 
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageFive/learn/words')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageFive/learn/words')
     cy.wait(500)
     cy.getByText('TestWord', { exact: false }).click()
     cy.wait(500)
@@ -108,7 +108,7 @@ describe('RecorderEnable-Word.js > RecorderEnable-Word', () => {
       userName: 'TESTLANGUAGEFIVE_RECORDER',
     })
 
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageFive/learn/words')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageFive/learn/words')
     cy.wait(500)
     cy.getByText('TestWord', { exact: false }).click()
     cy.wait(500)

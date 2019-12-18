@@ -1,6 +1,6 @@
 describe('word_crud.js > PageDialectWordsCreate', () => {
   const create =
-    'http://127.0.0.1:8080/nuxeo/api/v1/path/FV/Workspaces/Data/TEst/Test/TestLanguageOne/Dictionary'
+    'http://127.0.0.1:8080/nuxeo/api/v1/path/FV/Workspaces/Data/Test/Test/TestLanguageOne/Dictionary'
   // const waitLong = 5000
   const waitMedium = 2000
   const waitShort = 50
@@ -42,7 +42,7 @@ describe('word_crud.js > PageDialectWordsCreate', () => {
       url: create,
       body: word,
     }).then((response) => {
-      cy.visit(`/explore/FV/Workspaces/Data/TEst/Test/TestLanguageOne/learn/words/${response.body.uid}`)
+      cy.visit(`/explore/FV/Workspaces/Data/Test/Test/TestLanguageOne/learn/words/${response.body.uid}`)
 
       // Read
       cy.log('--- READ ---')

@@ -9,7 +9,7 @@ describe('LangAdminPortal.js > LangAdminPortal', () => {
     cy.login({
       userName: 'TESTLANGUAGESIX_ADMIN',
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageSix')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageSix')
     cy.wait(500)
 
     /*
@@ -59,7 +59,7 @@ describe('LangAdminPortal.js > LangAdminPortal', () => {
       .within(() => {
         cy.get('[name="dc:title"]').type('TestPortalRelatedLinkTitle')
         cy.get('[name="dc:description"]').type('TestPortalRelatedLinkDescription')
-        cy.get('[name="fvlink:url"]').type('http://127.0.0.1:3001/explore/FV/Workspaces/Data/TEst/Test/TestLanguageSix')
+        cy.get('[name="fvlink:url"]').type('http://127.0.0.1:3001/explore/FV/Workspaces/Data/Test/Test/TestLanguageSix')
         cy.getByText('Save').click()
       })
 
@@ -149,7 +149,7 @@ describe('LangAdminPortal.js > LangAdminPortal', () => {
     /*
         Test that if a user clicks cancel when editing, the changes don't save.
      */
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageSix')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageSix')
     cy.wait(500)
     cy.getByText('Edit Portal').click()
     cy.wait(500)

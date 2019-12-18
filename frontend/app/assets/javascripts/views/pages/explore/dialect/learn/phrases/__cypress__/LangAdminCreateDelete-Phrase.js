@@ -15,14 +15,14 @@ describe('LangAdminCreateDelete-Phrase.js > LangAdminCreateDelete-Phrase', () =>
     cy.login({
       userName: 'TESTLANGUAGEONE_ADMIN',
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageOne/learn/phrases')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageOne/learn/phrases')
     cy.wait(500)
     cy.getByText('No results found.', { exact: true }).should('be.visible')
 
     /*
                 Going through the steps to create a phrase
             */
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageOne')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageOne')
     cy.wait(500)
     cy.getByText('Learn our Language', { exact: false }).click()
     cy.get('div.Header.row').within(() => {
@@ -104,7 +104,7 @@ describe('LangAdminCreateDelete-Phrase.js > LangAdminCreateDelete-Phrase', () =>
     /*
                 Checking to see if the phrase now exists.
             */
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageOne/learn/phrases')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageOne/learn/phrases')
     cy.wait(500)
     cy.getByTestId('DictionaryList__row').within(() => {
       cy.getByText('TestPhrase').should('exist')

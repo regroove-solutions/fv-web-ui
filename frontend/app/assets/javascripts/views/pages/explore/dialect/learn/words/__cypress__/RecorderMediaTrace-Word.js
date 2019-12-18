@@ -12,7 +12,7 @@ describe('RecorderMediaTrace-Word.js > RecorderMediaTrace-Word', () => {
     cy.login({
       userName: 'TESTLANGUAGETWO_RECORDER',
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageTwo/learn/words')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageTwo/learn/words')
     cy.wait(500)
     cy.getByTestId('DictionaryList__row').within(() => {
       cy.getByText('TestWord').should('exist')
@@ -44,7 +44,7 @@ describe('RecorderMediaTrace-Word.js > RecorderMediaTrace-Word', () => {
       cy.getByText('TestTranslation').should('exist')
       cy.getByText('Noun').should('exist')
     })
-    cy.visit('/explore/FV/Workspaces/Data/TEst/Test/TestLanguageTwo/media')
+    cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageTwo/media')
     cy.wait(1000)
     cy.getByText('TestWordVideo').click()
     cy.getByText('Linked Words').click()
