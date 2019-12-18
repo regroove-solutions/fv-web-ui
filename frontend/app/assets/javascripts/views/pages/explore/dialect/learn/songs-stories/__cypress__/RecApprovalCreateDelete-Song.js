@@ -207,6 +207,8 @@ describe('RecApprovalCreateDelete-Song.js > RecApprovalCreateDelete-Song', () =>
 
     cy.getByText('Return To Previous Page').click()
     cy.wait(500)
+    cy.reload()
+    cy.wait(500)
     cy.queryByText('TestSongTitle').should('not.exist')
     cy.queryByText('Continue to song').should('not.exist')
   })
