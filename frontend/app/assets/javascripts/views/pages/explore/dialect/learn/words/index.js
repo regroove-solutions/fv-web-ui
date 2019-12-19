@@ -123,6 +123,10 @@ class PageDialectLearnWords extends PageDialectLearnBase {
         id: '/api/v1/path/' + this.props.routeParams.dialect_path + '/Categories/@children',
         entity: this.props.computeCategories,
       },
+      {
+        id: '/api/v1/path/FV/' + this.props.routeParams.area + '/SharedData/Shared Categories/@children',
+        entity: this.props.computeCategories,
+      },
     ])
 
     this.state = {
@@ -191,8 +195,23 @@ class PageDialectLearnWords extends PageDialectLearnBase {
       this.props.computeCategories,
       '/api/v1/path/' + this.props.routeParams.dialect_path + '/Categories/@children'
     )
+    const computeSharedCategories = ProviderHelpers.getEntry(
+      this.props.computeCategories,
+      '/api/v1/path/FV/' + this.props.routeParams.area + '/SharedData/Shared Categories/@children'
+    )
 
-    const computeCategoriesSize = selectn('response.entries.length', computeCategories) || 0
+    let showCategories = false
+
+    let computeCategoriesResults = []
+
+    if (selectn('response.entries', computeCategories) != 0) {
+      computeCategoriesResults = selectn('response.entries', computeCategories)
+      showCategories = true
+    } else if (selectn('response.entries', computeSharedCategories) != 0) {
+      computeCategoriesResults = selectn('response.entries', computeSharedCategories)
+      showCategories = true
+    }
+
     const dialect = selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) || ''
     const pageTitle = intl.trans('views.pages.explore.dialect.words.x_words', `${dialect} Words`, null, [dialect])
     const wordListView = selectn('response.uid', computeDocument) ? (
@@ -272,7 +291,7 @@ class PageDialectLearnWords extends PageDialectLearnBase {
           </div>
         </div>
         <div className="row">
-          <div className={classNames('col-xs-12', 'col-md-3', computeCategoriesSize === 0 ? null : null, 'PrintHide')}>
+          <div className={classNames('col-xs-12', 'col-md-3', showCategories === false ? null : null, 'PrintHide')}>
             <AlphabetListView
               dialect={selectn('response', computePortal)}
               handleClick={this.handleAlphabetClick}
@@ -288,14 +307,14 @@ class PageDialectLearnWords extends PageDialectLearnBase {
               )}
               appliedFilterIds={this.state.filterInfo.get('currentCategoryFilterIds')}
               facetField={ProviderHelpers.switchWorkspaceSectionKeys('fv-word:categories', this.props.routeParams.area)}
-              facets={selectn('response.entries', computeCategories) || []}
+              facets={computeCategoriesResults}
               routeParams={this.props.routeParams}
               handleDialectFilterClick={this.handleCategoryClick}
               handleDialectFilterList={this.handleDialectFilterList} // NOTE: Comes from PageDialectLearnBase
               clearDialectFilter={this.clearDialectFilter}
             />
           </div>
-          <div className={classNames('col-xs-12', computeCategoriesSize === 0 ? 'col-md-12' : 'col-md-9')}>
+          <div className={classNames('col-xs-12', showCategories === false ? 'col-md-12' : 'col-md-9')}>
             <h1 className="DialectPageTitle">{pageTitle}</h1>
 
             <SearchDialect
@@ -427,26 +446,32 @@ class PageDialectLearnWords extends PageDialectLearnBase {
 
   // NOTE: PageDialectLearnBase calls `fetchData`
   fetchData(newProps) {
-    ProviderHelpers.fetchIfMissing(
-      newProps.routeParams.dialect_path + '/Portal', // key
-      newProps.fetchPortal, // action
-      newProps.computePortal // reducer
-    )
-    ProviderHelpers.fetchIfMissing(
-      newProps.routeParams.dialect_path + '/Dictionary', // key
-      newProps.fetchDocument, // action
-      newProps.computeDocument
-    )
-    ProviderHelpers.fetchIfMissing(
-      '/api/v1/path/' + newProps.routeParams.dialect_path + '/Categories/@children', // key
-      newProps.fetchCategories, // action
-      newProps.computeCategories
-    )
+    // ProviderHelpers.fetchIfMissing(
+    //   newProps.routeParams.dialect_path + '/Portal', // key
+    //   newProps.fetchPortal, // action
+    //   newProps.computePortal // reducer
+    // )
+    // ProviderHelpers.fetchIfMissing(
+    //   newProps.routeParams.dialect_path + '/Dictionary', // key
+    //   newProps.fetchDocument, // action
+    //   newProps.computeDocument
+    // )
+    // ProviderHelpers.fetchIfMissing(
+    //   '/api/v1/path/' + newProps.routeParams.dialect_path + '/Categories/@children', // key
+    //   newProps.fetchCategories, // action
+    //   newProps.computeCategories,
+    // )
+    // ProviderHelpers.fetchIfMissing(
+    //   '/api/v1/path/FV/' + newProps.routeParams.area + '/SharedData/Shared Categories/@children', // key
+    //   newProps.fetchSharedCategories, // action
+    //   newProps.computeSharedCategories,
+    // )
 
-    // // action(key);
-    // newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal')
-    // newProps.fetchDocument(newProps.routeParams.dialect_path + '/Dictionary')
-    // newProps.fetchCategories(newProps.routeParams.dialect_path + '/Categories/@children')
+    // action(key);
+    newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal')
+    newProps.fetchDocument(newProps.routeParams.dialect_path + '/Dictionary')
+    newProps.fetchCategories('/api/v1/path/' + newProps.routeParams.dialect_path + '/Categories/@children')
+    newProps.fetchCategories('/api/v1/path/FV/' + newProps.routeParams.area + '/SharedData/Shared Categories/@children')
   }
 
   changeFilter(href, updateUrl = true) {
