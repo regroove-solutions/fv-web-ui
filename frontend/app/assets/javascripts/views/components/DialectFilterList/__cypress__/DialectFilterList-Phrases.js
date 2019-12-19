@@ -1,10 +1,7 @@
 describe('DialectFilterList-Phrases.js > DialectFilterList', () => {
   it('Select category with enough results for pagination, confirm has data, navigate to next page, confirm has data', () => {
-    cy.log('Forcing the test to fail until FW-707 is fixed.').then(() => {
-      cy.expect(true).to.equal(false)
-    })
-
     cy.visit('/explore/FV/sections/Data/Test/Test/TestLanguageSix/learn/phrases')
+    cy.wait(500)
 
     const category = 'TestPhraseBook'
     cy.DialectFilterList({
@@ -20,6 +17,7 @@ describe('DialectFilterList-Phrases.js > DialectFilterList', () => {
       userName: 'TESTLANGUAGESIX_ADMIN',
     })
     cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageSix/learn/phrases')
+    cy.wait(500)
 
     const category = 'TestPhraseBook'
 
