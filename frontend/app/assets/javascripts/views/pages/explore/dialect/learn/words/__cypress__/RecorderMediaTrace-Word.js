@@ -30,6 +30,7 @@ describe('RecorderMediaTrace-Word.js > RecorderMediaTrace-Word', () => {
     cy.getByText('Media Browser', { exact: true }).click()
     cy.getByText('TestWordAudio').click()
     cy.getByText('Linked Words').click()
+    cy.wait(500)
     cy.getByTestId('DictionaryList__row').within(() => {
       cy.getByText('TestWord').should('exist')
       cy.getByText('TestTranslation').should('exist')
@@ -39,6 +40,7 @@ describe('RecorderMediaTrace-Word.js > RecorderMediaTrace-Word', () => {
     cy.wait(500)
     cy.getByText('TestWordImage').click()
     cy.getByText('Linked Words').click()
+    cy.wait(500)
     cy.getByTestId('DictionaryList__row').within(() => {
       cy.getByText('TestWord').should('exist')
       cy.getByText('TestTranslation').should('exist')
@@ -48,6 +50,7 @@ describe('RecorderMediaTrace-Word.js > RecorderMediaTrace-Word', () => {
     cy.wait(1000)
     cy.getByText('TestWordVideo').click()
     cy.getByText('Linked Words').click()
+    cy.wait(500)
     cy.getByTestId('DictionaryList__row').within(() => {
       cy.getByText('TestWord').should('exist')
       cy.getByText('TestTranslation').should('exist')
