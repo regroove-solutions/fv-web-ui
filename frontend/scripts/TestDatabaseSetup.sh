@@ -257,6 +257,65 @@ if [[ "$?" -ne 0 ]]; then
   echo -e 'fv-utils TestLanguageSeven creation failed \n'; exit 1
   echo
 fi
+echo
+
+# Check for "FV/Workspaces/Site/Resources/Pages/Get Stated" and create it if it doesn't exist
+echo "Checking if \"Get Started\" page exists"
+Test_exists=$(curl -o /dev/null -s -w "%{response_code}\n" -X POST ${TARGET}'/nuxeo/site/automation/Proxy.GetSourceDocument' -H 'Nuxeo-Transaction-Timeout: 3' -H 'X-NXproperties: *' -H 'X-NXRepository: default' -H 'X-NXVoidOperation: false' -H 'content-type: application/json' -d '{"params":{},"input":"/FV/Workspaces/Site/Resources/Pages/Get Started","context":{}}' -u $CYPRESS_FV_USERNAME:$CYPRESS_FV_PASSWORD)
+if [[ "Test_exists" -eq 404 ]]; then
+    # Create "Get Started" menu page
+    echo "Creating \"Get Started\" page"
+    response=$(curl -o /dev/null -s -w "%{response_code}\n" -X POST ${TARGET}'/nuxeo/site/automation/Document.Create' -H 'Nuxeo-Transaction-Timeout: 3' -H 'X-NXproperties: *' -H 'X-NXRepository: default' -H 'X-NXVoidOperation: false' -H 'content-type: application/json' -d '{"params":{"type":"FVPage","name":"Get Started","properties":{"dc:title":"Get Started","fvpage:blocks":[], "fvpage:url":"get-started"}},"input":"/FV/Workspaces/Site/Resources/Pages","context":{}}' -u $CYPRESS_FV_USERNAME:$CYPRESS_FV_PASSWORD)
+    if [[ "$response" -ne 200 ]]; then
+        echo -e '"Get started" page creation failed: Error ' $response ' \n'; exit 1
+        echo
+    fi
+    echo "Adding block property to \"Get Started\" page"
+    response=$(curl -o /dev/null -s -w "%{response_code}\n" -X POST ${TARGET}'/nuxeo/site/automation/Document.AddItemToListProperty' -H 'Nuxeo-Transaction-Timeout: 3' -H 'X-NXproperties: *' -H 'X-NXRepository: default' -H 'X-NXVoidOperation: false' -H 'content-type: application/json' -d '{"params":{"complexJsonProperties":"[{\"text\":\"Test body text.\",\"title\":\"Get Started\"}]","xpath":"fvpage:blocks","save":"true"},"input":"/FV/Workspaces/Site/Resources/Pages/Get Started","context":{}}' -u $CYPRESS_FV_USERNAME:$CYPRESS_FV_PASSWORD)
+    if [[ "$response" -ne 200 ]]; then
+        echo -e '"Get started" block property addition failed: Error ' $response ' \n'; exit 1
+        echo
+    fi
+    # Publish "Get Started" menu page
+    echo "Publishing \"Get Started\" page"
+    response=$(curl -o /dev/null -s -w "%{response_code}\n" -X POST ${TARGET}'/nuxeo/site/automation/javascript.FVPublishOrRepublish' -H 'Nuxeo-Transaction-Timeout: 10' -H 'X-NXproperties: *' -H 'X-NXRepository: default' -H 'X-NXVoidOperation: false' -H 'content-type: application/json' -d '{"params":{},"input":"/FV/Workspaces/Site/Resources/Pages/Get Started","context":{}}' -u $CYPRESS_FV_USERNAME:$CYPRESS_FV_PASSWORD)
+    if [[ "$response" -ne 200 ]]; then
+        echo -e '"Get Started" page publish failed: Error ' $response ' \n'; exit 1
+        echo
+    fi
+else
+    echo "\"Get Started\" page found"
+fi
+echo
+
+# Check for "FV/Workspaces/Site/Resources/Pages/FirstVoices Apps" and create it if it doesn't exist
+echo "Checking if \"FirstVoices Apps\" page exists"
+Test_exists=$(curl -o /dev/null -s -w "%{response_code}\n" -X POST ${TARGET}'/nuxeo/site/automation/Proxy.GetSourceDocument' -H 'Nuxeo-Transaction-Timeout: 3' -H 'X-NXproperties: *' -H 'X-NXRepository: default' -H 'X-NXVoidOperation: false' -H 'content-type: application/json' -d '{"params":{},"input":"/FV/Workspaces/Site/Resources/Pages/FirstVoices Apps","context":{}}' -u $CYPRESS_FV_USERNAME:$CYPRESS_FV_PASSWORD)
+if [[ "Test_exists" -eq 404 ]]; then
+    # Create "FirstVoices Apps" menu page
+    echo "Creating \"FirstVoices Apps\" page"
+    response=$(curl -o /dev/null -s -w "%{response_code}\n" -X POST ${TARGET}'/nuxeo/site/automation/Document.Create' -H 'Nuxeo-Transaction-Timeout: 3' -H 'X-NXproperties: *' -H 'X-NXRepository: default' -H 'X-NXVoidOperation: false' -H 'content-type: application/json' -d '{"params":{"type":"FVPage","name":"FirstVoices Apps","properties":{"dc:title":"FirstVoices Apps","fvpage:blocks":[], "fvpage:url":"apps"}},"input":"/FV/Workspaces/Site/Resources/Pages","context":{}}' -u $CYPRESS_FV_USERNAME:$CYPRESS_FV_PASSWORD)
+    if [[ "$response" -ne 200 ]]; then
+        echo -e '"FirstVoices Apps" page creation failed: Error ' $response ' \n'; exit 1
+        echo
+    fi
+    echo "Adding block property to \"FirstVoices Apps\" page"
+    response=$(curl -o /dev/null -s -w "%{response_code}\n" -X POST ${TARGET}'/nuxeo/site/automation/Document.AddItemToListProperty' -H 'Nuxeo-Transaction-Timeout: 3' -H 'X-NXproperties: *' -H 'X-NXRepository: default' -H 'X-NXVoidOperation: false' -H 'content-type: application/json' -d '{"params":{"complexJsonProperties":"[{\"text\":\"Test body text.\",\"title\":\"FirstVoices Apps\"}]","xpath":"fvpage:blocks","save":"true"},"input":"/FV/Workspaces/Site/Resources/Pages/FirstVoices Apps","context":{}}' -u $CYPRESS_FV_USERNAME:$CYPRESS_FV_PASSWORD)
+    if [[ "$response" -ne 200 ]]; then
+        echo -e 'FirstVoices Apps block property addition failed: Error ' $response ' \n'; exit 1
+        echo
+    fi
+    # Publish "Get Started" menu page
+    echo "Publishing \"FirstVoices Apps\" page"
+    response=$(curl -o /dev/null -s -w "%{response_code}\n" -X POST ${TARGET}'/nuxeo/site/automation/javascript.FVPublishOrRepublish' -H 'Nuxeo-Transaction-Timeout: 10' -H 'X-NXproperties: *' -H 'X-NXRepository: default' -H 'X-NXVoidOperation: false' -H 'content-type: application/json' -d '{"params":{},"input":"/FV/Workspaces/Site/Resources/Pages/FirstVoices Apps","context":{}}' -u $CYPRESS_FV_USERNAME:$CYPRESS_FV_PASSWORD)
+    if [[ "$response" -ne 200 ]]; then
+        echo -e '"FirstVoices Apps" page publish failed: Error ' $response ' \n'; exit 1
+        echo
+    fi
+else
+    echo "\"FirstVoices Apps\" page found"
+fi
+echo
 
 # Remove generated batch files
 cd $DIRECTORY/scripts/files/

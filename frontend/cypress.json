@@ -3,7 +3,7 @@
   "baseUrl": "http://127.0.0.1:3001",
   "videoUploadOnPasses": false,
   "projectId": "CYPRESS_PROJECT_ID",
-  "videoCompression": false,
+  "videoCompression": 40,
   "env": {
     "TARGET": "http://127.0.0.1:8080"
   }
