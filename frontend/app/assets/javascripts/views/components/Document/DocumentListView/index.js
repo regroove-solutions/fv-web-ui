@@ -10,128 +10,150 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component } from 'react'
+import React, { Suspense } from 'react'
 import PropTypes from 'prop-types'
 import selectn from 'selectn'
-import GridView from 'views/pages/explore/dialect/learn/base/grid-view'
-import DictionaryList from 'views/components/Browsing/dictionary-list'
-import FlashcardList from 'views/components/Browsing/flashcard-list'
 
 import withPagination from 'views/hoc/grid-list/with-pagination'
-import IntlService from 'views/services/intl'
 
-// is TapEvent needed here?! Test on mobile
-//var injectTapEventPlugin = require("react-tap-event-plugin");
-//injectTapEventPlugin();
+const GridView = React.lazy(() => import('views/pages/explore/dialect/learn/base/grid-view'))
+const DictionaryList = React.lazy(() => import('views/components/Browsing/DictionaryList'))
 
-const GridViewWithPagination = withPagination(GridView, 8)
-const DefaultFetcherParams = { currentPageIndex: 1, pageSize: 10, sortBy: 'fv:custom_order', sortOrder: 'asc' }
-
-const { any, bool, func, number, string } = PropTypes
-
-export default class DocumentListView extends Component {
-  static propTypes = {
-    cssModifier: string,
-    columns: any, // TODO: set appropriate propType
-    data: any, // TODO: set appropriate propType
-    dialect: any, // TODO: set appropriate propType
-    disablePageSize: any, // TODO: set appropriate propType
-    gridCols: any, // TODO: set appropriate propType
-    gridListTile: any, // TODO: set appropriate propType
-    gridListView: any, // TODO: set appropriate propType
-    gridViewProps: any, // TODO: set appropriate propType
-    onSelectionChange: func,
-    onSortChange: any, // TODO: set appropriate propType
-    page: number,
-    pageSize: number,
-    pagination: bool,
-    refetcher: func,
-    renderSimpleTable: any, // TODO: set appropriate propType
-    sortInfo: any, // TODO: set appropriate propType
-    type: any, // TODO: set appropriate propType
-    flashcard: bool,
-    flashcardTitle: string,
-    usePrevResponse: bool,
-  }
-
-  static defaultProps = {
-    cssModifier: '',
-    data: {},
-    pagination: true,
-    usePrevResponse: false,
-    onSelectionChange: () => {},
-    flashcard: false,
-    flashcardTitle: '',
-  }
-
-  constructor(props, context) {
-    super(props, context)
-
-    this.state = {
-      selectedId: null,
-    }
-  }
-
-  intl = IntlService.instance
-
-  componentDidUpdate(prevProps) {
-    if (this.props.data !== prevProps.data) {
-      this.setState({
-        page: 1,
-      })
-    }
-  }
-
-  render() {
-    const {
-      columns,
-      cssModifier,
-      data,
-      dialect,
-      disablePageSize,
-      flashcardTitle,
-      gridCols,
-      gridListTile,
-      gridListView,
-      pagination,
-      page,
-      pageSize,
-      type,
-    } = this.props
-
-    let gridViewProps = {
-      cssModifier,
-      style: { overflowY: 'auto', maxHeight: '50vh' },
-      cols: gridCols,
-      cellHeight: 160,
-      fetcher: this._gridListFetcher,
-      type,
-      pagination,
-      fetcherParams: { currentPageIndex: page, pageSize: pageSize },
-      metadata: selectn('response', data),
-      gridListTile,
-      disablePageSize,
-      dialect,
-      items: selectn('response.entries', data),
-      flashcardTitle,
+const DocumentListView = (props) => {
+  const getContent = () => {
+    if (props.gridListView) {
+      const gridViewProps = Object.assign(
+        {},
+        {
+          cellHeight: 160,
+          cols: props.gridCols,
+          // cssModifier: props.cssModifier,
+          dialect: props.dialect,
+          disablePageSize: props.disablePageSize,
+          fetcher: gridListFetcher,
+          fetcherParams: { currentPageIndex: props.page, pageSize: props.pageSize },
+          flashcardTitle: props.flashcardTitle,
+          gridListTile: props.gridListTile,
+          items: selectn('response.entries', props.data),
+          metadata: selectn('response', props.data),
+          pagination: props.pagination,
+          style: { overflowY: 'auto', maxHeight: '50vh' },
+          type: props.type,
+          // Search:
+          handleSearch: props.handleSearch,
+          hasSearch: props.hasSearch,
+          resetSearch: props.resetSearch,
+          hasViewModeButtons: props.hasViewModeButtons,
+        },
+        props.gridViewProps
+      )
+      const GridViewWithPagination = withPagination(GridView, 8)
+      return props.pagination ? (
+        <Suspense fallback={<div>Loading...</div>}>
+          <GridViewWithPagination {...gridViewProps} />
+        </Suspense>
+      ) : (
+        <Suspense fallback={<div>Loading...</div>}>
+          <GridView {...gridViewProps} />
+        </Suspense>
+      )
     }
 
-    if (gridListView) {
-      gridViewProps = Object.assign({}, gridViewProps, this.props.gridViewProps)
-
-      if (pagination) {
-        return <GridViewWithPagination {...gridViewProps} />
-      }
-      return <GridView {...gridViewProps} />
-    }
-    const FilteredPaginatedDictionaryList = withPagination(
-      this.props.flashcard ? FlashcardList : DictionaryList,
-      DefaultFetcherParams.pageSize
+    return (
+      <Suspense fallback={<div>Loading...</div>}>
+        <DictionaryList
+          // Listview
+          data={props.data}
+          hasFlashcard={props.flashcard}
+          hasPagination={props.pagination}
+          hasSearch={props.hasSearch}
+          hasViewModeButtons={props.hasViewModeButtons}
+          rowClickHandler={props.rowClickHandler}
+          dictionaryListSmallScreenTemplate={props.dictionaryListSmallScreenTemplate}
+          // Listview: Batch
+          batchConfirmationAction={props.batchConfirmationAction}
+          batchTitleSelect={props.batchTitleSelect}
+          batchTitleDeselect={props.batchTitleDeselect}
+          batchFooterIsConfirmOrDenyTitle={props.batchFooterIsConfirmOrDenyTitle}
+          batchFooterBtnInitiate={props.batchFooterBtnInitiate}
+          batchFooterBtnDeny={props.batchFooterBtnDeny}
+          batchFooterBtnConfirm={props.batchFooterBtnConfirm}
+          batchSelected={props.batchSelected}
+          setBatchSelected={props.setBatchSelected}
+          batchDeletedUids={props.batchDeletedUids}
+          setBatchDeletedUids={props.setBatchDeletedUids}
+          // Listview: Sort
+          sortHandler={props.sortHandler}
+          hasSorting={props.hasSorting}
+          // Listview: computed data
+          computedData={props.computedData}
+          // Search
+          handleSearch={props.handleSearch}
+          resetSearch={props.resetSearch}
+          searchUi={props.searchUi}
+          searchByMode={props.searchByMode}
+          searchDialectDataType={props.searchDialectDataType}
+          // ==================================================
+          cellHeight={160}
+          cols={props.gridCols}
+          columns={props.columns}
+          // cssModifier={props.cssModifier}
+          dialect={props.dialect}
+          disablePageSize={props.disablePageSize}
+          fetcher={gridListFetcher}
+          fetcherParams={{ currentPageIndex: props.page, pageSize: props.pageSize }}
+          flashcardTitle={props.flashcardTitle}
+          gridListTile={props.gridListTile}
+          items={selectn('response.entries', props.data)}
+          metadata={selectn('response', props.data)}
+          style={{ overflowY: 'auto', maxHeight: '50vh' }}
+          type={props.type}
+        />
+      </Suspense>
     )
-    return <FilteredPaginatedDictionaryList {...gridViewProps} columns={columns} />
   }
 
-  _gridListFetcher = (fetcherParams) => {
-    this.props.refetcher(this.props, fetcherParams.currentPageIndex, fetcherParams.pageSize)
+  const gridListFetcher = (fetcherParams) => {
+    props.refetcher(props, fetcherParams.currentPageIndex, fetcherParams.pageSize)
   }
+
+  return getContent()
 }
+
+const { any, array, bool, func, number, object, string } = PropTypes
+
+DocumentListView.propTypes = {
+  // className,
+  columns: array,
+  // cssModifier: string,
+  data: object,
+  dialect: object,
+  dictionaryListSmallScreenTemplate: func,
+  disablePageSize: bool,
+  flashcard: bool,
+  flashcardTitle: string,
+  gridCols: any, // TODO: set appropriate propType
+  gridListTile: any, // TODO: set appropriate propType
+  gridListView: bool,
+  gridViewProps: object,
+  handleSearch: func,
+  hasSearch: bool,
+  searchDialectDataType: number,
+  hasViewModeButtons: bool,
+  page: number,
+  pageSize: number,
+  pagination: bool,
+  refetcher: func,
+  resetSearch: func,
+  rowClickHandler: func,
+  type: string,
+}
+
+DocumentListView.defaultProps = {
+  // cssModifier: '',
+  data: {},
+  pagination: true,
+  flashcard: false,
+  flashcardTitle: '',
+}
+export default DocumentListView

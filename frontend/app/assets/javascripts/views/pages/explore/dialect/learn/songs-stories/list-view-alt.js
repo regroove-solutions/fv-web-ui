@@ -34,16 +34,16 @@ import NavigationHelpers from 'common/NavigationHelpers'
 import DocumentListView from 'views/components/Document/DocumentListView'
 
 import DataListView from 'views/pages/explore/dialect/learn/base/data-list-view'
+import { dictionaryListSmallScreenColumnDataTemplate } from 'views/components/Browsing/DictionaryListSmallScreen'
 
 import IntlService from 'views/services/intl'
-
 const intl = IntlService.instance
 /**
  * List view for words
  */
 
 const { array, bool, func, number, object, string } = PropTypes
-export class ListViewAlt extends DataListView {
+export class SongsStoriesListViewAlt extends DataListView {
   static propTypes = {
     action: func,
     data: string,
@@ -93,6 +93,7 @@ export class ListViewAlt extends DataListView {
         {
           name: 'title',
           title: intl.trans('title', 'Title', 'first'),
+          columnDataTemplate: dictionaryListSmallScreenColumnDataTemplate.cellRenderTypography,
           render: (v, data /*, cellProps*/) => {
             const href = NavigationHelpers.generateUIDPath(
               currentTheme || 'explore',
@@ -102,9 +103,9 @@ export class ListViewAlt extends DataListView {
             const clickHandler = props.disableClickItem
               ? NavigationHelpers.disable
               : (/*e*/) => {
-                // e.preventDefault()
-                // NavigationHelpers.navigate(href, this.props.pushWindowPath, false)
-              }
+                  // e.preventDefault()
+                  // NavigationHelpers.navigate(href, this.props.pushWindowPath, false)
+                }
             return (
               <a onClick={clickHandler} href={href}>
                 {v}
@@ -232,20 +233,20 @@ export class ListViewAlt extends DataListView {
           if (selectn('response.entries', computeBooks)) {
             return (
               <DocumentListView
-                objectDescriptions="books"
-                type="FVBook"
+                // objectDescriptions="books"
+                // onSelectionChange={this._onEntryNavigateRequest}
+                // onSortChange={this._handleSortChange}
+                // sortInfo={this.state.sortInfo.uiSortOrder}
+                className="browseDataGrid"
+                columns={this.state.columns}
                 data={computeBooks}
+                dialect={selectn('response', computeDialect2)}
                 gridListView={this.props.gridListView}
-                refetcher={this._handleRefetch}
-                onSortChange={this._handleSortChange}
-                onSelectionChange={this._onEntryNavigateRequest}
+                hasViewModeButtons={false}
                 page={this.state.pageInfo.page}
                 pageSize={this.state.pageInfo.pageSize}
-                onColumnOrderChange={this._handleColumnOrderChange}
-                columns={this.state.columns}
-                sortInfo={this.state.sortInfo.uiSortOrder}
-                className="browseDataGrid"
-                dialect={selectn('response', computeDialect2)}
+                refetcher={this._handleRefetch}
+                type="FVBook"
               />
             )
           }
@@ -285,4 +286,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(ListViewAlt)
+)(SongsStoriesListViewAlt)

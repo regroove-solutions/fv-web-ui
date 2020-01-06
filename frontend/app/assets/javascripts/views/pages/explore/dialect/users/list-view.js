@@ -23,7 +23,7 @@ import { connect } from 'react-redux'
 import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
 import { pushWindowPath } from 'providers/redux/reducers/windowPath'
 import { fetchUser, userSuggestion, updateUser } from 'providers/redux/reducers/fvUser'
-
+import { dictionaryListSmallScreenColumnDataTemplate } from 'views/components/Browsing/DictionaryListSmallScreen'
 import selectn from 'selectn'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import ProviderHelpers from 'common/ProviderHelpers'
@@ -36,7 +36,6 @@ import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
 const DefaultFetcherParams = { filters: { 'properties.dc:title': '', dialect: '' } }
-
 const FilteredPaginatedMediaList = withFilter(DocumentListView, DefaultFetcherParams)
 
 /**
@@ -44,7 +43,7 @@ const FilteredPaginatedMediaList = withFilter(DocumentListView, DefaultFetcherPa
  */
 
 const { array, bool, func, number, object, string } = PropTypes
-export class ListView extends DataListView {
+export class UsersListView extends DataListView {
   static propTypes = {
     dialect: object,
     routeParams: object.isRequired,
@@ -90,17 +89,24 @@ export class ListView extends DataListView {
       columns: [
         {
           name: 'username',
+          columnDataTemplate: dictionaryListSmallScreenColumnDataTemplate.cellRenderTypography,
           title: intl.trans('views.pages.explore.dialect.users.username', 'Username', 'first'),
         },
         {
           name: 'firstName',
+          columnDataTemplate: dictionaryListSmallScreenColumnDataTemplate.cellRender,
           title: intl.trans('first_name', 'First Name', 'words'),
         },
         {
           name: 'lastName',
+          columnDataTemplate: dictionaryListSmallScreenColumnDataTemplate.cellRender,
           title: intl.trans('last_name', 'Last Name', 'words'),
         },
-        { name: 'email', title: intl.trans('email', 'Email', 'first') },
+        {
+          name: 'email',
+          columnDataTemplate: dictionaryListSmallScreenColumnDataTemplate.columnTitleCellRender,
+          title: intl.trans('email', 'Email', 'first'),
+        },
       ],
       sortInfo: {
         uiSortOrder: [],
@@ -122,7 +128,7 @@ export class ListView extends DataListView {
     }
 
     // Bind methods to 'this'
-    [
+    ;[
       '_onNavigateRequest',
       '_onUserSelected',
       '_handleRefetch',
@@ -232,24 +238,24 @@ export class ListView extends DataListView {
     return (
       <PromiseWrapper hideFetch renderOnError computeEntities={computeEntities}>
         <FilteredPaginatedMediaList
-          objectDescriptions="users"
-          type="FVUser"
-          filterOptionsKey="User"
-          data={normalizedComputeUserSuggestion}
-          gridListView={this.props.gridListView}
-          refetcher={this._handleRefetch}
-          onSortChange={this._handleSortChange}
-          onSelectionChange={this._onUserSelected}
-          page={this.state.pageInfo.page}
-          pagination={false}
-          fetcher={this._fetcher}
-          pageSize={this.state.pageInfo.pageSize}
-          onColumnOrderChange={this._handleColumnOrderChange}
-          columns={this.state.columns}
-          fixedCols={this.state.fixedCols}
-          sortInfo={this.state.sortInfo.uiSortOrder}
+          // objectDescriptions="users"
+          // onSelectionChange={this._onUserSelected}
+          // onSortChange={this._handleSortChange}
+          // sortInfo={this.state.sortInfo.uiSortOrder}
           className="browseDataGrid"
+          columns={this.state.columns}
+          data={normalizedComputeUserSuggestion}
           dialect={selectn('response', computeDialect2)}
+          fetcher={this._fetcher}
+          filterOptionsKey="User"
+          fixedCols={this.state.fixedCols}
+          gridListView={this.props.gridListView}
+          hasViewModeButtons={false}
+          page={this.state.pageInfo.page}
+          pageSize={this.state.pageInfo.pageSize}
+          pagination={false}
+          refetcher={this._handleRefetch}
+          type="FVUser"
         />
 
         <GroupAssignmentDialog
@@ -303,4 +309,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(ListView)
+)(UsersListView)

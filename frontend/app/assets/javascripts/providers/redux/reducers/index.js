@@ -1,18 +1,22 @@
 import { combineReducers } from 'redux'
 
 /*
-NOTE:
-For some unknown reason, when `./index.js` imports:
+NOTE: ODD MYSTERY
+
+For some reason, when this file imports:
 `import { directoryReducer } from './directory'`
 
-Components that import `fetchDirectory` get `undefined`:
+Any component that imports `fetchDirectory` will get `undefined`, eg:
 `import { fetchDirectory } from 'providers/redux/reducers/directory'`
-  - javascripts/views/components/Editor/DirectoryList.js
-  - javascripts/views/components/SearchDialect/index.js
 
-So to sidestep this issue I duplicated `./directory` > `./_directory`
-and `./index.js` is importing it...
+To sidestep this issue I duplicated `./directory` > `./_directory`
+and it seems to work (but both files need to be in place!)
+
+Components importing `fetchDirectory`:
+  1) javascripts/views/components/Editor/DirectoryList.js
+  2) javascripts/views/components/SearchDialect/index.js
 */
+// import { directoryReducer } from './directory' // triggers undef error
 import { directoryReducer } from './_directory'
 
 import { documentReducer } from './document'
@@ -36,13 +40,16 @@ import { fvResourcesReducer } from './fvResources'
 import { fvUserReducer } from './fvUser'
 import { fvVideoReducer } from './fvVideo'
 import { fvWordReducer } from './fvWord'
+import { listViewReducer } from './listView'
 import { navigationReducer } from './navigation'
 import { nuxeoReducer } from './nuxeo'
 import { reportsReducer } from './reports'
 // import { restReducer } from './rest' // NOTE: restReducer not consumed by components, just other reducers
 import { searchReducer } from './search'
+import { searchDialectReducer } from './searchDialect'
 import { tasksReducer } from './tasks'
 import { windowPathReducer } from './windowPath'
+
 export default combineReducers({
   directory: directoryReducer,
   document: documentReducer,
@@ -66,11 +73,12 @@ export default combineReducers({
   fvUser: fvUserReducer,
   fvVideo: fvVideoReducer,
   fvWord: fvWordReducer,
+  listView: listViewReducer,
   navigation: navigationReducer,
   nuxeo: nuxeoReducer,
   reports: reportsReducer,
-  // rest: restReducer,
   search: searchReducer,
+  searchDialect: searchDialectReducer,
   tasks: tasksReducer,
   windowPath: windowPathReducer,
 })
