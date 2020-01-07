@@ -30,17 +30,16 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import DocumentListView from 'views/components/Document/DocumentListView'
-import DocumentListViewDatatable from 'views/components/Document/DocumentListViewDatatable'
 import DataListView from 'views/pages/explore/dialect/learn/base/data-list-view'
 import IntlService from 'views/services/intl'
-
+import { dictionaryListSmallScreenColumnDataTemplate } from 'views/components/Browsing/DictionaryListSmallScreen'
 const intl = IntlService.instance
 /**
  * List view for categories
  */
 
 const { bool, array, func, number, object, string } = PropTypes
-class ListView extends DataListView {
+class WordsCategoriesListView extends DataListView {
   static propTypes = {
     action: func,
     categoriesPath: string.isRequired,
@@ -55,7 +54,6 @@ class ListView extends DataListView {
     gridCols: number,
     gridListView: bool,
     routeParams: object.isRequired,
-    useDatatable: bool,
 
     // REDUX: reducers/state
     computeCategories: object.isRequired,
@@ -80,7 +78,6 @@ class ListView extends DataListView {
     filter: new Map(),
     gridListView: false,
     gridCols: 4,
-    useDatatable: false,
   }
 
   constructor(props, context) {
@@ -91,6 +88,7 @@ class ListView extends DataListView {
         {
           name: 'title',
           title: intl.trans('category', 'Category', 'first'),
+          columnDataTemplate: dictionaryListSmallScreenColumnDataTemplate.cellRenderTypography,
           render: (v /*, data, cellProps*/) => v,
         },
         {
@@ -176,46 +174,30 @@ class ListView extends DataListView {
     const computeCategories = ProviderHelpers.getEntry(this.props.computeCategories, this.props.categoriesPath)
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
 
-    const DocumentView = this.props.useDatatable ? (
-      <DocumentListViewDatatable
-        objectDescriptions="categories"
-        type="FVCategory"
-        data={computeCategories}
-        gridCols={this.props.gridCols}
-        gridListView={this.props.gridListView}
-        refetcher={this._handleRefetch}
-        onSortChange={this._handleSortChange}
-        onSelectionChange={this._onEntryNavigateRequest}
-        page={this.state.pageInfo.page}
-        pageSize={this.state.pageInfo.pageSize}
-        onColumnOrderChange={this._handleColumnOrderChange}
-        columns={this.state.columns}
-        sortInfo={this.state.sortInfo.uiSortOrder}
-        className="browseDataGrid"
-        dialect={selectn('response', computeDialect2)}
-      />
-    ) : (
-      <DocumentListView
-        objectDescriptions="categories"
-        type="FVCategory"
-        data={computeCategories}
-        gridCols={this.props.gridCols}
-        gridListView={this.props.gridListView}
-        refetcher={this._handleRefetch}
-        onSortChange={this._handleSortChange}
-        onSelectionChange={this._onEntryNavigateRequest}
-        page={this.state.pageInfo.page}
-        pageSize={this.state.pageInfo.pageSize}
-        onColumnOrderChange={this._handleColumnOrderChange}
-        columns={this.state.columns}
-        sortInfo={this.state.sortInfo.uiSortOrder}
-        className="browseDataGrid"
-        dialect={selectn('response', computeDialect2)}
-      />
-    )
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
-        {selectn('response.entries', computeCategories) && DocumentView}
+        {selectn('response.entries', computeCategories) && (
+          <DocumentListView
+            // objectDescriptions="categories"
+            // onSelectionChange={this._onEntryNavigateRequest}
+            // onSortChange={this._handleSortChange}
+            // sortInfo={this.state.sortInfo.uiSortOrder}
+            className="browseDataGrid"
+            columns={this.state.columns}
+            data={computeCategories}
+            dialect={selectn('response', computeDialect2)}
+            gridCols={this.props.gridCols}
+            gridListView={this.props.gridListView}
+            hasViewModeButtons={false}
+            page={this.state.pageInfo.page}
+            pageSize={this.state.pageInfo.pageSize}
+            refetcher={this._handleRefetch}
+            rowClickHandler={(row) => {
+              this._onEntryNavigateRequest(row)
+            }}
+            type="FVCategory"
+          />
+        )}
       </PromiseWrapper>
     )
   }
@@ -248,7 +230,4 @@ const mapDispatchToProps = {
   pushWindowPath,
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ListView)
+export default connect(mapStateToProps, mapDispatchToProps)(WordsCategoriesListView)

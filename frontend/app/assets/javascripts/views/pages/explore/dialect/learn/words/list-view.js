@@ -23,6 +23,7 @@ import { connect } from 'react-redux'
 import { fetchWords } from 'providers/redux/reducers/fvWord'
 import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
 import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+import { setRouteParams } from 'providers/redux/reducers/navigation'
 
 import selectn from 'selectn'
 
@@ -32,45 +33,51 @@ import { WORKSPACES } from 'common/Constants'
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
 import DataListView from 'views/pages/explore/dialect/learn/base/data-list-view'
 import DocumentListView from 'views/components/Document/DocumentListView'
-import DocumentListViewDatatable from 'views/components/Document/DocumentListViewDatatable'
 import FVButton from 'views/components/FVButton'
 import IntlService from 'views/services/intl'
-import NavigationHelpers from 'common/NavigationHelpers'
+import NavigationHelpers, { getSearchObject } from 'common/NavigationHelpers'
 import Preview from 'views/components/Editor/Preview'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import ProviderHelpers from 'common/ProviderHelpers'
 import StringHelpers from 'common/StringHelpers'
 import UIHelpers from 'common/UIHelpers'
-
+import {
+  dictionaryListSmallScreenColumnDataTemplate,
+  dictionaryListSmallScreenColumnDataTemplateCustomInspectChildrenCellRender,
+  dictionaryListSmallScreenColumnDataTemplateCustomAudio,
+} from 'views/components/Browsing/DictionaryListSmallScreen'
 const intl = IntlService.instance
 
 /**
  * List view for words
  */
 const { array, bool, func, number, object, string } = PropTypes
-class ListView extends DataListView {
+class WordsListView extends DataListView {
   static propTypes = {
     action: func,
     controlViaURL: bool,
     data: string,
-    DEFAULT_PAGE: number,
     DEFAULT_PAGE_SIZE: number,
+    DEFAULT_PAGE: number,
     DEFAULT_SORT_COL: string,
     DEFAULT_SORT_TYPE: string,
     dialect: object,
-    DISABLED_SORT_COLS: array,
     disableClickItem: bool,
+    DISABLED_SORT_COLS: array,
     disablePageSize: bool,
     ENABLED_COLS: array,
     filter: object,
+    flashcard: bool,
+    flashcardTitle: string,
     gridListView: bool,
     pageProperties: object,
     parentID: string,
     routeParams: object.isRequired,
-    renderSimpleTable: bool,
-    flashcard: bool,
-    flashcardTitle: string,
-    useDatatable: bool,
+    // Search
+    handleSearch: func,
+    resetSearch: func,
+    hasSearch: bool,
+    hasViewModeButtons: bool,
 
     // REDUX: reducers/state
     computeDialect2: object.isRequired,
@@ -80,60 +87,48 @@ class ListView extends DataListView {
     splitWindowPath: array.isRequired,
     windowPath: string.isRequired,
     // REDUX: actions/dispatch/func
-    fetchWords: func.isRequired,
     fetchDialect2: func.isRequired,
+    fetchWords: func.isRequired,
     pushWindowPath: func.isRequired,
   }
   static defaultProps = {
+    controlViaURL: false,
+    DEFAULT_LANGUAGE: 'english',
+    DEFAULT_PAGE_SIZE: 10,
+    DEFAULT_PAGE: 1,
+    DEFAULT_SORT_COL: 'fv:custom_order',
+    DEFAULT_SORT_TYPE: 'asc',
+    dialect: null,
     disableClickItem: true,
     DISABLED_SORT_COLS: ['state', 'fv-word:categories', 'related_audio', 'related_pictures', 'dc:modified'],
-    DEFAULT_PAGE: 1,
-    DEFAULT_PAGE_SIZE: 10,
-    DEFAULT_LANGUAGE: 'english',
-    DEFAULT_SORT_COL: 'fv:custom_order',
-    // DEFAULT_SORT_COL: 'dc:title',
-    DEFAULT_SORT_TYPE: 'asc',
+    disablePageSize: false,
     ENABLED_COLS: [
-      'title',
-      'related_pictures',
-      'related_audio',
-      'fv:definitions',
-      'fv-word:pronunciation',
       'fv-word:categories',
       'fv-word:part_of_speech',
+      'fv-word:pronunciation',
+      'fv:definitions',
+      'related_audio',
+      'related_pictures',
+      'title',
     ],
-    dialect: null,
     filter: new Map(),
-    gridListView: false,
-    controlViaURL: false,
-    renderSimpleTable: false,
-    disablePageSize: false,
     flashcard: false,
     flashcardTitle: '',
-    useDatatable: false,
+    gridListView: false,
   }
 
   constructor(props, context) {
     super(props, context)
-    // TODO: Remove `let language` below?
-    /*
-    let language
 
-    switch (intl.locale) {
-    case 'en':
-      language = 'english'
-      break
+    // NOTE: searchObj used below in setting state
+    const searchObj = getSearchObject()
 
-        case 'fr':
-      language = 'french'
-      break
-    }
-    */
     this.state = {
       columns: [
         {
           name: 'title',
           title: intl.trans('word', 'Word', 'first'),
+          columnDataTemplate: dictionaryListSmallScreenColumnDataTemplate.cellRender,
           render: (v, data) => {
             const isWorkspaces = this.props.routeParams.area === WORKSPACES
 
@@ -162,6 +157,7 @@ class ListView extends DataListView {
                     variant="flat"
                     size="small"
                     component="a"
+                    className="DictionaryList__linkEdit"
                     href={hrefEdit}
                     onClick={(e) => {
                       e.preventDefault()
@@ -176,7 +172,7 @@ class ListView extends DataListView {
 
             return (
               <>
-                <a className="DictionaryList__link" onClick={clickHandler} href={href}>
+                <a className="DictionaryList__link DictionaryList__link--indigenous" onClick={clickHandler} href={href}>
                   {v}
                 </a>
                 {editButton}
@@ -184,10 +180,13 @@ class ListView extends DataListView {
             )
           },
           sortName: 'fv:custom_order',
+          sortBy: 'fv:custom_order',
         },
         {
           name: 'fv:definitions',
           title: intl.trans('definitions', 'Definitions', 'first'),
+          columnDataTemplate: dictionaryListSmallScreenColumnDataTemplate.custom,
+          columnDataTemplateCustom: dictionaryListSmallScreenColumnDataTemplateCustomInspectChildrenCellRender,
           render: (v, data, cellProps) => {
             return UIHelpers.renderComplexArrayRow(selectn(`properties.${cellProps.name}`, data), (entry, i) => {
               if (entry.language === this.props.DEFAULT_LANGUAGE && i < 2) {
@@ -200,6 +199,8 @@ class ListView extends DataListView {
         {
           name: 'related_audio',
           title: intl.trans('audio', 'Audio', 'first'),
+          columnDataTemplate: dictionaryListSmallScreenColumnDataTemplate.custom,
+          columnDataTemplateCustom: dictionaryListSmallScreenColumnDataTemplateCustomAudio,
           render: (v, data, cellProps) => {
             const firstAudio = selectn('contextParameters.word.' + cellProps.name + '[0]', data)
             if (firstAudio) {
@@ -221,6 +222,7 @@ class ListView extends DataListView {
           width: 72,
           textAlign: 'center',
           title: intl.trans('picture', 'Picture', 'first'),
+          columnDataTemplate: dictionaryListSmallScreenColumnDataTemplate.cellRender,
           render: (v, data, cellProps) => {
             const firstPicture = selectn('contextParameters.word.' + cellProps.name + '[0]', data)
             if (firstPicture) {
@@ -239,6 +241,7 @@ class ListView extends DataListView {
           name: 'fv-word:part_of_speech',
           title: intl.trans('part_of_speech', 'Part of Speech', 'first'),
           render: (v, data) => selectn('contextParameters.word.part_of_speech', data),
+          sortBy: 'fv-word:part_of_speech',
         },
         {
           name: 'dc:modified',
@@ -267,8 +270,8 @@ class ListView extends DataListView {
       ],
       sortInfo: {
         uiSortOrder: [],
-        currentSortCols: this.props.DEFAULT_SORT_COL,
-        currentSortType: this.props.DEFAULT_SORT_TYPE,
+        currentSortCols: searchObj.sortBy || this.props.DEFAULT_SORT_COL,
+        currentSortType: searchObj.sortOrder || this.props.DEFAULT_SORT_TYPE,
       },
       pageInfo: {
         page: this.props.DEFAULT_PAGE,
@@ -290,13 +293,11 @@ class ListView extends DataListView {
     // Bind methods to 'this'
     ;[
       '_onNavigateRequest', // no references in file
-      // '_onEntryNavigateRequest', // now an arrow fn, no need for binding
       '_handleRefetch', // Note: comes from DataListView
       '_handleSortChange', // Note: comes from DataListView
       '_handleColumnOrderChange', // Note: comes from DataListView
       '_resetColumns', // Note: comes from DataListView
       // '_fetchData2', // now an arrow fn, no need for binding, looks like it's not being used though
-      // '_getPathOrParentID', // now an arrow fn, no need for binding
     ].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
@@ -309,13 +310,15 @@ class ListView extends DataListView {
     if (newProps.dialect === null && !this.getDialect(newProps)) {
       newProps.fetchDialect2(newProps.routeParams.dialect_path)
     }
+    const searchObj = getSearchObject()
 
     this._fetchListViewData(
       newProps,
       newProps.DEFAULT_PAGE,
       newProps.DEFAULT_PAGE_SIZE,
-      newProps.DEFAULT_SORT_TYPE,
-      newProps.DEFAULT_SORT_COL
+      // 1st: redux values, 2nd: url search query, 3rd: defaults
+      this.props.navigationRouteSearch.sortOrder || searchObj.sortOrder || newProps.DEFAULT_SORT_TYPE,
+      this.props.navigationRouteSearch.sortBy || searchObj.sortBy || newProps.DEFAULT_SORT_COL
     )
   }
 
@@ -352,22 +355,13 @@ class ListView extends DataListView {
     return ProviderHelpers.getEntry(props.computeDialect2, props.routeParams.dialect_path)
   }
 
+  // TODO: Is this fn() being used?
   _fetchData2 = (fetcherParams /*, props = this.props*/) => {
     this.setState({
       fetcherParams: fetcherParams,
     })
 
     this._handleRefetch()
-
-    /*props.fetchWords(props.routeParams.dialect_path + '/Dictionary',
-          ProviderHelpers.filtersToNXQL(fetcherParams.filters)  +
-          '&currentPageIndex=' + (fetcherParams.currentPageIndex - 1) +
-          '&pageSize=' + fetcherParams.pageSize +
-          '&sortOrder=' + fetcherParams.sortOrder +
-          '&sortBy=' + fetcherParams.sortBy
-      );*/
-
-    //this._fetchListViewData(props, fetcherParams.currentPageIndex, fetcherParams.pageSize, fetcherParams.sortOrder, fetcherParams.sortBy);
   }
 
   render() {
@@ -391,35 +385,109 @@ class ListView extends DataListView {
     const computeWords = ProviderHelpers.getEntry(this.props.computeWords, this._getPathOrParentID(this.props))
     const computeDialect2 = this.props.dialect || this.getDialect()
 
-    const listViewProps = {
-      className: 'browseDataGrid',
-      columns: this.state.columns,
-      data: computeWords,
-      dialect: selectn('response', computeDialect2),
-      disablePageSize: this.props.disablePageSize,
-      gridListView: this.props.gridListView,
-      objectDescriptions: 'words',
-      onColumnOrderChange: this._handleColumnOrderChange,
-      onSelectionChange: this._onEntryNavigateRequest,
-      onSortChange: this._handleSortChange,
-      page: this.state.pageInfo.page,
-      pageSize: this.state.pageInfo.pageSize,
-      refetcher: this._handleRefetch,
-      refetcher2: this._handleRefetch,
-      renderSimpleTable: this.props.renderSimpleTable,
-      sortInfo: this.state.sortInfo.uiSortOrder,
-      type: 'FVWord',
-      flashcard: this.props.flashcard,
-      flashcardTitle: this.props.flashcardTitle,
-    }
-    const DocumentView = this.props.useDatatable ? (
-      <DocumentListViewDatatable {...listViewProps} />
-    ) : (
-      <DocumentListView {...listViewProps} />
-    )
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
-        {selectn('response.entries', computeWords) && DocumentView}
+        {selectn('response.entries', computeWords) && (
+          <DocumentListView
+            // objectDescriptions="words"
+            // onSelectionChange={this._onEntryNavigateRequest} // NOTE: may call this.props.action
+            // sortInfo={this.state.sortInfo.uiSortOrder}
+            className={'browseDataGrid'}
+            columns={this.state.columns}
+            data={computeWords}
+            dialect={selectn('response', computeDialect2)}
+            disablePageSize={this.props.disablePageSize}
+            flashcard={this.props.flashcard}
+            flashcardTitle={this.props.flashcardTitle}
+            gridListView={this.props.gridListView}
+            page={this.state.pageInfo.page}
+            pageSize={this.state.pageInfo.pageSize}
+            // NOTE: Pagination === refetcher
+            refetcher={(dataGridProps, page, pageSize) => {
+              this._handleRefetch2({
+                page,
+                pageSize,
+                preserveSearch: true,
+              })
+            }}
+            sortHandler={async ({ page, pageSize, sortBy, sortOrder } = {}) => {
+              /*
+              NOTE: TOWER OF INDIRECTION!
+
+              Since `WordsListView extends DataListView`...
+
+              `DataListView` detects the sort change via it's `componentDidUpdate`
+              which then calls `WordsListView's > fetchData()` which gets the new
+              data via `this._fetchListViewData`
+
+              Also, _handleRefetch2 is called to update the url, eg: A sort event
+              happens when on page 3 and `_handleRefetch2` resets it to page 1
+              */
+              await this.props.setRouteParams({
+                search: {
+                  pageSize,
+                  page,
+                  sortBy,
+                  sortOrder,
+                },
+              })
+              this._handleRefetch2({
+                page,
+                pageSize,
+                preserveSearch: true,
+                sortBy,
+                sortOrder,
+              })
+            }}
+            type={'FVWord'}
+            dictionaryListSmallScreenTemplate={({ templateData }) => {
+              return (
+                <div className="DictionaryListSmallScreen__words">
+                  <div className="DictionaryListSmallScreen__groupPrimary">
+                    {templateData.related_pictures}
+                    {templateData.title}
+                  </div>
+
+                  <div className="DictionaryListSmallScreen__groupSecondary">
+                    {templateData['fv:definitions']}
+                    <div className="DictionaryListSmallScreen__groupSecondary">
+                      {templateData.related_audio}
+                      {templateData['dc:description']}
+
+                      {templateData['fv-word:part_of_speech']}
+
+                      {templateData['thumb:thumbnail']}
+
+                      {templateData['fv-word:categories']}
+                      {templateData.parent}
+                      {templateData['fv-phrase:phrase_books']}
+
+                      {templateData.username}
+
+                      {templateData.email}
+
+                      {templateData['fvlink:url']}
+
+                      {templateData['dc:modified']}
+                      {templateData['dc:created']}
+                      {templateData.state}
+                      {templateData.actions}
+                    </div>
+                  </div>
+                </div>
+              )
+            }}
+            // List View
+            hasViewModeButtons={this.props.hasViewModeButtons}
+            rowClickHandler={this.props.rowClickHandler}
+            hasSorting={this.props.hasSorting}
+            // SEARCH:
+            handleSearch={this.props.handleSearch}
+            hasSearch={this.props.hasSearch}
+            resetSearch={this.props.resetSearch}
+            searchUi={this.props.searchUi}
+          />
+        )}
       </PromiseWrapper>
     )
   }
@@ -429,7 +497,7 @@ class ListView extends DataListView {
 const mapStateToProps = (state /*, ownProps*/) => {
   const { fvDialect, fvWord, navigation, nuxeo, windowPath } = state
 
-  const { properties } = navigation
+  const { properties, route } = navigation
   const { computeLogin } = nuxeo
   const { computeWords } = fvWord
   const { computeDialect2 } = fvDialect
@@ -440,6 +508,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
     computeLogin,
     computeWords,
     properties,
+    navigationRouteSearch: route.search,
     splitWindowPath,
     windowPath: _windowPath,
   }
@@ -450,9 +519,7 @@ const mapDispatchToProps = {
   fetchWords,
   fetchDialect2,
   pushWindowPath,
+  setRouteParams,
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ListView)
+export default connect(mapStateToProps, mapDispatchToProps)(WordsListView)

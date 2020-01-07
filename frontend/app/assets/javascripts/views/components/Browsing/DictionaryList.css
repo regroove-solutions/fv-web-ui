@@ -1,3 +1,31 @@
+.DictionaryList__colSort {
+  background-color: transparent;
+  border: none;
+  display: flex;
+  flex-direction: row;
+  padding: 0;
+}
+.DictionaryList__actions {
+  list-style-type: none;
+  display: flex;
+  flex-direction: row-reverse;
+  margin: 0;
+  padding: 0;
+}
+.DictionaryList__actionContainer {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+}
+.DictionaryList__actionDelete {
+  margin-left: 2rem;
+}
+
+.DictionaryList__confirmationDelete {
+  margin-left: auto;
+}
+
+/* -------------------- */
 /* ELEMENT */
 .DictionaryList__data,
 .data-table td.DictionaryList__data {
@@ -16,15 +44,23 @@
   font-weight: 700;
 }
 
+.DictionaryList__viewModeGroup {
+  /* margin: 10px 0; */
+  text-align: right;
+}
+.DictionaryList__viewModeGroup .DictionaryList__viewModeButton {
+  margin: 5px;
+}
+
 /* MODIFIER */
 .DictionaryList--noData {
   margin: 20px 0;
 }
 .DictionaryList__row--a {
-  background: #fff
+  background: #fff;
 }
 .DictionaryList__row--b {
-  background: #f2f7ff
+  background: #f2f7ff;
 }
 .DictionaryList__data--title,
 .DictionaryList__data.DictionaryList__data--title,
@@ -33,8 +69,9 @@
   padding: 10px;
 }
 
-// Note: text-decoration 'underline' will obscure some indigenous fonts that have a diacritic under a letter
-.DictionaryList__data--title .DictionaryList__link {
+/* Note: text-decoration 'underline' will obscure some indigenous fonts that have a diacritic under a letter */
+.DictionaryList__data--title .DictionaryList__link,
+.DictionaryList__link.DictionaryList__link--indigenous {
   border-bottom: none;
   text-align: center;
   text-decoration: none;
@@ -48,7 +85,8 @@
   font-size: 2rem;
   line-height: 1.3;
 }
-.DictionaryList__data--title .DictionaryList__link:hover {
+.DictionaryList__data--title .DictionaryList__link:hover,
+.DictionaryList__link.DictionaryList__link--indigenous:hover {
   background-color: #fbe8e8;
   color: #820000;
   border-color: #820000;
@@ -58,17 +96,9 @@
 .DictionaryList__data--definitions {
   font-size: 1.6rem;
 }
-.DictionaryList__data--audio {
-}
-.DictionaryList__data--pictures {
-}
-.DictionaryList__data--speech {
-}
 
-.DictionaryList--contributors {
-  .DictionaryList__data--title,
-  .DictionaryList__data.DictionaryList__data--title,
-  .data-table td.DictionaryList__data--title {
-    text-align: left;
-  }
+.DictionaryList--contributors .DictionaryList__data--title,
+.DictionaryList--contributors .DictionaryList__data.DictionaryList__data--title,
+.DictionaryList--contributors .data-table td.DictionaryList__data--title {
+  text-align: left;
 }

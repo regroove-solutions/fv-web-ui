@@ -287,7 +287,4 @@ const mapDispatchToProps = {
   updatePortal,
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ExploreDialectEdit)
+export default connect(mapStateToProps, mapDispatchToProps)(ExploreDialectEdit)

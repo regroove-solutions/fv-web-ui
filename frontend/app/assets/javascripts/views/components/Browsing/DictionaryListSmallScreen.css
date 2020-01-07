@@ -1,0 +1,145 @@
+/* Block 
+============================================ */
+
+/* Element
+============================================ */
+.DictionaryListSmallScreen__actions {
+  background: linear-gradient(to bottom, #f7f7f7 0%, #efefef 13%, #e6e6e6 100%);
+  padding: 10px;
+  border-bottom: 1px solid #a8a8a8;
+  display: flex;
+  align-items: center;
+}
+.DictionaryListSmallScreen__audio {
+  display: block;
+  min-width: 225px;
+  width: 100%;
+}
+.DictionaryListSmallScreen__audioGroup {
+  width: 35%;
+}
+
+.DictionaryListSmallScreen__batch {
+  padding: 0 10px 0 0;
+}
+.DictionaryListSmallScreen__batchButtons {
+  display: flex;
+}
+.DictionaryListSmallScreen__batchSibling {
+  flex-grow: 1;
+}
+
+.DictionaryListSmallScreen__ContributorsListView {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.DictionaryListSmallScreen__ContributorsListView .DictionaryListSmallScreen__dataItem {
+  padding: 5px;
+}
+
+.DictionaryListSmallScreen__dataItem .DictionaryList__link.DictionaryList__link--indigenous {
+  padding: 5px;
+  font-size: 1.8rem;
+}
+.DictionaryListSmallScreen__dataItem .DictionaryList__linkEdit {
+  padding: 5px;
+  min-width: auto;
+  border-radius: 2px;
+}
+.DictionaryListSmallScreen__definitionsGroup {
+  width: 25%;
+}
+
+.DictionaryListSmallScreen__group .DictionaryListSmallScreen__dataItem {
+  padding: 10px 20px 10px 0;
+}
+.DictionaryListSmallScreen__group,
+.DictionaryListSmallScreen__groupPrimary,
+.DictionaryListSmallScreen__groupSecondary {
+  display: flex;
+  justify-content: flex-start;
+}
+.DictionaryListSmallScreen__groupContainer {
+  display: flex;
+}
+.DictionaryListSmallScreen__groupPrimary,
+.DictionaryListSmallScreen__groupSecondary {
+  flex-wrap: wrap;
+}
+.DictionaryListSmallScreen__groupPrimary .DictionaryListSmallScreen__dataItem {
+  display: flex;
+  align-items: center;
+}
+.DictionaryListSmallScreen__groupSecondary .DictionaryListSmallScreen__groupSecondary {
+  justify-content: space-between;
+}
+.DictionaryListSmallScreen__groupSecondary .DictionaryListSmallScreen__dataItem {
+  padding: 0 5px;
+  display: flex;
+  flex-direction: column;
+}
+
+.DictionaryListSmallScreen__imageGroup {
+  width: 15%;
+  text-align: center;
+}
+
+.DictionaryListSmallScreen__list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px dotted #a8a8a8;
+}
+.DictionaryListSmallScreen__listItem {
+  background-color: #fff;
+  border-bottom: 1px dotted #a8a8a8;
+  padding: 5px;
+  margin: 0;
+}
+
+.DictionaryListSmallScreen__miscGroup {
+  width: 25%;
+}
+
+.DictionaryListSmallScreen__sortHeading {
+  margin: 5px;
+}
+.DictionaryListSmallScreen__sortButton {
+  margin: 5px;
+}
+
+/* Modifiers
+============================================ */
+.DictionaryListSmallScreen__listItem--alt {
+  background: #f2f7ff;
+}
+
+.DictionaryListSmallScreen__actions--batch {
+  display: block;
+}
+
+/* Media Queries
+============================================ */
+@media (max-width: 750px) {
+  .DictionaryListSmallScreen__audioGroup,
+  .DictionaryListSmallScreen__definitionsGroup,
+  .DictionaryListSmallScreen__imageGroup,
+  .DictionaryListSmallScreen__miscGroup {
+    width: auto;
+  }
+
+  .DictionaryListSmallScreen__group {
+    flex-direction: column;
+  }
+  .DictionaryListSmallScreen__group .DictionaryListSmallScreen__dataItem .Phrasebooks__actions {
+    justify-content: space-between;
+  }
+  .DictionaryListSmallScreen__group--contributor {
+    flex-direction: row;
+  }
+
+  .DictionaryListSmallScreen__imageGroup {
+    text-align: left;
+  }
+}

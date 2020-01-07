@@ -23,6 +23,7 @@ import { connect } from 'react-redux'
 import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
 import { fetchPhrases } from 'providers/redux/reducers/fvPhrase'
 import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+import { setRouteParams } from 'providers/redux/reducers/navigation'
 
 import selectn from 'selectn'
 
@@ -32,23 +33,28 @@ import { WORKSPACES } from 'common/Constants'
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
 import DataListView from 'views/pages/explore/dialect/learn/base/data-list-view'
 import DocumentListView from 'views/components/Document/DocumentListView'
-import DocumentListViewDatatable from 'views/components/Document/DocumentListViewDatatable'
 import FVButton from 'views/components/FVButton'
 import IntlService from 'views/services/intl'
-import NavigationHelpers from 'common/NavigationHelpers'
+import NavigationHelpers, { getSearchObject } from 'common/NavigationHelpers'
 import Preview from 'views/components/Editor/Preview'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import ProviderHelpers from 'common/ProviderHelpers'
 import StringHelpers from 'common/StringHelpers'
 import UIHelpers from 'common/UIHelpers'
-
+import { SEARCH_DATA_TYPE_PHRASE } from 'views/components/SearchDialect/constants'
+import {
+  dictionaryListSmallScreenColumnDataTemplate,
+  dictionaryListSmallScreenColumnDataTemplateCustomInspectChildren,
+  dictionaryListSmallScreenColumnDataTemplateCustomInspectChildrenCellRender,
+  dictionaryListSmallScreenColumnDataTemplateCustomAudio,
+} from 'views/components/Browsing/DictionaryListSmallScreen'
 const intl = IntlService.instance
 /**
  * List view for phrases
  */
 
 const { array, bool, func, number, object, string } = PropTypes
-export class ListView extends DataListView {
+export class PhrasesListView extends DataListView {
   static propTypes = {
     action: func,
     data: string,
@@ -59,7 +65,7 @@ export class ListView extends DataListView {
     DEFAULT_SORT_TYPE: string,
     dialect: object,
     disableClickItem: bool,
-    DISABLED_SORT_COLS: array,
+    // DISABLED_SORT_COLS: array,
     ENABLED_COLS: array,
     filter: object,
     flashcard: bool,
@@ -68,10 +74,8 @@ export class ListView extends DataListView {
     gridListView: bool,
     parentID: string,
     onPagePropertiesChange: func,
-    onPaginationReset: func,
     pageProperties: object,
     routeParams: object.isRequired,
-    useDatatable: bool,
 
     // REDUX: reducers/state
     computeDialect2: object.isRequired,
@@ -87,7 +91,6 @@ export class ListView extends DataListView {
   }
   static defaultProps = {
     disableClickItem: true,
-    DISABLED_SORT_COLS: ['state', 'fv-phrase:phrase_books', 'related_audio', 'related_pictures', 'dc:modified'],
     DEFAULT_PAGE: 1,
     DEFAULT_PAGE_SIZE: 10,
     DEFAULT_LANGUAGE: 'english',
@@ -101,7 +104,6 @@ export class ListView extends DataListView {
     controlViaURL: false,
     flashcard: false,
     flashcardTitle: '',
-    useDatatable: false,
   }
 
   constructor(props, context) {
@@ -109,11 +111,15 @@ export class ListView extends DataListView {
 
     const currentTheme = this.props.routeParams.siteTheme
 
+    // NOTE: searchObj used below in setting state
+    const searchObj = getSearchObject()
+
     this.state = {
       columns: [
         {
           name: 'title',
           title: intl.trans('phrase', 'Phrase', 'first'),
+          columnDataTemplate: dictionaryListSmallScreenColumnDataTemplate.cellRender,
           render: (v, data) => {
             const href = NavigationHelpers.generateUIDPath(currentTheme, data, 'phrases')
             const clickHandler = props.disableClickItem ? NavigationHelpers.disable : null
@@ -138,6 +144,7 @@ export class ListView extends DataListView {
                     variant="flat"
                     size="small"
                     component="a"
+                    className="DictionaryList__linkEdit"
                     href={hrefEdit}
                     onClick={(e) => {
                       e.preventDefault()
@@ -151,7 +158,7 @@ export class ListView extends DataListView {
               ) : null
             return (
               <>
-                <a className="DictionaryList__link" onClick={clickHandler} href={href}>
+                <a className="DictionaryList__link DictionaryList__link--indigenous" onClick={clickHandler} href={href}>
                   {v}
                 </a>
                 {editButton}
@@ -159,10 +166,13 @@ export class ListView extends DataListView {
             )
           },
           sortName: 'fv:custom_order',
+          sortBy: 'fv:custom_order',
         },
         {
           name: 'fv:definitions',
           title: intl.trans('definitions', 'Definitions', 'first'),
+          columnDataTemplate: dictionaryListSmallScreenColumnDataTemplate.custom,
+          columnDataTemplateCustom: dictionaryListSmallScreenColumnDataTemplateCustomInspectChildrenCellRender,
           render: (v, data, cellProps) => {
             return UIHelpers.renderComplexArrayRow(selectn('properties.' + cellProps.name, data), (entry, i) => {
               if (entry.language === this.props.DEFAULT_LANGUAGE && i < 2) {
@@ -175,6 +185,8 @@ export class ListView extends DataListView {
         {
           name: 'related_audio',
           title: intl.trans('audio', 'Audio', 'first'),
+          columnDataTemplate: dictionaryListSmallScreenColumnDataTemplate.custom,
+          columnDataTemplateCustom: dictionaryListSmallScreenColumnDataTemplateCustomAudio,
           render: (v, data, cellProps) => {
             const firstAudio = selectn('contextParameters.phrase.' + cellProps.name + '[0]', data)
             if (firstAudio) {
@@ -195,6 +207,7 @@ export class ListView extends DataListView {
           width: 72,
           textAlign: 'center',
           title: intl.trans('picture', 'Picture', 'first'),
+          columnDataTemplate: dictionaryListSmallScreenColumnDataTemplate.cellRender,
           render: (v, data, cellProps) => {
             const firstPicture = selectn('contextParameters.phrase.' + cellProps.name + '[0]', data)
             if (firstPicture) {
@@ -211,6 +224,8 @@ export class ListView extends DataListView {
         {
           name: 'fv-phrase:phrase_books',
           title: intl.trans('phrase_books', 'Phrase Books', 'words'),
+          columnDataTemplate: dictionaryListSmallScreenColumnDataTemplate.custom,
+          columnDataTemplateCustom: dictionaryListSmallScreenColumnDataTemplateCustomInspectChildren,
           render: (v, data) => {
             return UIHelpers.renderComplexArrayRow(
               selectn('contextParameters.phrase.phrase_books', data),
@@ -237,8 +252,8 @@ export class ListView extends DataListView {
       ],
       sortInfo: {
         uiSortOrder: [],
-        currentSortCols: this.props.DEFAULT_SORT_COL,
-        currentSortType: this.props.DEFAULT_SORT_TYPE,
+        currentSortCols: searchObj.sortBy || this.props.DEFAULT_SORT_COL,
+        currentSortType: searchObj.sortOrder || this.props.DEFAULT_SORT_TYPE,
       },
       pageInfo: {
         page: this.props.DEFAULT_PAGE,
@@ -288,50 +303,113 @@ export class ListView extends DataListView {
     const computePhrases = ProviderHelpers.getEntry(this.props.computePhrases, this._getPathOrParentID(this.props))
     const computeDialect2 = this.props.dialect || this.getDialect()
 
-    const DocumentView = this.props.useDatatable ? (
-      <DocumentListViewDatatable
-        objectDescriptions="phrases"
-        type="FVPhrase"
-        data={computePhrases}
-        gridCols={this.props.gridCols}
-        gridListView={this.props.gridListView}
-        refetcher={this._handleRefetch}
-        onSortChange={this._handleSortChange}
-        onSelectionChange={this._onEntryNavigateRequest}
-        page={this.state.pageInfo.page}
-        pageSize={this.state.pageInfo.pageSize}
-        onColumnOrderChange={this._handleColumnOrderChange}
-        columns={this.state.columns}
-        sortInfo={this.state.sortInfo.uiSortOrder}
-        className="browseDataGrid"
-        dialect={selectn('response', computeDialect2)}
-        flashcard={this.props.flashcard}
-        flashcardTitle={this.props.flashcardTitle}
-      />
-    ) : (
-      <DocumentListView
-        objectDescriptions="phrases"
-        type="FVPhrase"
-        data={computePhrases}
-        gridCols={this.props.gridCols}
-        gridListView={this.props.gridListView}
-        refetcher={this._handleRefetch}
-        onSortChange={this._handleSortChange}
-        onSelectionChange={this._onEntryNavigateRequest}
-        page={this.state.pageInfo.page}
-        pageSize={this.state.pageInfo.pageSize}
-        onColumnOrderChange={this._handleColumnOrderChange}
-        columns={this.state.columns}
-        sortInfo={this.state.sortInfo.uiSortOrder}
-        className="browseDataGrid"
-        dialect={selectn('response', computeDialect2)}
-        flashcard={this.props.flashcard}
-        flashcardTitle={this.props.flashcardTitle}
-      />
-    )
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
-        {selectn('response.entries', computePhrases) && DocumentView}
+        {selectn('response.entries', computePhrases) && (
+          <DocumentListView
+            // className={'browseDataGrid'}
+            // objectDescriptions="phrases"
+            // onSelectionChange={this._onEntryNavigateRequest}
+            // onSortChange={this._handleSortChange}
+            // sortInfo={this.state.sortInfo.uiSortOrder}
+            columns={this.state.columns}
+            data={computePhrases}
+            dialect={selectn('response', computeDialect2)}
+            flashcard={this.props.flashcard}
+            flashcardTitle={this.props.flashcardTitle}
+            gridCols={this.props.gridCols}
+            gridListView={this.props.gridListView}
+            page={this.state.pageInfo.page}
+            pageSize={this.state.pageInfo.pageSize}
+            // refetcher: this._handleRefetch,
+            // NOTE: Pagination === refetcher
+            refetcher={(dataGridProps, page, pageSize) => {
+              this._handleRefetch2({
+                page,
+                pageSize,
+                preserveSearch: true,
+              })
+            }}
+            sortHandler={({ page, pageSize, sortBy, sortOrder } = {}) => {
+              /*
+              NOTE: TOWER OF INDIRECTION!
+
+              Since `WordsListView extends DataListView`...
+
+              `DataListView` detects the sort change via it's `componentDidUpdate`
+              which then calls `WordsListView's > fetchData()` which gets the new
+              data via `this._fetchListViewData`
+
+              _handleRefetch2 is called to update the url
+              eg: A sort event happens on page 3, `_handleRefetch2` resets it to page 1
+              */
+              this.props.setRouteParams({
+                search: {
+                  pageSize,
+                  page,
+                  sortBy,
+                  sortOrder,
+                },
+              })
+              this._handleRefetch2({
+                page,
+                pageSize,
+                preserveSearch: true,
+                sortBy,
+                sortOrder,
+              })
+            }}
+            type={'FVPhrase'}
+            dictionaryListSmallScreenTemplate={({ templateData }) => {
+              return (
+                <div className="DictionaryListSmallScreen__words">
+                  <div className="DictionaryListSmallScreen__groupPrimary">
+                    {templateData.related_pictures}
+                    {templateData.title}
+                  </div>
+
+                  <div className="DictionaryListSmallScreen__groupSecondary">
+                    {templateData['fv:definitions']}
+                    <div className="DictionaryListSmallScreen__groupSecondary">
+                      {templateData.related_audio}
+                      {templateData['dc:description']}
+
+                      {templateData['fv-word:part_of_speech']}
+
+                      {templateData['thumb:thumbnail']}
+
+                      {templateData['fv-word:categories']}
+                      {templateData.parent}
+                      {templateData['fv-phrase:phrase_books']}
+
+                      {templateData.username}
+
+                      {templateData.email}
+
+                      {templateData['fvlink:url']}
+
+                      {templateData['dc:modified']}
+                      {templateData['dc:created']}
+                      {templateData.state}
+                      {templateData.actions}
+                    </div>
+                  </div>
+                </div>
+              )
+            }}
+            // SEARCH:
+            handleSearch={this.props.handleSearch}
+            hasSearch={this.props.hasSearch}
+            searchDialectDataType={SEARCH_DATA_TYPE_PHRASE}
+            resetSearch={this.props.resetSearch}
+            searchByMode={this.props.searchByMode}
+            searchUi={this.props.searchUi}
+            // List view
+            hasViewModeButtons={this.props.hasViewModeButtons}
+            hasSorting={this.props.hasSorting}
+            rowClickHandler={this.props.rowClickHandler}
+          />
+        )}
       </PromiseWrapper>
     )
   }
@@ -341,12 +419,14 @@ export class ListView extends DataListView {
     if (newProps.dialect === null && !this.getDialect(newProps)) {
       newProps.fetchDialect2(newProps.routeParams.dialect_path)
     }
+    const searchObj = getSearchObject()
     this._fetchListViewData(
       newProps,
       newProps.DEFAULT_PAGE,
       newProps.DEFAULT_PAGE_SIZE,
-      newProps.DEFAULT_SORT_TYPE,
-      newProps.DEFAULT_SORT_COL
+      // 1st: redux values, 2nd: url search query, 3rd: defaults
+      this.props.navigationRouteSearch.sortOrder || searchObj.sortOrder || newProps.DEFAULT_SORT_TYPE,
+      this.props.navigationRouteSearch.sortBy || searchObj.sortBy || newProps.DEFAULT_SORT_COL
     )
   }
 
@@ -363,7 +443,6 @@ export class ListView extends DataListView {
 
     // WORKAROUND: DY @ 17-04-2019 - Mark this query as a "starts with" query. See DirectoryOperations.js for note
     const startsWithQuery = ProviderHelpers.isStartsWithQuery(currentAppliedFilter)
-
     props.fetchPhrases(
       this._getPathOrParentID(props),
       `${currentAppliedFilter}&currentPageIndex=${pageIndex -
@@ -392,7 +471,7 @@ export class ListView extends DataListView {
 const mapStateToProps = (state /*, ownProps*/) => {
   const { fvDialect, fvPhrase, navigation, nuxeo, windowPath } = state
 
-  const { properties } = navigation
+  const { properties, route } = navigation
   const { computeLogin } = nuxeo
   const { computeDialect2 } = fvDialect
   const { computePhrases } = fvPhrase
@@ -402,6 +481,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
     computeDialect2,
     computeLogin,
     computePhrases,
+    navigationRouteSearch: route.search,
     properties,
     splitWindowPath,
     windowPath: _windowPath,
@@ -413,9 +493,7 @@ const mapDispatchToProps = {
   fetchDialect2,
   fetchPhrases,
   pushWindowPath,
+  setRouteParams,
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ListView)
+export default connect(mapStateToProps, mapDispatchToProps)(PhrasesListView)

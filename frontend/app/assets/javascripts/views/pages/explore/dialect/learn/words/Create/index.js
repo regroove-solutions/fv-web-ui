@@ -144,7 +144,7 @@ export class PageDialectWordsCreate extends Component {
     await this.props.fetchDialect2(this.props.routeParams.dialect_path)
     const _computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
 
-    if (_computeDialect2.isError) {
+    if (_computeDialect2 && _computeDialect2.isError) {
       this.setState({
         componentState: STATE_DEFAULT,
         // Note: Intentional == comparison
@@ -337,7 +337,4 @@ const mapDispatchToProps = {
   replaceWindowPath,
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(PageDialectWordsCreate)
+export default connect(mapStateToProps, mapDispatchToProps)(PageDialectWordsCreate)

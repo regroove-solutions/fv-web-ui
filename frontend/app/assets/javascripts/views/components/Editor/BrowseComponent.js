@@ -42,7 +42,6 @@ import IntlService from 'views/services/intl'
 import LinksListView from 'views/pages/explore/dialect/learn/base/links-list-view'
 import PhraseListView from 'views/pages/explore/dialect/learn/phrases/list-view'
 import WordListView from 'views/pages/explore/dialect/learn/words/list-view'
-
 const intl = IntlService.instance
 const DefaultFetcherParams = {
   currentPageIndex: 1,
@@ -110,9 +109,10 @@ export class BrowseComponent extends Component {
         title = 'Select existing phrases from ' + selectn('properties.dc:title', dialect) + ' dialect:'
         view = (
           <PhraseListView
-            action={this._handleSelectElement}
-            useDatatable
             dialect={dialect}
+            hasSorting={false}
+            hasViewModeButtons={false}
+            rowClickHandler={this._handleSelectElement}
             routeParams={{
               siteTheme: 'explore',
               dialect_path: dialectPath,
@@ -127,16 +127,18 @@ export class BrowseComponent extends Component {
             ? intl.trans('categories', 'Categories', 'first')
             : intl.trans('phrase_books', 'Phrase Books', 'words')
         }`
+        // Note: CategoriesListView has a rowClickHandler that checks for a props.action fn()
         view = (
           <CategoriesListView
             action={this._handleSelectElement}
-            useDatatable
-            dialect={dialect}
             categoriesPath={
               this.props.containerType === 'FVWord'
                 ? '/FV/Workspaces/SharedData/Shared Categories/'
                 : dialectPath + '/Phrase Books/'
             }
+            dialect={dialect}
+            hasSorting={false}
+            hasViewModeButtons={false}
             routeParams={{
               siteTheme: 'explore',
               area: WORKSPACES,
@@ -153,10 +155,10 @@ export class BrowseComponent extends Component {
           'first',
           [selectn('properties.dc:title', dialect)]
         )}:`
+        // Note: ContributorsListView sets DictionaryList props (eg: hasSorting, rowClickhandler, etc)
         view = (
           <ContributorsListView
             action={this._handleSelectElement}
-            useDatatable
             dialect={dialect}
             routeParams={{
               siteTheme: 'explore',
@@ -174,11 +176,13 @@ export class BrowseComponent extends Component {
           'first',
           [selectn('properties.dc:title', dialect)]
         )}:`
+        // Note: LinksListView has a rowClickHandler that checks for a props.action fn()
         view = (
           <LinksListView
             action={this._handleSelectElement}
-            useDatatable
             dialect={dialect}
+            hasSorting={false}
+            hasViewModeButtons={false}
             routeParams={{
               siteTheme: 'explore',
               area: WORKSPACES,
@@ -197,13 +201,14 @@ export class BrowseComponent extends Component {
         )}:`
         view = (
           <WordListView
-            action={this._handleSelectElement}
-            useDatatable
             dialect={dialect}
+            hasSorting={false}
+            hasViewModeButtons={false}
             routeParams={{
               siteTheme: 'explore',
               dialect_path: dialectPath,
             }}
+            rowClickHandler={this._handleSelectElement}
           />
         )
         break
@@ -279,7 +284,4 @@ const mapDispatchToProps = {
   fetchSharedVideos,
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(BrowseComponent)
+export default connect(mapStateToProps, mapDispatchToProps)(BrowseComponent)

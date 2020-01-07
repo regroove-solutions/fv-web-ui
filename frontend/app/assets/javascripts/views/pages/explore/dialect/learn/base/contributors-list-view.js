@@ -23,25 +23,24 @@ import { connect } from 'react-redux'
 import { fetchContributors } from 'providers/redux/reducers/fvContributor'
 import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
 import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+import { setRouteParams } from 'providers/redux/reducers/navigation'
 
 import selectn from 'selectn'
-
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import DocumentListView from 'views/components/Document/DocumentListView'
-import DocumentListViewDatatable from 'views/components/Document/DocumentListViewDatatable'
 
 import DataListView from 'views/pages/explore/dialect/learn/base/data-list-view'
 import IntlService from 'views/services/intl'
-
+import { dictionaryListSmallScreenColumnDataTemplate } from 'views/components/Browsing/DictionaryListSmallScreen'
 const intl = IntlService.instance
 /**
  * List view for contributors
  */
 
 const { array, bool, func, number, object, string } = PropTypes
-class ListView extends DataListView {
+class ContributorsListView extends DataListView {
   static propTypes = {
     action: func,
     data: string,
@@ -55,7 +54,7 @@ class ListView extends DataListView {
     gridCols: number,
     gridListView: bool,
     routeParams: object.isRequired,
-    useDatatable: bool,
+    dictionaryListSmallScreenTemplate: func,
     // REDUX: reducers/state
     properties: object.isRequired,
     windowPath: string.isRequired,
@@ -79,7 +78,6 @@ class ListView extends DataListView {
     filter: new Map(),
     gridListView: false,
     gridCols: 4,
-    useDatatable: false,
   }
 
   constructor(props, context) {
@@ -90,11 +88,14 @@ class ListView extends DataListView {
         {
           name: 'title',
           title: intl.trans('contributor', 'Contributor', 'first'),
+          columnDataTemplate: dictionaryListSmallScreenColumnDataTemplate.cellRender,
+          // sortBy: 'title',
           render: (v /*, data, cellProps*/) => v,
         },
         {
           name: 'dc:description',
           title: intl.trans('short_proflile', 'Short Profile', 'words'),
+          columnDataTemplate: dictionaryListSmallScreenColumnDataTemplate.cellRender,
           render: (v, data /*, cellProps*/) => selectn('properties.dc:description', data),
         },
       ],
@@ -112,12 +113,13 @@ class ListView extends DataListView {
 
     // Bind methods to 'this'
     ;[
-      '_onNavigateRequest',
+      '_onNavigateRequest', // NOTE: Comes from DataListView
       '_onEntryNavigateRequest',
-      '_handleRefetch',
-      '_handleSortChange',
-      '_handleColumnOrderChange',
-      '_resetColumns',
+      '_handleRefetch', // NOTE: Comes from DataListView
+      '_handleRefetch2', // NOTE: Comes from DataListView
+      '_handleSortChange', // NOTE: Comes from DataListView
+      '_handleColumnOrderChange', // NOTE: Comes from DataListView
+      '_resetColumns', // NOTE: Comes from DataListView
       '_fetchListViewData',
     ].forEach((method) => (this[method] = this[method].bind(this)))
   }
@@ -173,46 +175,85 @@ class ListView extends DataListView {
     const computeContributors = ProviderHelpers.getEntry(this.props.computeContributors, this.state.contributorsPath)
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
 
-    const DocumentView = this.props.useDatatable ? (
-      <DocumentListViewDatatable
-        objectDescriptions="contributors"
-        type="FVContributor"
-        data={computeContributors}
-        gridCols={this.props.gridCols}
-        gridListView={this.props.gridListView}
-        refetcher={this._handleRefetch}
-        onSortChange={this._handleSortChange}
-        onSelectionChange={this._onEntryNavigateRequest}
-        page={this.state.pageInfo.page}
-        pageSize={this.state.pageInfo.pageSize}
-        onColumnOrderChange={this._handleColumnOrderChange}
-        columns={this.state.columns}
-        sortInfo={this.state.sortInfo.uiSortOrder}
-        className="browseDataGrid"
-        dialect={selectn('response', computeDialect2)}
-      />
-    ) : (
-      <DocumentListView
-        objectDescriptions="contributors"
-        type="FVContributor"
-        data={computeContributors}
-        gridCols={this.props.gridCols}
-        gridListView={this.props.gridListView}
-        refetcher={this._handleRefetch}
-        onSortChange={this._handleSortChange}
-        onSelectionChange={this._onEntryNavigateRequest}
-        page={this.state.pageInfo.page}
-        pageSize={this.state.pageInfo.pageSize}
-        onColumnOrderChange={this._handleColumnOrderChange}
-        columns={this.state.columns}
-        sortInfo={this.state.sortInfo.uiSortOrder}
-        className="browseDataGrid"
-        dialect={selectn('response', computeDialect2)}
-      />
-    )
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
-        {selectn('response.entries', computeContributors) && DocumentView}
+        {selectn('response.entries', computeContributors) && (
+          <DocumentListView
+            // objectDescriptions="contributors"
+            // onSortChange={this._handleSortChange}
+            // sortInfo={this.state.sortInfo.uiSortOrder}
+            className="browseDataGrid"
+            columns={this.state.columns}
+            data={computeContributors}
+            dialect={selectn('response', computeDialect2)}
+            dictionaryListSmallScreenTemplate={({ templateData }) => {
+              return (
+                <span className="DictionaryListSmallScreen__ContributorsListView">
+                  {templateData.rowClick}
+                  {templateData.title}
+                  {templateData['dc:description']}
+                  {templateData.state}
+                </span>
+              )
+            }}
+            gridCols={this.props.gridCols}
+            gridListView={this.props.gridListView}
+            hasSorting={false}
+            hasViewModeButtons={false}
+            page={this.state.pageInfo.page}
+            pageSize={this.state.pageInfo.pageSize}
+            refetcher={(dataGridProps, page, pageSize) => {
+              this._handleRefetch2({
+                page,
+                pageSize,
+                preserveSearch: true,
+              })
+            }}
+            rowClickHandler={(row) => {
+              this._onEntryNavigateRequest(row)
+            }}
+            type="FVContributor"
+            // TODO: Page rerenders on sort, cloasing the modal
+            // sortHandler={({ page, pageSize, sortBy, sortOrder } = {}) => {
+            //   /*
+            //   NOTE: TOWER OF INDIRECTION!
+
+            //   Since `ContributorsListView extends DataListView`...
+
+            //   `DataListView` detects the sort change via it's `componentDidUpdate`
+            //   which then calls `WordsListView's > fetchData()` which gets the new
+            //   data via `this._fetchListViewData`
+
+            //   _handleRefetch2 is called to update the url
+            //   eg: A sort event happens on page 3, `_handleRefetch2` resets it to page 1
+            //   */
+            //   this.props.setRouteParams({
+            //     search: {
+            //       pageSize,
+            //       page,
+            //       sortBy,
+            //       sortOrder,
+            //     },
+            //   })
+            //   this._handleRefetch2({
+            //     page,
+            //     pageSize,
+            //     preserveSearch: true,
+            //     sortBy,
+            //     sortOrder,
+            //   })
+            // }}
+            // TODO: Search
+            // handleSearch={(a, b, c, d, e, f) => {
+            //   console.log('handleSearch', { a, b, c, d, e, f })
+            // }}
+            // hasSearch
+            // resetSearch={(a, b, c, d, e, f) => {
+            //   console.log('resetSearch', { a, b, c, d, e, f })
+            // }}
+            // searchUi={this.props.searchUi}
+          />
+        )}
       </PromiseWrapper>
     )
   }
@@ -222,7 +263,7 @@ class ListView extends DataListView {
 const mapStateToProps = (state /*, ownProps*/) => {
   const { fvContributor, fvDialect, navigation, nuxeo, windowPath } = state
 
-  const { properties } = navigation
+  const { properties, route } = navigation
   const { computeLogin } = nuxeo
   const { computeContributors } = fvContributor
   const { computeDialect2 } = fvDialect
@@ -232,6 +273,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
     computeContributors,
     computeDialect2,
     computeLogin,
+    navigationRouteSearch: route.search,
     properties,
     splitWindowPath,
     windowPath: _windowPath,
@@ -243,9 +285,7 @@ const mapDispatchToProps = {
   fetchContributors,
   fetchDialect2,
   pushWindowPath,
+  setRouteParams,
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ListView)
+export default connect(mapStateToProps, mapDispatchToProps)(ContributorsListView)

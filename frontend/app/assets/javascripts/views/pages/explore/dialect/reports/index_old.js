@@ -286,11 +286,11 @@ export class PageDialectReports extends React.Component {
 
             <div className="col-xs-12">
               <DocumentListView
+                // onSelectionChange={this._onEntryNavigateRequest}
+                className="browseDataGrid"
+                columns={this.state.columns}
                 data={this.props.computeReportDocuments}
                 refetcher={this._handleRefetch}
-                onSelectionChange={this._onEntryNavigateRequest}
-                columns={this.state.columns}
-                className="browseDataGrid"
               />
             </div>
           </div>
@@ -720,7 +720,4 @@ const mapDispatchToProps = {
   pushWindowPath,
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(PageDialectReports)
+export default connect(mapStateToProps, mapDispatchToProps)(PageDialectReports)
