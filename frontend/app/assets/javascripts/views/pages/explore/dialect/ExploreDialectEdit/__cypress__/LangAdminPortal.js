@@ -44,7 +44,12 @@ describe('LangAdminPortal.js > LangAdminPortal', () => {
         })
     })
     cy.wait(500)
-    cy.getByText('Dragon').click()
+    cy.getByText('Dragon')
+      .parent()
+      .parent()
+      .within(() => {
+        cy.getByText('Select').click()
+      })
     cy.wait(500)
     cy.get('div.form-horizontal').within(() => {
       cy.getByText('Related links')
