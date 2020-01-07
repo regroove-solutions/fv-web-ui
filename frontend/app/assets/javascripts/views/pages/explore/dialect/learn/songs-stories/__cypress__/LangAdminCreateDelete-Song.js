@@ -127,6 +127,7 @@ describe('LangAdminCreateDelete-Song.js > LangAdminCreateDelete-Song', () => {
     cy.getByText('Edit book')
       .should('exist')
       .click()
+    cy.wait(500)
     cy.get('fieldset.fieldset').within(() => {
       cy.getByText('Book title', { exact: true }).should('exist')
       cy.getByText('Book title translation', { exact: true }).should('exist')
