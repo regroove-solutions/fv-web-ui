@@ -228,7 +228,7 @@ Cypress.Commands.add('FlashcardList', (obj) => {
   cy.getByTestId('DictionaryList__row')
 
   cy.log('--- FlashcardList: Enter flashcard mode  ---')
-  cy.queryByText(/flashcards/i).click()
+  cy.queryByText(/Flashcard view/i).click()
 
   if (_obj.confirmData) {
     cy.log('--- FlashcardList: Confirm flashcard  ---')
@@ -248,7 +248,7 @@ Cypress.Commands.add('FlashcardList', (obj) => {
   }
   if (_obj.clearFilter) {
     cy.log('--- FlashcardList: Leave flashcard mode  ---')
-    cy.queryByText(/stop viewing flashcards/i).click()
+    cy.queryByText(/Cancel flashcard view/i).click()
 
     cy.log('--- FlashcardList: Confirm not in flashcard mode  ---')
     cy.getByTestId('DictionaryList__row').should('exist')
