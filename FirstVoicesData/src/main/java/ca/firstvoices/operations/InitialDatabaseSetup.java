@@ -58,78 +58,74 @@ public class InitialDatabaseSetup {
             /*
                 Create the proper folder structure.
              */
-            boolean thisExists;
-            thisExists = session.exists(new PathRef("/FV/Workspaces/Site"));
-            if (!thisExists) {
+            if (!session.exists(new PathRef("/FV/Workspaces/Site"))) {
                 DocumentModel SiteWorkspace = session.createDocumentModel("/FV/Workspaces", "Site", "Workspace");
                 SiteWorkspace.setPropertyValue("dc:title", "Site");
                 SiteWorkspace = session.createDocument(SiteWorkspace);
+                session.saveDocument(SiteWorkspace);
             }
             
-            thisExists = session.exists(new PathRef("/FV/sections/Site"));
-            if (!thisExists) {
+            if (!session.exists(new PathRef("/FV/sections/Site"))) {
                 DocumentModel SiteSection = session.createDocumentModel("/FV/sections", "Site", "Section");
                 SiteSection.setPropertyValue("dc:title", "Site");
                 SiteSection = session.createDocument(SiteSection);
+                session.saveDocument(SiteSection);
             }
             
-            thisExists = session.exists(new PathRef("/FV/Workspaces/Site/Resources"));
-            if (!thisExists) {
+            if (!session.exists(new PathRef("/FV/Workspaces/Site/Resources"))) {
                 DocumentModel Resources = session.createDocumentModel("/FV/Workspaces/Site", "Resources", "FVResources");
                 Resources.setPropertyValue("dc:title", "Resources");
                 Resources = session.createDocument(Resources);
+                session.saveDocument(Resources);
             }
             
-            thisExists = session.exists(new PathRef("/FV/Workspaces/Site/Resources/Pages"));
-            if (!thisExists) {
+            if (!session.exists(new PathRef("/FV/Workspaces/Site/Resources/Pages"))) {
                 DocumentModel Pages = session.createDocumentModel("/FV/Workspaces/Site/Resources", "Pages", "Folder");
                 Pages.setPropertyValue("dc:title", "Pages");
                 Pages = session.createDocument(Pages);
+                session.saveDocument(Pages);
             }
-    
-            thisExists = session.exists(new PathRef("/FV/Workspaces/SharedData/Shared Categories"));
-            if (!thisExists) {
+            
+            if (!session.exists(new PathRef("/FV/Workspaces/SharedData/Shared Categories"))) {
                 DocumentModel SharedCategories = session.createDocumentModel("/FV/Workspaces/SharedData", "Shared Categories", "FVCategories");
                 SharedCategories.setPropertyValue("dc:title", "Shared Categories");
                 SharedCategories = session.createDocument(SharedCategories);
+                session.saveDocument(SharedCategories);
             }
-    
-            thisExists = session.exists(new PathRef("/FV/Workspaces/SharedData/Shared Links"));
-            if (!thisExists) {
+            
+            if (!session.exists(new PathRef("/FV/Workspaces/SharedData/Shared Links"))) {
                 DocumentModel SharedLinks = session.createDocumentModel("/FV/Workspaces/SharedData", "Shared Links", "FVLinks");
                 SharedLinks.setPropertyValue("dc:title", "Shared Links");
                 SharedLinks = session.createDocument(SharedLinks);
+                session.saveDocument(SharedLinks);
             }
-    
-            thisExists = session.exists(new PathRef("/FV/Workspaces/SharedData/Shared Resources"));
-            if (!thisExists) {
+            
+            if (!session.exists(new PathRef("/FV/Workspaces/SharedData/Shared Resources"))) {
                 DocumentModel SharedResources = session.createDocumentModel("/FV/Workspaces/SharedData", "Shared Resources", "FVResources");
                 SharedResources.setPropertyValue("dc:title", "Shared Resources");
                 SharedResources = session.createDocument(SharedResources);
+                session.saveDocument(SharedResources);
             }
             
 
             /*
                 Create the user groups.
              */
-            thisExists = userManager.getGroup("language_administrators") != null;
-            if (!thisExists) {
+            if (userManager.getGroup("language_administrators") == null) {
                 DocumentModel LanguageAdministrators = userManager.getBareGroupModel();
                 LanguageAdministrators.setProperty("group", "groupname", "language_administrators");
                 LanguageAdministrators.setProperty("group", "grouplabel", "Language Administators");
                 userManager.createGroup(LanguageAdministrators);
             }
-    
-            thisExists = userManager.getGroup("recorders") != null;
-            if (!thisExists) {
+            
+            if (userManager.getGroup("recorders") == null) {
                 DocumentModel Recorders = userManager.getBareGroupModel();
                 Recorders.setProperty("group", "groupname", "recorders");
                 Recorders.setProperty("group", "grouplabel", "Recorders");
                 userManager.createGroup(Recorders);
             }
-    
-            thisExists = userManager.getGroup("recorders_with_approval") != null;
-            if (!thisExists) {
+            
+            if (userManager.getGroup("recorders_with_approval") == null) {
                 DocumentModel RecordersWithApproval = userManager.getBareGroupModel();
                 RecordersWithApproval.setProperty("group", "groupname", "recorders_with_approval");
                 RecordersWithApproval.setProperty("group", "grouplabel", "Recorders With Approval");
