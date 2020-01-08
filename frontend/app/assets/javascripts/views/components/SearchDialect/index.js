@@ -444,7 +444,7 @@ export const SearchDialect = (props) => {
           element = (
             <span key={key1} className={_classes.SearchDialectFormSecondaryGroup}>
               <input
-                checked={searchBySettings[idName]}
+                checked={searchBySettings[idName] || false}
                 className={_classes.SearchDialectOption}
                 id={idName}
                 name={idName}
