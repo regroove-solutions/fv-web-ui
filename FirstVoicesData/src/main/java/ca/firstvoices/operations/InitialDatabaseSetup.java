@@ -27,10 +27,10 @@ import static org.nuxeo.ecm.platform.usermanager.UserConfig.USERNAME_COLUMN;
  *
  */
 @Operation(id=InitialDatabaseSetup.ID, category= Constants.CAT_DOCUMENT, label="FVInitialDatabaseSetup",
-        description="This operation is used to setup the inital FirstVoices backend for development.  " +
-                "It can be run multiple times without issues. Please ensure you have your environment " +
-                "variables set for CYPRESS_FV_USERNAME and CYPRESS_FV_PASSWORD as these will create an admin " +
-                "account for you.")
+    description="This operation is used to setup the inital FirstVoices backend for development.  " +
+        "It can be run multiple times without issues. Please ensure you have your environment " +
+        "variables set for CYPRESS_FV_USERNAME and CYPRESS_FV_PASSWORD as these will create an admin " +
+        "account for you.")
 public class InitialDatabaseSetup {
     
     public static final String ID = "Document.InitialDatabaseSetup";
@@ -58,79 +58,20 @@ public class InitialDatabaseSetup {
             /*
                 Create the proper folder structure.
              */
-            if (!session.exists(new PathRef("/FV/Workspaces/Site"))) {
-                DocumentModel SiteWorkspace = session.createDocumentModel("/FV/Workspaces", "Site", "Workspace");
-                SiteWorkspace.setPropertyValue("dc:title", "Site");
-                SiteWorkspace = session.createDocument(SiteWorkspace);
-                session.saveDocument(SiteWorkspace);
-            }
-            
-            if (!session.exists(new PathRef("/FV/sections/Site"))) {
-                DocumentModel SiteSection = session.createDocumentModel("/FV/sections", "Site", "Section");
-                SiteSection.setPropertyValue("dc:title", "Site");
-                SiteSection = session.createDocument(SiteSection);
-                session.saveDocument(SiteSection);
-            }
-            
-            if (!session.exists(new PathRef("/FV/Workspaces/Site/Resources"))) {
-                DocumentModel Resources = session.createDocumentModel("/FV/Workspaces/Site", "Resources", "FVResources");
-                Resources.setPropertyValue("dc:title", "Resources");
-                Resources = session.createDocument(Resources);
-                session.saveDocument(Resources);
-            }
-            
-            if (!session.exists(new PathRef("/FV/Workspaces/Site/Resources/Pages"))) {
-                DocumentModel Pages = session.createDocumentModel("/FV/Workspaces/Site/Resources", "Pages", "Folder");
-                Pages.setPropertyValue("dc:title", "Pages");
-                Pages = session.createDocument(Pages);
-                session.saveDocument(Pages);
-            }
-            
-            if (!session.exists(new PathRef("/FV/Workspaces/SharedData/Shared Categories"))) {
-                DocumentModel SharedCategories = session.createDocumentModel("/FV/Workspaces/SharedData", "Shared Categories", "FVCategories");
-                SharedCategories.setPropertyValue("dc:title", "Shared Categories");
-                SharedCategories = session.createDocument(SharedCategories);
-                session.saveDocument(SharedCategories);
-            }
-            
-            if (!session.exists(new PathRef("/FV/Workspaces/SharedData/Shared Links"))) {
-                DocumentModel SharedLinks = session.createDocumentModel("/FV/Workspaces/SharedData", "Shared Links", "FVLinks");
-                SharedLinks.setPropertyValue("dc:title", "Shared Links");
-                SharedLinks = session.createDocument(SharedLinks);
-                session.saveDocument(SharedLinks);
-            }
-            
-            if (!session.exists(new PathRef("/FV/Workspaces/SharedData/Shared Resources"))) {
-                DocumentModel SharedResources = session.createDocumentModel("/FV/Workspaces/SharedData", "Shared Resources", "FVResources");
-                SharedResources.setPropertyValue("dc:title", "Shared Resources");
-                SharedResources = session.createDocument(SharedResources);
-                session.saveDocument(SharedResources);
-            }
-            
+            createNewDocument("Site", "Workspace", "/FV/Workspaces");
+            createNewDocument("Site", "Section", "/FV/sections");
+            createNewDocument("Resources", "FVResources", "/FV/Workspaces/Site");
+            createNewDocument("Pages", "Folder", "/FV/Workspaces/Site/Resources");
+            createNewDocument("Shared Categories", "FVCategories", "/FV/Workspaces/SharedData");
+            createNewDocument("Shared Links", "FVLinks", "/FV/Workspaces/SharedData");
+            createNewDocument("Shared Resources", "FVResources", "/FV/Workspaces/SharedData");
 
             /*
                 Create the user groups.
              */
-            if (userManager.getGroup("language_administrators") == null) {
-                DocumentModel LanguageAdministrators = userManager.getBareGroupModel();
-                LanguageAdministrators.setProperty("group", "groupname", "language_administrators");
-                LanguageAdministrators.setProperty("group", "grouplabel", "Language Administators");
-                userManager.createGroup(LanguageAdministrators);
-            }
-            
-            if (userManager.getGroup("recorders") == null) {
-                DocumentModel Recorders = userManager.getBareGroupModel();
-                Recorders.setProperty("group", "groupname", "recorders");
-                Recorders.setProperty("group", "grouplabel", "Recorders");
-                userManager.createGroup(Recorders);
-            }
-            
-            if (userManager.getGroup("recorders_with_approval") == null) {
-                DocumentModel RecordersWithApproval = userManager.getBareGroupModel();
-                RecordersWithApproval.setProperty("group", "groupname", "recorders_with_approval");
-                RecordersWithApproval.setProperty("group", "grouplabel", "Recorders With Approval");
-                userManager.createGroup(RecordersWithApproval);
-            }
+            createNewGroup("language_administrators", "Language Administrators");
+            createNewGroup("recorders", "Recorders");
+            createNewGroup("recorders_with_approval", "Recorders With Approval");
             
             /*
                 Add new user groups as subgroups of group "members" and keep any existing subgroups.
@@ -232,6 +173,31 @@ public class InitialDatabaseSetup {
             session.saveDocument(sourceDocument);
             session.save();
         }
+    }
+    
+    /*
+        Helper method to create the folder structure if it doesn't exist already
+     */
+    private void createNewDocument(String name, String type, String parentPath) {
+        if (!session.exists(new PathRef(parentPath + "/" + name))) {
+            DocumentModel newDoc = session.createDocumentModel(parentPath, name, type);
+            newDoc.setPropertyValue("dc:title", name);
+            newDoc = session.createDocument(newDoc);
+            session.saveDocument(newDoc);
+        }
+    }
+    
+    /*
+        Helper method to create the user groups
+     */
+    private void createNewGroup(String groupName, String groupLabel) {
+        if (userManager.getGroup(groupName) == null) {
+            DocumentModel newGroup = userManager.getBareGroupModel();
+            newGroup.setProperty("group", "groupname", groupName);
+            newGroup.setProperty("group", "grouplabel", groupLabel);
+            userManager.createGroup(newGroup);
+        }
+        
     }
     
 }
