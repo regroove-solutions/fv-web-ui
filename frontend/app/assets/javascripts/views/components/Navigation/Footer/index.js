@@ -38,11 +38,16 @@ export default class Footer extends React.Component {
           <div className="container-fluid">
             <div className="row">
               <div className={classNames('col-xs-12', 'col-md-5', 'col-md-offset-1', 'Footer__group', 'PrintHide')}>
-                <img
-                  src="assets/images/logo-fpcc-white.png"
-                  alt="FirstVoices Logo"
-                  className={classNames('pull-left')}
-                />
+                <p>
+                  <small>An initiative of</small>
+                </p>
+                <a href="http://www.fpcc.ca/" target="_blank" rel="noopener noreferrer">
+                  <img
+                    src="assets/images/logo-fpcc-white.png"
+                    alt="First Peoples' Cultural Council Logo"
+                    className={classNames('pull-left')}
+                  />
+                </a>
               </div>
 
               <div className={classNames('col-xs-12', 'col-md-5', 'col-md-offset-1', 'Footer__group')}>
