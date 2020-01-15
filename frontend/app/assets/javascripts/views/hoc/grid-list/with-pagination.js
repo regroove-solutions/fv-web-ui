@@ -63,9 +63,9 @@ export default function withPagination(ComposedFilter, pageSize = 10, pageRange 
     }
 
     // TODO: Is `return false` intended?
-    shouldComponentUpdate() {
-      return false
-    }
+    // shouldComponentUpdate() {
+    //   return false
+    // }
 
     _changePage(newPageIndex) {
       this.props.fetcher(
