@@ -25,8 +25,48 @@ export default {
     dataItems.map(function dataItemsMap(entry, i) {
       rows.push(render(entry, i))
     })
-    const classNameModifier = rows.length === 1 ? 'renderComplexArrayRow--rowSingle' : ''
-    return <ol className={`renderComplexArrayRow ${classNameModifier}`}>{rows}</ol>
+
+    return (
+      <ol className={`renderComplexArrayRow ${rows.length === 1 ? 'renderComplexArrayRow--rowSingle' : ''}`}>{rows}</ol>
+    )
+  },
+  generateOrderedListFromDataset({
+    dataSet = [],
+    extractDatum = () => {},
+    classNameList = 'generateOrderedListFromDataset',
+    classNameListItem = 'generateOrderedListFromDataset__listItem',
+  }) {
+    const rows = []
+
+    dataSet.forEach((entry, i) => {
+      rows.push(
+        <li className={classNameListItem} key={i}>
+          {extractDatum(entry, i)}
+        </li>
+      )
+    })
+
+    return <ol className={`${classNameList} ${rows.length === 1 ? `${classNameList}--single` : ''}`}>{rows}</ol>
+  },
+  generateDelimitedDatumFromDataset({
+    dataSet = [],
+    extractDatum = () => {},
+    classNameContainer = '',
+    classNameText = '',
+    delimiter = ', ',
+  }) {
+    const rows = []
+
+    dataSet.forEach((entry, i) => {
+      rows.push(
+        <>
+          {i > 0 ? delimiter : ''}
+          <span className={classNameText}>{extractDatum(entry, i)}</span>
+        </>
+      )
+    })
+
+    return <span className={classNameContainer}>{rows}</span>
   },
   getPreferenceVal(key, preferences) {
     return selectn('preferences.values.' + key + '.' + selectn(key, preferences), ConfGlobal)

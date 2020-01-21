@@ -182,10 +182,16 @@ export class PhrasesListView extends DataListView {
           columnDataTemplate: dictionaryListSmallScreenColumnDataTemplate.custom,
           columnDataTemplateCustom: dictionaryListSmallScreenColumnDataTemplateCustomInspectChildrenCellRender,
           render: (v, data, cellProps) => {
-            return UIHelpers.renderComplexArrayRow(selectn('properties.' + cellProps.name, data), (entry, i) => {
-              if (entry.language === this.props.DEFAULT_LANGUAGE && i < 2) {
-                return <li key={i}>{entry.translation}</li>
-              }
+            return UIHelpers.generateOrderedListFromDataset({
+              dataSet: selectn(`properties.${cellProps.name}`, data),
+              extractDatum: (entry, i) => {
+                if (entry.language === this.props.DEFAULT_LANGUAGE && i < 2) {
+                  return entry.translation
+                }
+                return null
+              },
+              classNameList: 'DictionaryList__definitionList',
+              classNameListItem: 'DictionaryList__definitionListItem',
             })
           },
           sortName: 'fv:definitions/0/translation',
@@ -201,7 +207,8 @@ export class PhrasesListView extends DataListView {
               return (
                 <Preview
                   minimal
-                  tagStyles={{ width: '300px', maxWidth: '100%' }}
+                  styles={{ padding: 0 }}
+                  tagStyles={{ width: '100%', minWidth: '230px' }}
                   key={selectn('uid', firstAudio)}
                   expandedValue={firstAudio}
                   type="FVAudio"
@@ -235,10 +242,10 @@ export class PhrasesListView extends DataListView {
           columnDataTemplate: dictionaryListSmallScreenColumnDataTemplate.custom,
           columnDataTemplateCustom: dictionaryListSmallScreenColumnDataTemplateCustomInspectChildren,
           render: (v, data) => {
-            return UIHelpers.renderComplexArrayRow(
-              selectn('contextParameters.phrase.phrase_books', data),
-              (entry, i) => <li key={i}>{selectn('dc:title', entry)}</li>
-            )
+            return UIHelpers.generateDelimitedDatumFromDataset({
+              dataSet: selectn('contextParameters.phrase.phrase_books', data),
+              extractDatum: (entry) => selectn('dc:title', entry),
+            })
           },
         },
         {
@@ -267,12 +274,6 @@ export class PhrasesListView extends DataListView {
         page: this.props.DEFAULT_PAGE,
         pageSize: this.props.DEFAULT_PAGE_SIZE,
       },
-    }
-
-    // Reduce the number of columns displayed for mobile
-    if (UIHelpers.isViewSize('xs')) {
-      this.state.columns = this.state.columns.filter((v) => ['title', 'fv:definitions'].indexOf(v.name) !== -1)
-      this.state.hideStateColumn = true
     }
 
     // Only show enabled cols if specified
@@ -378,38 +379,32 @@ export class PhrasesListView extends DataListView {
             type={'FVPhrase'}
             dictionaryListSmallScreenTemplate={({ templateData }) => {
               return (
-                <div className="DictionaryListSmallScreen__words">
-                  <div className="DictionaryListSmallScreen__groupPrimary">
-                    {templateData.related_pictures}
-                    {templateData.title}
-                  </div>
-
-                  <div className="DictionaryListSmallScreen__groupSecondary">
-                    {templateData['fv:definitions']}
-                    <div className="DictionaryListSmallScreen__groupSecondary">
+                <div className="DictionaryListSmallScreen__item">
+                  <div className="DictionaryListSmallScreen__groupMain">
+                    <div className="DictionaryListSmallScreen__groupData DictionaryListSmallScreen__groupData--noHorizPad">
+                      {templateData.title}
+                      <span className="DictionaryListSmallScreen__partOfSpeech">
+                        {templateData['fv-word:part_of_speech']}
+                      </span>
+                    </div>
+                    <div className="DictionaryListSmallScreen__groupData DictionaryListSmallScreen__groupData--noHorizPad">
                       {templateData.related_audio}
-                      {templateData['dc:description']}
+                    </div>
 
-                      {templateData['fv-word:part_of_speech']}
+                    <div className="DictionaryListSmallScreen__groupData">
+                      <h2 className="DictionaryListSmallScreen__definitionsHeading">Definitions</h2>
+                      {templateData['fv:definitions']}
+                    </div>
 
-                      {templateData['thumb:thumbnail']}
-
-                      {templateData['fv-word:categories']}
-                      {templateData.parent}
-                      {templateData['fv-phrase:phrase_books']}
-
-                      {templateData.username}
-
-                      {templateData.email}
-
-                      {templateData['fvlink:url']}
-
-                      {templateData['dc:modified']}
-                      {templateData['dc:created']}
-                      {templateData.state}
-                      {templateData.actions}
+                    <div className="DictionaryListSmallScreen__groupMainMiscellaneous">
+                      <div className="DictionaryListSmallScreen__groupData">
+                        {templateData['fv-phrase:phrase_books']}
+                      </div>
+                      <div className="DictionaryListSmallScreen__groupData">{templateData.state}</div>
                     </div>
                   </div>
+
+                  <div className="DictionaryListSmallScreen__groupData">{templateData.related_pictures}</div>
                 </div>
               )
             }}

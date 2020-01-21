@@ -158,7 +158,7 @@ export class DialectFilterList extends Component {
     return (
       <div className="DialectFilterList" data-testid="DialectFilterList">
         <h2>{this.title}</h2>
-        <ul className="DialectFilterListList">{this.state.listItems}</ul>
+        <ul className="DialectFilterListList DialectFilterListList--root">{this.state.listItems}</ul>
       </div>
     )
   }
@@ -452,7 +452,4 @@ const mapDispatchToProps = {
   pushWindowPath,
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(DialectFilterList)
+export default connect(mapStateToProps, mapDispatchToProps)(DialectFilterList)

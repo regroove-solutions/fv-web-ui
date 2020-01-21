@@ -262,9 +262,6 @@ const DictionaryList = (props) => {
 
   const [viewMode, setViewMode] = useState(0)
 
-  // ============= MQ
-  const [mediaQuery, setMediaQuery] = useState({})
-
   // ============= SORT
   if (props.hasSorting) {
     // If window.location.search has sortOrder & sortBy,
@@ -407,7 +404,6 @@ const DictionaryList = (props) => {
         clickHandlerViewMode: setViewMode,
         dictionaryListViewMode: props.dictionaryListViewMode,
         hasViewModeButtons: props.hasViewModeButtons,
-        mediaQueryIsSmall: mediaQuery.small,
         viewMode,
       })}
 
@@ -419,11 +415,6 @@ const DictionaryList = (props) => {
         }}
       >
         {(matches) => {
-          // =========================================
-          // save MQ data
-          // =========================================
-          setMediaQuery(matches)
-
           // =========================================
           //  All screens: no results
           // =========================================
@@ -508,41 +499,12 @@ function generateListButtons({
   clickHandlerViewMode = () => {},
   dictionaryListViewMode,
   hasViewModeButtons,
-  mediaQueryIsSmall,
   viewMode,
 }) {
-  let buttonCompact = null
   let buttonFlashcard = null
   let exportDialect = null
 
   if (hasViewModeButtons && dictionaryListViewMode === undefined) {
-    // NOTE: hiding view mode button when on small screens
-    if (mediaQueryIsSmall === false) {
-      buttonCompact =
-        viewMode === VIEWMODE_SMALL_SCREEN ? (
-          <FVButton
-            variant="contained"
-            className="DictionaryList__viewModeButton"
-            color="primary"
-            onClick={() => {
-              clickHandlerViewMode(VIEWMODE_DEFAULT)
-            }}
-          >
-            Cancel compact view
-          </FVButton>
-        ) : (
-          <FVButton
-            variant="contained"
-            className="DictionaryList__viewModeButton"
-            onClick={() => {
-              clickHandlerViewMode(VIEWMODE_SMALL_SCREEN)
-            }}
-          >
-            Compact view
-          </FVButton>
-        )
-    }
-
     buttonFlashcard =
       viewMode === VIEWMODE_FLASHCARD ? (
         <FVButton
@@ -584,7 +546,6 @@ function generateListButtons({
 
   return (
     <div className="DictionaryList__ListButtonsGroup">
-      {buttonCompact}
       {buttonFlashcard}
       {exportDialect}
     </div>
