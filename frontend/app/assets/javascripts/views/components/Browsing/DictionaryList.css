@@ -1,3 +1,6 @@
+/* -------------------- */
+/* ELEMENT */
+/* -------------------- */
 .DictionaryList__colSort {
   background-color: transparent;
   border: none;
@@ -24,9 +27,6 @@
 .DictionaryList__confirmationDelete {
   margin-left: auto;
 }
-
-/* -------------------- */
-/* ELEMENT */
 .DictionaryList__data,
 .data-table td.DictionaryList__data {
   font-size: 1.6rem;
@@ -52,7 +52,12 @@
   margin: 5px;
 }
 
+.DictionaryList__definitionList {
+  padding-left: 25px;
+}
+/* -------------------- */
 /* MODIFIER */
+/* -------------------- */
 .DictionaryList--noData {
   margin: 20px 0;
 }

@@ -435,30 +435,26 @@ export class Search extends DataListView {
                             {
                               name: 'type',
                               title: 'Type',
-                              columnDataTemplate: dictionaryListSmallScreenColumnDataTemplate.cellRenderTypography,
-                              typographyVariant: 'subheading',
+                              columnDataTemplate: dictionaryListSmallScreenColumnDataTemplate.cellRender,
                               render: (v, data) => {
+                                const family = selectn(['contextParameters', 'ancestry', 'family', 'dc:title'], data)
+                                const language = selectn(
+                                  ['contextParameters', 'ancestry', 'language', 'dc:title'],
+                                  data
+                                )
                                 let itemType
                                 switch (data.type) {
                                   case 'FVPhrase':
-                                    itemType = 'Phrase'
+                                    itemType = `${language} » Phrase`
                                     break
                                   case 'FVWord':
-                                    itemType = 'Word'
+                                    itemType = `${language} » Word`
                                     break
                                   case 'FVBook':
-                                    itemType = data.properties['fvbook:type']
+                                    itemType = `${language} » ${data.properties['fvbook:type']}`
                                     break
                                   case 'FVPortal': {
-                                    const family = selectn(
-                                      ['contextParameters', 'ancestry', 'family', 'dc:title'],
-                                      data
-                                    )
-                                    const language = selectn(
-                                      ['contextParameters', 'ancestry', 'language', 'dc:title'],
-                                      data
-                                    )
-                                    itemType = `Dialect: ${family} » ${language}`
+                                    itemType = `${family} » ${language}`
                                     break
                                   }
                                   default:
@@ -583,14 +579,17 @@ export class Search extends DataListView {
                               columnDataTemplate: dictionaryListSmallScreenColumnDataTemplate.custom,
                               columnDataTemplateCustom: dictionaryListSmallScreenColumnDataTemplateCustomInspectChildrenCellRender,
                               render: (v, data, cellProps) => {
-                                return UIHelpers.renderComplexArrayRow(
-                                  selectn('properties.' + cellProps.name, data),
-                                  (entry, i) => {
+                                return UIHelpers.generateOrderedListFromDataset({
+                                  dataSet: selectn(`properties.${cellProps.name}`, data),
+                                  extractDatum: (entry, i) => {
                                     if (entry.language === this.props.DEFAULT_LANGUAGE && i < 2) {
-                                      return <div key={i}>{entry.translation}</div>
+                                      return entry.translation
                                     }
-                                  }
-                                )
+                                    return null
+                                  },
+                                  classNameList: 'DictionaryList__definitionList',
+                                  classNameListItem: 'DictionaryList__definitionListItem',
+                                })
                               },
                               sortName: 'fv:definitions/0/translation',
                             },
@@ -612,8 +611,8 @@ export class Search extends DataListView {
                                   return (
                                     <Preview
                                       minimal
-                                      tagStyles={{ width: '300px', maxWidth: '100%' }}
-                                      styles={{ padding: '0' }}
+                                      styles={{ padding: 0 }}
+                                      tagStyles={{ width: '100%', minWidth: '230px' }}
                                       key={selectn('uid', firstAudio)}
                                       expandedValue={firstAudio}
                                       type="FVAudio"
@@ -625,14 +624,27 @@ export class Search extends DataListView {
                           ],
                           dictionaryListSmallScreenTemplate: ({ templateData }) => {
                             return (
-                              <>
-                                {templateData.type}
-                                {templateData.title}
-                                <div className="DictionaryListSmallScreen__group">
-                                  {templateData['fv:definitions']}
-                                  {templateData.related_audio}
+                              <div className="DictionaryListSmallScreen__item">
+                                <div className="DictionaryListSmallScreen__groupMain">
+                                  <div className="DictionaryListSmallScreen__groupMainMiscellaneous">
+                                    <div className="DictionaryListSmallScreen__searchType">{templateData.type}</div>
+                                  </div>
+                                  <div className="DictionaryListSmallScreen__groupData DictionaryListSmallScreen__groupData--noHorizPad">
+                                    {templateData.title}
+                                  </div>
+                                  {templateData.related_audio && (
+                                    <div className="DictionaryListSmallScreen__groupData DictionaryListSmallScreen__groupData--noHorizPad">
+                                      {templateData.related_audio}
+                                    </div>
+                                  )}
+                                  {templateData['fv:definitions'] && (
+                                    <div className="DictionaryListSmallScreen__groupData">
+                                      <h2 className="DictionaryListSmallScreen__definitionsHeading">Definitions</h2>
+                                      {templateData['fv:definitions']}
+                                    </div>
+                                  )}
                                 </div>
-                              </>
+                              </div>
                             )
                           },
                         },
