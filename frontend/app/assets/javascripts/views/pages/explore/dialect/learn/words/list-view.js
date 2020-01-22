@@ -139,6 +139,9 @@ class WordsListView extends DataListView {
 
             const href = NavigationHelpers.generateUIDPath(this.props.routeParams.siteTheme, data, 'words')
             const hrefEdit = NavigationHelpers.generateUIDEditPath(this.props.routeParams.siteTheme, data, 'words')
+            const hrefEditRedirect = `${hrefEdit}?redirect=${encodeURIComponent(
+              `${window.location.pathname}${window.location.search}`
+            )}`
             // NOTE: FW-135: Using `onClick={()=>{}}` for unknown reasons causes the following error when on Words and clicking between categories:
             //`Uncaught Invariant Violation: findComponentRoot(..., .0.0.2.0.1.0.0:1.1.2.0.0.0.0.0.0.1:$0.$0.0): Unable to find element`
             // That's why `undefined` is used in `clickHandler`
@@ -162,11 +165,11 @@ class WordsListView extends DataListView {
                     variant="flat"
                     size="small"
                     component="a"
-                    className="DictionaryList__linkEdit"
-                    href={hrefEdit}
+                    className="DictionaryList__linkEdit PrintHide"
+                    href={hrefEditRedirect}
                     onClick={(e) => {
                       e.preventDefault()
-                      NavigationHelpers.navigate(hrefEdit, this.props.pushWindowPath, false)
+                      NavigationHelpers.navigate(hrefEditRedirect, this.props.pushWindowPath, false)
                     }}
                   >
                     <Edit title={intl.trans('edit', 'Edit', 'first')} />
@@ -193,10 +196,16 @@ class WordsListView extends DataListView {
           columnDataTemplate: dictionaryListSmallScreenColumnDataTemplate.custom,
           columnDataTemplateCustom: dictionaryListSmallScreenColumnDataTemplateCustomInspectChildrenCellRender,
           render: (v, data, cellProps) => {
-            return UIHelpers.renderComplexArrayRow(selectn(`properties.${cellProps.name}`, data), (entry, i) => {
-              if (entry.language === this.props.DEFAULT_LANGUAGE && i < 2) {
-                return <li key={i}>{entry.translation}</li>
-              }
+            return UIHelpers.generateOrderedListFromDataset({
+              dataSet: selectn(`properties.${cellProps.name}`, data),
+              extractDatum: (entry, i) => {
+                if (entry.language === this.props.DEFAULT_LANGUAGE && i < 2) {
+                  return entry.translation
+                }
+                return null
+              },
+              classNameList: 'DictionaryList__definitionList',
+              classNameListItem: 'DictionaryList__definitionListItem',
             })
           },
           sortName: 'fv:definitions/0/translation',
@@ -214,7 +223,8 @@ class WordsListView extends DataListView {
                   key={selectn('uid', firstAudio)}
                   minimal
                   tagProps={{ preload: 'none' }}
-                  tagStyles={{ width: '250px', maxWidth: '100%' }}
+                  styles={{ padding: 0 }}
+                  tagStyles={{ width: '100%', minWidth: '230px' }}
                   expandedValue={firstAudio}
                   type="FVAudio"
                 />
@@ -233,8 +243,8 @@ class WordsListView extends DataListView {
             if (firstPicture) {
               return (
                 <img
+                  className="PrintHide itemThumbnail"
                   key={selectn('uid', firstPicture)}
-                  style={{ maxWidth: '62px', maxHeight: '45px' }}
                   src={UIHelpers.getThumbnail(firstPicture, 'Thumbnail')}
                   alt=""
                 />
@@ -245,6 +255,7 @@ class WordsListView extends DataListView {
         {
           name: 'fv-word:part_of_speech',
           title: intl.trans('part_of_speech', 'Part of Speech', 'first'),
+          columnDataTemplate: dictionaryListSmallScreenColumnDataTemplate.cellRender,
           render: (v, data) => selectn('contextParameters.word.part_of_speech', data),
           sortBy: 'fv-word:part_of_speech',
         },
@@ -267,10 +278,12 @@ class WordsListView extends DataListView {
         {
           name: 'fv-word:categories',
           title: intl.trans('categories', 'Categories', 'first'),
-          render: (v, data) =>
-            UIHelpers.renderComplexArrayRow(selectn('contextParameters.word.categories', data), (entry, i) => (
-              <li key={i}>{selectn('dc:title', entry)}</li>
-            )),
+          render: (v, data) => {
+            return UIHelpers.generateDelimitedDatumFromDataset({
+              dataSet: selectn('contextParameters.word.categories', data),
+              extractDatum: (entry) => selectn('dc:title', entry),
+            })
+          },
         },
       ],
       sortInfo: {
@@ -282,12 +295,6 @@ class WordsListView extends DataListView {
         page: this.props.DEFAULT_PAGE,
         pageSize: this.props.DEFAULT_PAGE_SIZE,
       },
-    }
-
-    // Reduce the number of columns displayed for mobile
-    if (UIHelpers.isViewSize('xs')) {
-      this.state.columns = this.state.columns.filter((v) => ['title', 'fv:literal_translation'].indexOf(v.name) !== -1)
-      this.state.hideStateColumn = true
     }
 
     // Only show enabled cols if specified
@@ -455,38 +462,32 @@ class WordsListView extends DataListView {
             type={'FVWord'}
             dictionaryListSmallScreenTemplate={({ templateData }) => {
               return (
-                <div className="DictionaryListSmallScreen__words">
-                  <div className="DictionaryListSmallScreen__groupPrimary">
-                    {templateData.related_pictures}
-                    {templateData.title}
-                  </div>
-
-                  <div className="DictionaryListSmallScreen__groupSecondary">
-                    {templateData['fv:definitions']}
-                    <div className="DictionaryListSmallScreen__groupSecondary">
+                <div className="DictionaryListSmallScreen__item">
+                  <div className="DictionaryListSmallScreen__groupMain">
+                    {templateData.actions}
+                    {templateData.rowClick}
+                    <div className="DictionaryListSmallScreen__groupData DictionaryListSmallScreen__groupData--noHorizPad">
+                      {templateData.title}
+                      <span className="DictionaryListSmallScreen__partOfSpeech">
+                        {templateData['fv-word:part_of_speech']}
+                      </span>
+                    </div>
+                    <div className="DictionaryListSmallScreen__groupData DictionaryListSmallScreen__groupData--noHorizPad">
                       {templateData.related_audio}
-                      {templateData['dc:description']}
+                    </div>
 
-                      {templateData['fv-word:part_of_speech']}
+                    <div className="DictionaryListSmallScreen__groupData">
+                      <h2 className="DictionaryListSmallScreen__definitionsHeading">Definitions</h2>
+                      {templateData['fv:definitions']}
+                    </div>
 
-                      {templateData['thumb:thumbnail']}
-
-                      {templateData['fv-word:categories']}
-                      {templateData.parent}
-                      {templateData['fv-phrase:phrase_books']}
-
-                      {templateData.username}
-
-                      {templateData.email}
-
-                      {templateData['fvlink:url']}
-
-                      {templateData['dc:modified']}
-                      {templateData['dc:created']}
-                      {templateData.state}
-                      {templateData.actions}
+                    <div className="DictionaryListSmallScreen__groupMainMiscellaneous">
+                      <div className="DictionaryListSmallScreen__groupData">{templateData['fv-word:categories']}</div>
+                      <div className="DictionaryListSmallScreen__groupData">{templateData.state}</div>
                     </div>
                   </div>
+
+                  <div className="DictionaryListSmallScreen__groupData">{templateData.related_pictures}</div>
                 </div>
               )
             }}

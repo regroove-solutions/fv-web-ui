@@ -262,9 +262,6 @@ const DictionaryList = (props) => {
 
   const [viewMode, setViewMode] = useState(0)
 
-  // ============= MQ
-  const [mediaQuery, setMediaQuery] = useState({})
-
   // ============= SORT
   if (props.hasSorting) {
     // If window.location.search has sortOrder & sortBy,
@@ -407,7 +404,6 @@ const DictionaryList = (props) => {
         clickHandlerViewMode: setViewMode,
         dictionaryListViewMode: props.dictionaryListViewMode,
         hasViewModeButtons: props.hasViewModeButtons,
-        mediaQueryIsSmall: mediaQuery.small,
         viewMode,
       })}
 
@@ -415,14 +411,10 @@ const DictionaryList = (props) => {
         queries={{
           small: '(max-width: 850px)',
           medium: '(min-width: 851px)',
+          print: 'print',
         }}
       >
         {(matches) => {
-          // =========================================
-          // save MQ data
-          // =========================================
-          setMediaQuery(matches)
-
           // =========================================
           //  All screens: no results
           // =========================================
@@ -461,12 +453,25 @@ const DictionaryList = (props) => {
           // =========================================
           // Responsive states
           // =========================================
+          // Print: list view (uses large screen)
+          // -----------------------------------------
+          // NOTE: Chrome prints small screen on both small AND large views (not preferred)
+          // NOTE: `matches.print` forces Chrome to print the large view for both small & large views (slightly better)
+          // NOTE: But, with `matches.print` in place the only way to print the small view on Chrome is to click "Compact view"
+          // NOTE: ie: small view doesn't print if it's dynamically displayed via a small screen
+
+          // NOTE: Firefox behaves a bit better in that it dynamically chooses the view depending on the screen size
+          // NOTE: Firefox ignores `matches.print`
+          if (matches.print) {
+            return getListLargeScreen(getListLargeScreenArg)
+          }
 
           // Small screen: list view
           // -----------------------------------------
           if (matches.small) {
             return getListSmallScreen(getListSmallScreenArg)
           }
+
           // Large screen: list view
           // -----------------------------------------
           if (matches.medium) {
@@ -494,41 +499,12 @@ function generateListButtons({
   clickHandlerViewMode = () => {},
   dictionaryListViewMode,
   hasViewModeButtons,
-  mediaQueryIsSmall,
   viewMode,
 }) {
-  let buttonCompact = null
   let buttonFlashcard = null
   let exportDialect = null
 
   if (hasViewModeButtons && dictionaryListViewMode === undefined) {
-    // NOTE: hiding view mode button when on small screens
-    if (mediaQueryIsSmall === false) {
-      buttonCompact =
-        viewMode === VIEWMODE_SMALL_SCREEN ? (
-          <FVButton
-            variant="contained"
-            className="DictionaryList__viewModeButton"
-            color="primary"
-            onClick={() => {
-              clickHandlerViewMode(VIEWMODE_DEFAULT)
-            }}
-          >
-            Cancel compact view
-          </FVButton>
-        ) : (
-          <FVButton
-            variant="contained"
-            className="DictionaryList__viewModeButton"
-            onClick={() => {
-              clickHandlerViewMode(VIEWMODE_SMALL_SCREEN)
-            }}
-          >
-            Compact view
-          </FVButton>
-        )
-    }
-
     buttonFlashcard =
       viewMode === VIEWMODE_FLASHCARD ? (
         <FVButton
@@ -570,7 +546,6 @@ function generateListButtons({
 
   return (
     <div className="DictionaryList__ListButtonsGroup">
-      {buttonCompact}
       {buttonFlashcard}
       {exportDialect}
     </div>
