@@ -336,7 +336,9 @@ class PageDialectLearnWords extends PageDialectLearnBase {
     newFilter = newFilter.set('currentCategoryFilterIds', new Set())
 
     // Add new search query
-    newFilter = newFilter.updateIn(['currentAppliedFilter', searchType], () => ` AND ${searchNxqlQuery}`)
+    newFilter = newFilter.updateIn(['currentAppliedFilter', searchType], () => {
+      return searchNxqlQuery && searchNxqlQuery !== '' ? ` AND ${searchNxqlQuery}` : ''
+    })
 
     // When facets change, pagination should be reset.
     // In these pages (words/phrase), list views are controlled via URL
