@@ -4,7 +4,11 @@ This environment is setup for localhost work. It includes an embedded database (
 
 ## Prerequisites
 
-1. You must have Docker installed and running, as well as git installed. Docker can be downloaded from [this link](https://docs.docker.com/install/) and git can be downloaded from [this link](https://git-scm.com/downloads).
+1. You must have Docker installed and running, as well as git installed. Docker can be downloaded from [this link](https://docs.docker.com/install/) and git can be downloaded from [this link](https://git-scm.com/downloads). You will also need the following dependencies:
+- Java 8
+- [Apache Maven](https://maven.apache.org/)
+- Node v8.10.0
+- NPM v5.6.0.
 2. Basic knowledge of Docker, Nuxeo and bash.
 3. Ensure you have the two environment variables set for CYPRESS_FV_USERNAME and CYPRESS_FV_PASSWORD which will be passed into the container and used to create an admin account during the initial setup. After setting environment variables they can be checked by running the following in your terminal window:
 ```
