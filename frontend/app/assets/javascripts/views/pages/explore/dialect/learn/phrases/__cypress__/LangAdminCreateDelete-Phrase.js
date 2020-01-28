@@ -95,7 +95,7 @@ describe('LangAdminCreateDelete-Phrase.js > LangAdminCreateDelete-Phrase', () =>
                 Finishing the phrase creation form and save
             */
     cy.getByText('+ Add cultural note', { exact: true }).click()
-    cy.get('[name="fv:cultural_note[0]"]', { exact: true }).type('TestCulturalNote')
+    cy.getByTestId('fv-cultural_note0', { exact: true }).type('TestCulturalNote')
     cy.get('[name="fv:reference"]', { exact: true }).type('TestReference')
     cy.get('[name="fv-phrase:acknowledgement"]', { exact: true }).type('TestAcknowledgement')
     cy.getByText('Save', { exact: true }).click()
@@ -151,7 +151,11 @@ describe('LangAdminCreateDelete-Phrase.js > LangAdminCreateDelete-Phrase', () =>
                 Delete the phrase and check that it no longer exists.
             */
     cy.getByText('Delete phrase').click()
-    cy.getByTestId('ViewWithActions__buttonDelete').click()
+    cy.wait(300)
+    cy.getByTestId('ViewWithActions__dialog').within(() => {
+      cy.getByTestId('ViewWithActions__buttonDelete').click()
+    })
+    cy.wait(500)
     cy.getByText('Delete phrase success').should('exist')
 
     // https://www.cypress.io/blog/2019/01/22/when-can-the-test-click/

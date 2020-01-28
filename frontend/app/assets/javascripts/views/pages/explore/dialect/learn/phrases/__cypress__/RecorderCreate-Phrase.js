@@ -81,7 +81,7 @@ describe('RecorderCreate-Phrase.js > RecorderCreate-Phrase', () => {
             Finishing the phrase creation form and save
         */
     cy.getByText('+ Add cultural note', { exact: true }).click()
-    cy.get('[name="fv:cultural_note[0]"]', { exact: true }).type('TestCulturalNote')
+    cy.getByTestId('fv-cultural_note0', { exact: true }).type('TestCulturalNote')
     cy.get('[name="fv:reference"]', { exact: true }).type('TestReference')
     cy.get('[name="fv-phrase:acknowledgement"]', { exact: true }).type('TestAcknowledgement')
     cy.getByText('Save', { exact: true }).click()

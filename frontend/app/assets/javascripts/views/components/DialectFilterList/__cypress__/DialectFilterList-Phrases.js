@@ -31,6 +31,7 @@ describe('DialectFilterList-Phrases.js > DialectFilterList', () => {
     cy.getByText('Create new phrase', {
       exact: false,
     }).click()
+    cy.wait(500)
 
     cy.getByText('Add New Phrase to', {
       exact: false,

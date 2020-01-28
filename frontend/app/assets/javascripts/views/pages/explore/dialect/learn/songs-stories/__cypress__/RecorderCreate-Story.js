@@ -128,7 +128,9 @@ describe('RecorderCreate-Story.js > RecorderCreate-Story', () => {
                  */
     cy.get('div.CardViewCard').should('have.css', 'font-family', 'Arial, sans-serif')
     cy.getByTestId('Navigation__open').click()
-    cy.getByText('Sign Out').click()
+    cy.getByTestId('LeftNav').within(() => {
+      cy.getByText('Sign Out').click()
+    })
 
     /*
                 Login as language member and check that the story is not visible.
@@ -140,7 +142,9 @@ describe('RecorderCreate-Story.js > RecorderCreate-Story', () => {
     cy.wait(500)
     cy.queryByText('TestStoryTitle').should('not.exist')
     cy.getByTestId('Navigation__open').click()
-    cy.getByText('Sign Out').click()
+    cy.getByTestId('LeftNav').within(() => {
+      cy.getByText('Sign Out').click()
+    })
 
     /*
                 Login as admin, check that the story is editable, and enable the story.
@@ -180,7 +184,9 @@ describe('RecorderCreate-Story.js > RecorderCreate-Story', () => {
       })
     })
     cy.getByTestId('Navigation__open').click()
-    cy.getByText('Sign Out').click()
+    cy.getByTestId('LeftNav').within(() => {
+      cy.getByText('Sign Out').click()
+    })
 
     /*
                 Login as language member and check that the story is now visible.
@@ -196,7 +202,9 @@ describe('RecorderCreate-Story.js > RecorderCreate-Story', () => {
       cy.getByText('Continue to story').should('exist')
     })
     cy.getByTestId('Navigation__open').click()
-    cy.getByText('Sign Out').click()
+    cy.getByTestId('LeftNav').within(() => {
+      cy.getByText('Sign Out').click()
+    })
 
     /*
                 Login as admin and publish the story.

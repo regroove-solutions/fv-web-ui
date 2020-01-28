@@ -149,6 +149,7 @@ Cypress.Commands.add('AlphabetListView', (obj) => {
   cy.getByTestId('AlphabetListView').within(() => {
     cy.getByText(_obj.letter).click()
   })
+  cy.wait(500)
 
   if (_obj.confirmData) {
     cy.log('--- AlphabetListView: Confirm data  ---')
@@ -161,6 +162,7 @@ Cypress.Commands.add('AlphabetListView', (obj) => {
     // Navigate to next page
     cy.wait(500)
     cy.getByTestId('pagination__next').click()
+    cy.wait(500)
 
     if (_obj.confirmData) {
       cy.log('--- AlphabetListView: Confirm data  ---')
@@ -204,6 +206,7 @@ Cypress.Commands.add('DialectFilterList', (obj) => {
   cy.getByTestId('DialectFilterList').within(() => {
     cy.getByText(_obj.category).click()
   })
+  cy.wait(500)
 
   if (_obj.confirmData) {
     cy.log('--- DialectFilterList: Confirm data  ---')
@@ -216,6 +219,7 @@ Cypress.Commands.add('DialectFilterList', (obj) => {
     // Navigate to next page
     cy.wait(500)
     cy.getByTestId('pagination__next').click()
+    cy.wait(500)
 
     if (_obj.confirmData) {
       cy.log('--- DialectFilterList: Confirm data  ---')
@@ -256,6 +260,7 @@ Cypress.Commands.add('FlashcardList', (obj) => {
 
   cy.log('--- FlashcardList: Enter flashcard mode  ---')
   cy.queryByText(/Flashcard view/i).click()
+  cy.wait(500)
 
   if (_obj.confirmData) {
     cy.log('--- FlashcardList: Confirm flashcard  ---')

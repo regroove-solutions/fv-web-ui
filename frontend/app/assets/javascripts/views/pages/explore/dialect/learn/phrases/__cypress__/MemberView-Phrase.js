@@ -26,9 +26,8 @@ describe('MemberView-Phrase.js > MemberView-Phrase', () => {
     cy.getByTestId('DictionaryList__row').within(() => {
       cy.getByText('TestTranslation').should('exist')
       cy.getByText('Enabled').should('exist')
-      cy.getByText('TestPhrase')
-        .should('exist')
-        .click()
+      cy.getByText('TestPhrase').should('exist')
+      cy.getByText('TestPhrase').click()
     })
 
     /*

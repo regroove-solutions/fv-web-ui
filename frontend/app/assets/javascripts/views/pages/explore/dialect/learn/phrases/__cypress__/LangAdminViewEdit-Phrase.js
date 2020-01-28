@@ -24,7 +24,9 @@ describe('LangAdminViewEdit-Phrase.js > LangAdminViewEdit-Phrase', () => {
     cy.getByText('No results found.').should('exist')
     cy.queryByText('TestPhrase').should('not.exist')
     cy.getByTestId('Navigation__open').click()
-    cy.getByText('Sign Out').click()
+    cy.getByTestId('LeftNav').within(() => {
+      cy.getByText('Sign Out').click()
+    })
 
     /*
                 Login as Language Admin, navigate to phrases and check that a phrase exists.
@@ -59,7 +61,9 @@ describe('LangAdminViewEdit-Phrase.js > LangAdminViewEdit-Phrase', () => {
         .click()
     })
     cy.getByTestId('Navigation__open').click()
-    cy.getByText('Sign Out').click()
+    cy.getByTestId('LeftNav').within(() => {
+      cy.getByText('Sign Out').click()
+    })
 
     /*
             Login as member and check that the phrase is now visible and enabled.
@@ -80,7 +84,9 @@ describe('LangAdminViewEdit-Phrase.js > LangAdminViewEdit-Phrase', () => {
       cy.getByText('Enabled').should('exist')
     })
     cy.getByTestId('Navigation__open').click()
-    cy.getByText('Sign Out').click()
+    cy.getByTestId('LeftNav').within(() => {
+      cy.getByText('Sign Out').click()
+    })
 
     /*
             Login as Language Admin and publish the phrase.

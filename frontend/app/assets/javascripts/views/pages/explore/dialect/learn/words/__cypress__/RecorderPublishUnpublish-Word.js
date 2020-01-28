@@ -32,7 +32,9 @@ describe('RecorderPublishUnpublish-Word.js > RecorderPublishUnpublish-Word', () 
     cy.wait(500)
     cy.getByText('Publish (1)').should('have.css', 'cursor', 'pointer')
     cy.getByTestId('Navigation__open').click()
-    cy.getByText('Sign Out').click()
+    cy.getByTestId('LeftNav').within(() => {
+      cy.getByText('Sign Out').click()
+    })
 
     /*
       Login as Admin and verify/reject task.
@@ -45,7 +47,9 @@ describe('RecorderPublishUnpublish-Word.js > RecorderPublishUnpublish-Word', () 
     cy.getByText('View My Tasks', { exact: false }).click()
     cy.getByText('Reject', { exact: true }).click()
     cy.getByTestId('Navigation__open').click()
-    cy.getByText('Sign Out').click()
+    cy.getByTestId('LeftNav').within(() => {
+      cy.getByText('Sign Out').click()
+    })
 
     // TODO: verify site user can't see word.
 
@@ -67,7 +71,9 @@ describe('RecorderPublishUnpublish-Word.js > RecorderPublishUnpublish-Word', () 
     cy.wait(500)
     cy.getByText('Publish (1)').should('exist')
     cy.getByTestId('Navigation__open').click()
-    cy.getByText('Sign Out').click()
+    cy.getByTestId('LeftNav').within(() => {
+      cy.getByText('Sign Out').click()
+    })
 
     /*
       Login as Admin and verify/approve task.
@@ -95,7 +101,9 @@ describe('RecorderPublishUnpublish-Word.js > RecorderPublishUnpublish-Word', () 
       cy.getByText('Published').should('exist')
     })
     cy.getByTestId('Navigation__open').click()
-    cy.getByText('Sign Out').click()
+    cy.getByTestId('LeftNav').within(() => {
+      cy.getByText('Sign Out').click()
+    })
 
     /*
       Login as recorder and click unpublish.
@@ -110,7 +118,9 @@ describe('RecorderPublishUnpublish-Word.js > RecorderPublishUnpublish-Word', () 
     cy.getByText('Unpublish (0)', { exact: true }).click()
     cy.getByText('Unpublish (1)').should('exist')
     cy.getByTestId('Navigation__open').click()
-    cy.getByText('Sign Out').click()
+    cy.getByTestId('LeftNav').within(() => {
+      cy.getByText('Sign Out').click()
+    })
 
     /*
       Login as Admin and verify/reject task.
@@ -132,7 +142,9 @@ describe('RecorderPublishUnpublish-Word.js > RecorderPublishUnpublish-Word', () 
       cy.getByText('Published').should('exist')
     })
     cy.getByTestId('Navigation__open').click()
-    cy.getByText('Sign Out').click()
+    cy.getByTestId('LeftNav').within(() => {
+      cy.getByText('Sign Out').click()
+    })
 
     /*
       Login as recorder and click unpublish again.
@@ -146,7 +158,9 @@ describe('RecorderPublishUnpublish-Word.js > RecorderPublishUnpublish-Word', () 
     cy.getByText('Unpublish (0)', { exact: true }).click()
     cy.getByText('Unpublish (1)').should('exist')
     cy.getByTestId('Navigation__open').click()
-    cy.getByText('Sign Out').click()
+    cy.getByTestId('LeftNav').within(() => {
+      cy.getByText('Sign Out').click()
+    })
 
     /*
       Login as Admin and verify/approve task.

@@ -128,7 +128,9 @@ describe('RecorderCreate-Song.js > RecorderCreate-Song', () => {
              */
     cy.get('div.CardViewCard').should('have.css', 'font-family', 'Arial, sans-serif')
     cy.getByTestId('Navigation__open').click()
-    cy.getByText('Sign Out').click()
+    cy.getByTestId('LeftNav').within(() => {
+      cy.getByText('Sign Out').click()
+    })
 
     /*
             Login as language member and check that the song is not visible.
@@ -140,7 +142,9 @@ describe('RecorderCreate-Song.js > RecorderCreate-Song', () => {
     cy.wait(500)
     cy.queryByText('TestSongTitle').should('not.exist')
     cy.getByTestId('Navigation__open').click()
-    cy.getByText('Sign Out').click()
+    cy.getByTestId('LeftNav').within(() => {
+      cy.getByText('Sign Out').click()
+    })
 
     /*
             Login as admin, check that the song is editable, and enable the song.
@@ -180,7 +184,9 @@ describe('RecorderCreate-Song.js > RecorderCreate-Song', () => {
       })
     })
     cy.getByTestId('Navigation__open').click()
-    cy.getByText('Sign Out').click()
+    cy.getByTestId('LeftNav').within(() => {
+      cy.getByText('Sign Out').click()
+    })
 
     /*
             Login as language member and check that the song is now visible.
@@ -196,7 +202,9 @@ describe('RecorderCreate-Song.js > RecorderCreate-Song', () => {
       cy.getByText('Continue to song').should('exist')
     })
     cy.getByTestId('Navigation__open').click()
-    cy.getByText('Sign Out').click()
+    cy.getByTestId('LeftNav').within(() => {
+      cy.getByText('Sign Out').click()
+    })
 
     /*
             Login as admin and publish the song.

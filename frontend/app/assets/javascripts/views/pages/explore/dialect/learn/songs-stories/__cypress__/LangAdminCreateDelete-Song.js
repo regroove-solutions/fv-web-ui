@@ -161,7 +161,9 @@ describe('LangAdminCreateDelete-Song.js > LangAdminCreateDelete-Song', () => {
                     Delete the song and check that it no longer exists.
                 */
     cy.getByText('Delete book').click()
-    cy.getByTestId('ViewWithActions__buttonDelete').click()
+    cy.getByTestId('ViewWithActions__dialog').within(() => {
+      cy.getByTestId('ViewWithActions__buttonDelete').click()
+    })
     cy.wait(500)
     cy.getByText('Delete book success').should('exist')
 

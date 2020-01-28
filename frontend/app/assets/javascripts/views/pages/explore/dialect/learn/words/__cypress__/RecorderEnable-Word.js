@@ -35,7 +35,9 @@ describe('RecorderEnable-Word.js > RecorderEnable-Word', () => {
     cy.getByText('Publish (0)').should('have.css', 'color', 'rgb(161, 161, 161)')
     cy.getByText('Publish (0)').should('have.css', 'cursor', 'default')
     cy.getByTestId('Navigation__open').click()
-    cy.getByText('Sign Out').click()
+    cy.getByTestId('LeftNav').within(() => {
+      cy.getByText('Sign Out').click()
+    })
 
     /*
       Login as Admin and verify task exists / reject task.
@@ -49,7 +51,9 @@ describe('RecorderEnable-Word.js > RecorderEnable-Word', () => {
     cy.getByText('Reject', { exact: true }).click()
 
     cy.getByTestId('Navigation__open').click()
-    cy.getByText('Sign Out').click()
+    cy.getByTestId('LeftNav').within(() => {
+      cy.getByText('Sign Out').click()
+    })
 
     /*
       Login as Recorder and click enable again.
@@ -68,7 +72,9 @@ describe('RecorderEnable-Word.js > RecorderEnable-Word', () => {
     cy.getByText('Publish (0)').should('have.css', 'color', 'rgb(161, 161, 161)')
     cy.getByText('Publish (0)').should('have.css', 'cursor', 'default')
     cy.getByTestId('Navigation__open').click()
-    cy.getByText('Sign Out').click()
+    cy.getByTestId('LeftNav').within(() => {
+      cy.getByText('Sign Out').click()
+    })
 
     /*
       Login as Admin and verify task exists / approve task.
@@ -82,7 +88,9 @@ describe('RecorderEnable-Word.js > RecorderEnable-Word', () => {
     cy.getByText('Approve', { exact: true }).click()
 
     cy.getByTestId('Navigation__open').click()
-    cy.getByText('Sign Out').click()
+    cy.getByTestId('LeftNav').within(() => {
+      cy.getByText('Sign Out').click()
+    })
 
     /*
       Login as Site Member and check that the word is visible once enabled.
@@ -99,7 +107,9 @@ describe('RecorderEnable-Word.js > RecorderEnable-Word', () => {
       cy.getByText('Enabled').should('exist')
     })
     cy.getByTestId('Navigation__open').click()
-    cy.getByText('Sign Out').click()
+    cy.getByTestId('LeftNav').within(() => {
+      cy.getByText('Sign Out').click()
+    })
 
     /*
       Login as Recorder and verify that publish is now clickable.

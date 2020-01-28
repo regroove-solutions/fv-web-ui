@@ -176,7 +176,9 @@ describe('RecApprovalCreateDelete-Word.js > RecApprovalCreateDelete-Word', () =>
                 Delete the word and check that it no longer exists.
             */
     cy.getByText('Delete word').click()
-    cy.getByTestId('ViewWithActions__buttonDelete').click()
+    cy.getByTestId('ViewWithActions__dialog').within(() => {
+      cy.getByTestId('ViewWithActions__buttonDelete').click()
+    })
     cy.getByText('Delete word success').should('exist')
     // https://www.cypress.io/blog/2019/01/22/when-can-the-test-click/
     cy.getByText('Return To Previous Page')
