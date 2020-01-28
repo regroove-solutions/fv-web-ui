@@ -28,7 +28,7 @@ describe('PageDialectLearnAlphabet', () => {
     })
 
     cy.getByText('add audio', { exact: false }).click()
-    cy.wait(500)
+    cy.wait(1000)
 
     cy.getByText('add audio', { exact: false })
       .parents('fieldset')

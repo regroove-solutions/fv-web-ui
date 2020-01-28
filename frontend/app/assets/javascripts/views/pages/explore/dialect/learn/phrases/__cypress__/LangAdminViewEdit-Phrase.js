@@ -55,6 +55,7 @@ describe('LangAdminViewEdit-Phrase.js > LangAdminViewEdit-Phrase', () => {
     cy.wait(800)
     cy.getByText('TestPhrase', { exact: false }).click()
     cy.queryByText('Edit phrase', { exact: true }).should('exist')
+    cy.wait(500)
     cy.get('div.hidden-xs').within(() => {
       cy.get('input[type=checkbox]')
         .eq(0)

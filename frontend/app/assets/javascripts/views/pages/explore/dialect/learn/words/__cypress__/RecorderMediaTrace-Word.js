@@ -27,6 +27,7 @@ describe('RecorderMediaTrace-Word.js > RecorderMediaTrace-Word', () => {
             proper word show up under linked words.
          */
     cy.get('[title="More Options"]', { exact: true }).click()
+    cy.wait(500)
     cy.getByText('Media Browser', { exact: true }).click()
     cy.getByText('TestWordAudio').click()
     cy.getByText('Linked Words').click()

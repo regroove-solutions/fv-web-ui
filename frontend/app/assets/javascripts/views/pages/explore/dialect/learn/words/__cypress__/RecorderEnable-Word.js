@@ -63,7 +63,7 @@ describe('RecorderEnable-Word.js > RecorderEnable-Word', () => {
     })
 
     cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageFive/learn/words')
-    cy.wait(500)
+    cy.wait(1000)
     cy.getByText('TestWord', { exact: false }).click()
     cy.wait(500)
     cy.getByText('Enable (0)', { exact: true }).click()
@@ -119,7 +119,7 @@ describe('RecorderEnable-Word.js > RecorderEnable-Word', () => {
     })
 
     cy.visit('/explore/FV/Workspaces/Data/Test/Test/TestLanguageFive/learn/words')
-    cy.wait(500)
+    cy.wait(1000)
     cy.getByText('TestWord', { exact: false }).click()
     cy.wait(500)
     cy.getByText('Enable (0)').should('have.css', 'color', 'rgb(161, 161, 161)')

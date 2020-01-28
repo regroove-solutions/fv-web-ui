@@ -118,6 +118,7 @@ describe('RecApprovalCreateDelete-Phrase.js > RecApprovalCreateDelete-Phrase', (
     cy.wait(500)
     cy.getByText('TestPhrase').click()
     cy.getByTestId('pageContainer').within(() => {
+      cy.wait(500)
       cy.get('div.hidden-xs').within(() => {
         cy.get('input[type=checkbox]')
           .eq(0)

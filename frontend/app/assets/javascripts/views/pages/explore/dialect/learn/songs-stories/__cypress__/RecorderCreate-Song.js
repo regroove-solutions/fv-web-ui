@@ -128,6 +128,7 @@ describe('RecorderCreate-Song.js > RecorderCreate-Song', () => {
              */
     cy.get('div.CardViewCard').should('have.css', 'font-family', 'Arial, sans-serif')
     cy.getByTestId('Navigation__open').click()
+    cy.wait(500)
     cy.getByTestId('LeftNav').within(() => {
       cy.getByText('Sign Out').click()
     })
@@ -142,6 +143,7 @@ describe('RecorderCreate-Song.js > RecorderCreate-Song', () => {
     cy.wait(500)
     cy.queryByText('TestSongTitle').should('not.exist')
     cy.getByTestId('Navigation__open').click()
+    cy.wait(500)
     cy.getByTestId('LeftNav').within(() => {
       cy.getByText('Sign Out').click()
     })
@@ -184,6 +186,7 @@ describe('RecorderCreate-Song.js > RecorderCreate-Song', () => {
       })
     })
     cy.getByTestId('Navigation__open').click()
+    cy.wait(500)
     cy.getByTestId('LeftNav').within(() => {
       cy.getByText('Sign Out').click()
     })
@@ -202,6 +205,7 @@ describe('RecorderCreate-Song.js > RecorderCreate-Song', () => {
       cy.getByText('Continue to song').should('exist')
     })
     cy.getByTestId('Navigation__open').click()
+    cy.wait(500)
     cy.getByTestId('LeftNav').within(() => {
       cy.getByText('Sign Out').click()
     })
