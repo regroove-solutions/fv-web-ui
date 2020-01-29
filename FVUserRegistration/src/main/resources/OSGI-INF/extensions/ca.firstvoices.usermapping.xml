@@ -19,6 +19,7 @@
 	        userAttributes.put("contributors", userObject.contributors);
 			userAttributes.put("preferences", userObject.preferences);
 			userAttributes.put("ageGroup", userObject.ageGroup);
+			userAttributes.put("test", userObject.test);
 	    </mapperScript>
 	  </mapper>
 	

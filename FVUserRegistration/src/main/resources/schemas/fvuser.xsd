@@ -21,6 +21,7 @@
   <!-- Additional properties -->
   <xs:element name="yearBornRange" type="xs:string" />
   <xs:element name="role" type="xs:string" />
+  <xs:element name="test" type="xs:string" />
 
   <!-- Request properties -->
   <!-- These are captured during registration but could be supplemented in future logins -->

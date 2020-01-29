@@ -58,6 +58,7 @@
 				<usernameField>userinfo:login</usernameField>
 				<emailField>userinfo:email</emailField>
 				<firstnameField>userinfo:firstName</firstnameField>
+				<testField>userInfo:test</testField>
 				<lastnameField>userinfo:lastName</lastnameField>
 				<groupsField>userinfo:groups</groupsField>
 				<companyField>userinfo:company</companyField>
