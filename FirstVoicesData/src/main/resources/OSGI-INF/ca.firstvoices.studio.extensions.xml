@@ -49,6 +49,7 @@
         <schema name="inpersonalpronounce" prefix="inpersonalpronounce" override="true" src="data/schemas/inpersonalpronounce.xsd"/>
         <schema name="inphrase" prefix="inphrase" override="true" src="data/schemas/inphrase.xsd"/>
         <schema name="fvlabel" prefix="fvlabel" override="true" src="data/schemas/fvlabel.xsd"/>
+        <schema name="fvlabeldictionary" prefix="fvlabeldictionary" override="true" src="data/schemas/fvlabeldictionary.xsd"/>
         <schema name="inplacelocation" prefix="inplacelocation" override="true" src="data/schemas/inplacelocation.xsd"/>
         <schema name="inroot" prefix="inroot" override="true" src="data/schemas/inroot.xsd"/>
         <schema name="inverbending" prefix="inverbending" override="true" src="data/schemas/inverbending.xsd"/>
@@ -326,6 +327,7 @@
             </subtypes>
         </doctype>
         <doctype name="FVLabelDictionary" extends="FVDictionary">
+            <schema name="fvlabeldictionary"/>
             <subtypes>
                 <type>FVLabel</type>
             </subtypes>
@@ -22252,7 +22254,7 @@
                     <properties mode="any">
                         <property name="nxl_colspan_0">1</property>
                     </properties>
-                    <widget>description</widget>
+                    <widget>isPrivate</widget>
                 </row>
                 <row>
                     <properties mode="any">
@@ -22276,13 +22278,13 @@
                     <property name="styleClass">dataInputText</property>
                 </properties>
             </widget>
-            <widget name="description" type="text">
+            <widget name="isPrivate" type="checkbox">
                 <labels>
-                    <label mode="any">Description</label>
+                    <label mode="any">Is Private?</label>
                 </labels>
                 <translated>false</translated>
                 <fields>
-                    <field>dc:description</field>
+                    <field>fvdictionary:private</field>
                 </fields>
             </widget>
             <widget name="type" type="text">
@@ -23819,6 +23821,7 @@ function run(input, params) {
                 <templateItem typeName="FVResources" id="Resources" title="Resources" description=""/>
                 <templateItem typeName="FVContributors" id="Contributors" title="Contributors" description=""/>
                 <templateItem typeName="INDictionary" id="Dictionary" title="Dictionary" description=""/>
+                <templateItem typeName="FVLabelDictionary" id="Label Dictionary" title="Label Dictionary" description=""/>
                 <templateItem typeName="Forum" id="Forum" title="Forum" description=""/>
                 <templateItem typeName="FVPortal" id="Portal" title="Portal" description=""/>
                 <templateItem typeName="FVCategories" id="Categories" title="Categories" description=""/>
