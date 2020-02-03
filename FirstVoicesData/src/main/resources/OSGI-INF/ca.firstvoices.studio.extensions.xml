@@ -48,6 +48,8 @@
         <schema name="innounending" prefix="innounending" override="true" src="data/schemas/innounending.xsd"/>
         <schema name="inpersonalpronounce" prefix="inpersonalpronounce" override="true" src="data/schemas/inpersonalpronounce.xsd"/>
         <schema name="inphrase" prefix="inphrase" override="true" src="data/schemas/inphrase.xsd"/>
+        <schema name="fvlabel" prefix="fvlabel" override="true" src="data/schemas/fvlabel.xsd"/>
+        <schema name="fvlabeldictionary" prefix="fvlabeldictionary" override="true" src="data/schemas/fvlabeldictionary.xsd"/>
         <schema name="inplacelocation" prefix="inplacelocation" override="true" src="data/schemas/inplacelocation.xsd"/>
         <schema name="inroot" prefix="inroot" override="true" src="data/schemas/inroot.xsd"/>
         <schema name="inverbending" prefix="inverbending" override="true" src="data/schemas/inverbending.xsd"/>
@@ -301,6 +303,8 @@
                 <type>FVAlphabet</type>
                 <type>FVContributors</type>
                 <type>FVDictionary</type>
+                <type>FVLabelDictionary</type>
+                <type>FVLabel</type>
                 <type>FVDraftFolder</type>
                 <type>FVPortal</type>
                 <type>FVResources</type>
@@ -320,6 +324,12 @@
             <subtypes>
                 <type>FVPhrase</type>
                 <type>FVWord</type>
+            </subtypes>
+        </doctype>
+        <doctype name="FVLabelDictionary" extends="FVDictionary">
+            <schema name="fvlabeldictionary"/>
+            <subtypes>
+                <type>FVLabel</type>
             </subtypes>
         </doctype>
         <doctype name="FVDialect" append="true">
@@ -345,6 +355,7 @@
                 <type>FVPicture</type>
                 <type>FVVideo</type>
                 <type>FVWord</type>
+                <type>FVLabel</type>
             </subtypes>
         </doctype>
         <doctype name="FVDialect" append="true">
@@ -765,6 +776,19 @@
         </doctype>
         <doctype name="first_as" extends="DefaultSearch">
             <schema name="first_as"/>
+        </doctype>
+        <doctype name="FVLabel" extends="Document">
+            <schema name="fvlabel"/>
+            <schema name="dublincore"/>
+            <schema name="common"/>
+            <schema name="uid"/>
+            <schema name="fvancestry"/>
+            <schema name="fvcore"/>
+            <schema name="fvlegacy"/>
+            <facet name="NXTag"/>
+            <facet name="Publishable"/>
+            <facet name="Commentable"/>
+            <facet name="HasRelatedText"/>
         </doctype>
         <facet name="facet-var_Task2979">
             <schema name="var_Task2979"/>
@@ -1830,6 +1854,46 @@
 
             </layouts>
 
+        </type>
+        
+        <type id="FVLabel">
+            <label>Label</label>
+            <category>SimpleDocument</category>
+            <icon>/img/file.png</icon>
+            <bigIcon>/img/file_100.png</bigIcon>
+            <description>A UI label translation</description>
+            <default-view>view_documents</default-view>
+            <layouts mode="create">
+                <layout>layout@FVLabel-create</layout>
+            </layouts>
+            <layouts mode="edit">
+                <layout>layout@FVPhrase-edit</layout>
+            </layouts>
+            <layouts mode="view">
+                <layout>layout@FVLabel-view</layout>
+            </layouts>
+        </type>
+        
+        <type id="FVLabelDictionary">
+            <label>FVLabelDictionary</label>
+            <category>LanguageAssets</category>
+            <description>TODO: fill in</description>
+            <default-view>view_documents</default-view>
+            <layouts mode="create">
+                <layout>layout@FVLabelDictionary-create</layout>
+            </layouts>
+            <layouts mode="edit">
+                <layout>layout@FVDictionary-edit</layout>
+            </layouts>
+            <layouts mode="view">
+                <layout>layout@FVDictionary-view</layout>
+            </layouts>
+            <contentViews category="content">
+                <contentView showInExportView="false">FVWordListing</contentView>
+            </contentViews>
+            <contentViews category="trash_content">
+                <contentView showInExportView="false">document_trash_content</contentView>
+            </contentViews>
         </type>
     </extension>  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="actions">    <action id="TAB_CONTENT_JBPM">      <filter id="folder.deny.tab_content_jbpm">        <rule grant="false">          <type>Folder</type>
 </rule>
@@ -22029,6 +22093,213 @@
                 </fields>
             </widget>
         </layout>
+        <layout name="layout@FVLabel-create">
+            <templates>
+                <template mode="any">/layouts/First-Voices_layout_template.xhtml</template>
+            </templates>
+            <rows>
+                <row>
+                    <properties mode="any">
+                        <property name="nxl_colspan_0">1</property>
+                    </properties>
+                    <widget>title</widget>
+                </row>
+                <row>
+                    <properties mode="any">
+                        <property name="nxl_colspan_0">1</property>
+                    </properties>
+                    <widget>labelKey</widget>
+                </row>
+            </rows>
+            <widget name="title" type="text">
+                <labels>
+                    <label mode="any">Phrase</label>
+                </labels>
+                <translated>false</translated>
+                <fields>
+                    <field>dc:title</field>
+                </fields>
+                <properties widgetMode="edit">
+                    <property name="styleClass">dataInputText</property>
+                    <property name="required">true</property>
+                </properties>
+            </widget>
+            <widget name="labelKey" type="text">
+                <labels>
+                    <label mode="any">Label Key</label>
+                </labels>
+                <translated>false</translated>
+                <fields>
+                    <field>fvlabel:labelKey</field>
+                </fields>
+                <properties widgetMode="edit">
+                    <property name="styleClass">dataInputText</property>
+                    <property name="required">true</property>
+                </properties>
+            </widget>
+        </layout>
+        
+        <layout name="layout@FVPhrase-edit">
+            <templates>
+                <template mode="any">/layouts/First-Voices_layout_template.xhtml</template>
+            </templates>
+            <rows>
+                <row>
+                    <properties mode="any">
+                        <property name="nxl_colspan_0">1</property>
+                    </properties>
+                    <widget>title</widget>
+                </row>
+                <row>
+                    <properties mode="any">
+                        <property name="nxl_colspan_0">1</property>
+                    </properties>
+                    <widget>labelKey</widget>
+                </row>
+            </rows>
+            <widget name="title" type="text">
+                <labels>
+                    <label mode="any">Phrase</label>
+                </labels>
+                <translated>false</translated>
+                <fields>
+                    <field>dc:title</field>
+                </fields>
+                <properties widgetMode="edit">
+                    <property name="styleClass">dataInputText</property>
+                    <property name="required">true</property>
+                </properties>
+                <properties widgetMode="view">
+                    <property name="styleClass">dataInputText</property>
+                </properties>
+            </widget>
+            <widget name="labelKey" type="text">
+                <labels>
+                    <label mode="any">Label Key</label>
+                </labels>
+                <translated>false</translated>
+                <fields>
+                    <field>fvlabel:labelKey</field>
+                </fields>
+                <properties widgetMode="edit">
+                    <property name="styleClass">dataInputText</property>
+                    <property name="required">true</property>
+                </properties>
+                <properties widgetMode="view">
+                    <property name="styleClass">dataInputText</property>
+                </properties>
+            </widget>
+        </layout>
+        <layout name="layout@FVLabel-view">
+            <templates>
+                <template mode="any">/layouts/First-Voices_layout_template.xhtml</template>
+            </templates>
+            <rows>
+                <row>
+                    <properties mode="any">
+                        <property name="nxl_colspan_0">1</property>
+                    </properties>
+                    <widget>title</widget>
+                </row>
+                <row>
+                    <properties mode="any">
+                        <property name="nxl_colspan_0">1</property>
+                    </properties>
+                    <widget>labelKey</widget>
+                </row>
+            </rows>
+            <widget name="title" type="text">
+                <labels>
+                    <label mode="any">Phrase</label>
+                </labels>
+                <translated>false</translated>
+                <fields>
+                    <field>dc:title</field>
+                </fields>
+                <properties widgetMode="edit">
+                    <property name="styleClass">dataInputText</property>
+                    <property name="required">true</property>
+                </properties>
+                <properties widgetMode="view">
+                    <property name="styleClass">dataInputText</property>
+                </properties>
+            </widget>
+            <widget name="labelKey" type="text">
+                <labels>
+                    <label mode="any">Label Key</label>
+                </labels>
+                <translated>false</translated>
+                <fields>
+                    <field>fvlabel:labelKey</field>
+                </fields>
+                <properties widgetMode="edit">
+                    <property name="styleClass">dataInputText</property>
+                    <property name="required">true</property>
+                </properties>
+            </widget>
+        </layout>
+        
+        <layout name="layout@FVLabelDictionary-create">
+            <templates>
+                <template mode="any">/layouts/First-Voices_layout_template.xhtml</template>
+            </templates>
+            <rows>
+                <row>
+                    <properties mode="any">
+                        <property name="nxl_colspan_0">1</property>
+                    </properties>
+                    <widget>title</widget>
+                </row>
+                <row>
+                    <properties mode="any">
+                        <property name="nxl_colspan_0">1</property>
+                    </properties>
+                    <widget>isPrivate</widget>
+                </row>
+                <row>
+                    <properties mode="any">
+                        <property name="nxl_colspan_0">1</property>
+                    </properties>
+                    <widget>type</widget>
+                </row>
+            </rows>
+            <widget name="title" type="text">
+                <labels>
+                    <label mode="any">Title</label>
+                </labels>
+                <translated>false</translated>
+                <fields>
+                    <field>dc:title</field>
+                </fields>
+                <properties widgetMode="edit">
+                    <property name="styleClass">dataInputText</property>
+                </properties>
+                <properties widgetMode="view">
+                    <property name="styleClass">dataInputText</property>
+                </properties>
+            </widget>
+            <widget name="isPrivate" type="checkbox">
+                <labels>
+                    <label mode="any">Is Private?</label>
+                </labels>
+                <translated>false</translated>
+                <fields>
+                    <field>fvdictionary:private</field>
+                </fields>
+            </widget>
+            <widget name="type" type="text">
+                <labels>
+                    <label mode="any">Document Type</label>
+                </labels>
+                <translated>false</translated>
+                <fields>
+                    <field>type</field>
+                </fields>
+                <widgetModes>
+                    <mode value="create">view</mode>
+                </widgetModes>
+            </widget>
+        </layout>
     </extension>
     <extension target="org.nuxeo.theme.styling.service" point="flavors">
         <flavor name="logo" extends="default">
@@ -23550,6 +23821,7 @@ function run(input, params) {
                 <templateItem typeName="FVResources" id="Resources" title="Resources" description=""/>
                 <templateItem typeName="FVContributors" id="Contributors" title="Contributors" description=""/>
                 <templateItem typeName="INDictionary" id="Dictionary" title="Dictionary" description=""/>
+                <templateItem typeName="FVLabelDictionary" id="Label Dictionary" title="Label Dictionary" description=""/>
                 <templateItem typeName="Forum" id="Forum" title="Forum" description=""/>
                 <templateItem typeName="FVPortal" id="Portal" title="Portal" description=""/>
                 <templateItem typeName="FVCategories" id="Categories" title="Categories" description=""/>
@@ -24063,7 +24335,8 @@ function run(input, params) {
             <type>FVCategory</type>
             <type>FVContributors</type>
             <type>FVDialect</type>
-            <type>FVDictionary</type>
+            <type>FVDictionary</type> 
+            <type>FVLabelDictionary</type> 
             <type>FVGallery</type>
             <type>FVLanguage</type>
             <type>FVLanguageFamily</type>
