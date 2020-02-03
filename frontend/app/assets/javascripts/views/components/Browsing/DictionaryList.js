@@ -405,6 +405,7 @@ const DictionaryList = (props) => {
         dictionaryListViewMode: props.dictionaryListViewMode,
         hasViewModeButtons: props.hasViewModeButtons,
         viewMode,
+        hasFlashcard: props.hasFlashcard,
       })}
 
       <Media
@@ -500,11 +501,12 @@ function generateListButtons({
   dictionaryListViewMode,
   hasViewModeButtons,
   viewMode,
+  hasFlashcard,
 }) {
   let buttonFlashcard = null
   let exportDialect = null
 
-  if (hasViewModeButtons && dictionaryListViewMode === undefined) {
+  if (hasViewModeButtons && dictionaryListViewMode === undefined && hasFlashcard) {
     buttonFlashcard =
       viewMode === VIEWMODE_FLASHCARD ? (
         <FVButton
@@ -761,6 +763,7 @@ DictionaryList.propTypes = {
   filteredItems: oneOfType([array, instanceOf(List)]),
   hasSorting: bool,
   hasViewModeButtons: bool,
+  hasFlashcard: bool,
   items: oneOfType([array, instanceOf(List)]), // Data
   rowClickHandler: func,
   sortHandler: func,
