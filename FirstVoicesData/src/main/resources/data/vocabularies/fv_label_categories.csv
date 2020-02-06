@@ -8,7 +8,7 @@
 "tour_error","Error","tour","0"
 "views","Views","","0"
 "views_components","Components","views","0"
-"views_components_dashboard","Dashboard","views","0"
+"views_components_dashboard","Dashboard","views_components","0"
 "views_components_dialog_create_form","Dialog Create Form","views_components","0"
 "views_components_document","Document","views_components","0"
 "views_components_editor","Editor","views_components","0"
