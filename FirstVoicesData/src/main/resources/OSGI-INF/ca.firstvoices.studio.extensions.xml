@@ -22352,6 +22352,9 @@
                     <widget>parent</widget>
                 </row>
                 <row>
+                    <widget>template_strings</widget>
+                </row>
+                <row>
                     <widget>xvocabulary_id</widget>
                 </row>
                 <row>
@@ -22373,12 +22376,27 @@
                     <field>xvocabulary:parent</field>
                 </fields>
                 <properties mode="any">
-                    <property name="directoryName">parts_of_speech</property>
+                    <property name="directoryName">fv_labels</property>
                     <property name="localize">true</property>
                 </properties>
                 <properties widgetMode="edit">
                     <property name="required">false</property>
                     <property name="displayObsoleteEntries">true</property>
+                </properties>
+            </widget>
+            <widget name="template_strings" type="text">
+                <labels>
+                    <label mode="any">Template Variables (Separate by commas)</label>
+                </labels>
+                <translated>true</translated>
+                <fields>
+                    <field>fv_labels:template_strings</field>
+                </fields>
+                <properties widgetMode="edit">
+                    <property name="styleClass">dataInputText</property>
+                </properties>
+                <properties widgetMode="view">
+                    <property name="styleClass">dataInputText</property>
                 </properties>
             </widget>
         </layout>
@@ -24300,7 +24318,12 @@ function run(input, params) {
         <directory name="in_possession" layout="vocabulary" sortField="label"/>
         <directory name="in_transitivity" layout="vocabulary" sortField="label"/>
         <directory name="in_word_classes" layout="vocabulary" sortField="label"/>
-        <directory name="fv_labels" layout="vocabulary-fv_labels" sortField="label"/>
+        <directory name="fv_labels" layout="vocabulary-fv_labels" sortField="label">
+            <deleteConstraint class="org.nuxeo.ecm.directory.HierarchicalDirectoryDeleteConstraint">
+                <property name="targetDirectory">fv_labels</property>
+                <property name="targetDirectoryField">parent</property>
+            </deleteConstraint>
+        </directory>
         <directory name="parts_of_speech" layout="vocabulary-parts_of_speech" sortField="label">
             <deleteConstraint class="org.nuxeo.ecm.directory.HierarchicalDirectoryDeleteConstraint">
                 <property name="targetDirectory">parts_of_speech</property>

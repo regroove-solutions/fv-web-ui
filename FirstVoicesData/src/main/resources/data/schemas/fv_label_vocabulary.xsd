@@ -10,7 +10,7 @@
     <xs:element name="id" type="xs:string"/>
     <xs:element name="type" type="xs:string"/>
     <xs:element name="label" type="xs:string"/>
-    <xs:element name="parent" type="xs:string"/>
+    <xs:element name="category" type="xs:string"/>
     <xs:element name="template_strings" type="xs:string"/>
     <xs:element name="obsolete" type="xs:integer" default="0"/>
     <xs:element name="ordering" type="xs:integer" default="10000000"/>
