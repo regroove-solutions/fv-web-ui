@@ -24106,7 +24106,15 @@ function run(input, params) {
             <table>studio_vocabulary_fv_labels</table>
             <dataFile>data/vocabularies/fv_labels.csv</dataFile>
             <cacheEntryName>fv_labels-cache</cacheEntryName>
-            <cacheEntryWithoutReferencesName>vocab-label-keys-cache-without-references</cacheEntryWithoutReferencesName>
+            <cacheEntryWithoutReferencesName>vocab-labels-cache-without-references</cacheEntryWithoutReferencesName>
+        </directory>
+        <directory name="fv_label_categories" extends="template-xvocabulary">
+            <autoincrementIdField>false</autoincrementIdField>
+            <createTablePolicy>always</createTablePolicy>
+            <table>studio_vocabulary_fv_label_categories</table>
+            <dataFile>data/vocabularies/fv_label_categories.csv</dataFile>
+            <cacheEntryName>fv_label_categories-cache</cacheEntryName>
+            <cacheEntryWithoutReferencesName>vocab-label-categories-cache-without-references</cacheEntryWithoutReferencesName>
         </directory>
     </extension>
     <extension target="org.nuxeo.ecm.core.cache.CacheService" point="caches">
@@ -24295,6 +24303,21 @@ function run(input, params) {
             <option name="concurrencyLevel">500</option>
             <ttl>60</ttl>
         </cache>
+        <cache name="vocab-labels-cache-without-references">
+            <option name="maxSize">1000</option>
+            <option name="concurrencyLevel">500</option>
+            <ttl>60</ttl>
+        </cache>
+        <cache name="fv_label_categories-cache">
+            <option name="maxSize">1000</option>
+            <option name="concurrencyLevel">500</option>
+            <ttl>60</ttl>
+        </cache>
+        <cache name="vocab-label-categories-cache-without-references">
+            <option name="maxSize">1000</option>
+            <option name="concurrencyLevel">500</option>
+            <ttl>60</ttl>
+        </cache>
     </extension>
     <extension target="org.nuxeo.ecm.directory.ui.DirectoryUIManager" point="directories">
         <directory name="WorkflowType" layout="vocabulary" sortField="label"/>
@@ -24321,6 +24344,12 @@ function run(input, params) {
         <directory name="fv_labels" layout="vocabulary-fv_labels" sortField="label">
             <deleteConstraint class="org.nuxeo.ecm.directory.HierarchicalDirectoryDeleteConstraint">
                 <property name="targetDirectory">fv_labels</property>
+                <property name="targetDirectoryField">parent</property>
+            </deleteConstraint>
+        </directory>
+        <directory name="fv_label_categories" layout="vocabulary" sortField="label">
+            <deleteConstraint class="org.nuxeo.ecm.directory.HierarchicalDirectoryDeleteConstraint">
+                <property name="targetDirectory">fv_categories</property>
                 <property name="targetDirectoryField">parent</property>
             </deleteConstraint>
         </directory>
