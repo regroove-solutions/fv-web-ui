@@ -98,7 +98,7 @@ class PageDialectImmersionList extends PageDialectLearnBase {
         entity: props.computePortal,
       },
       {
-        id: `${props.routeParams.dialect_path}/Dictionary`,
+        id: `${props.routeParams.dialect_path}/Label Dictionary`,
         entity: props.computeDocument,
       },
       {
@@ -133,7 +133,7 @@ class PageDialectImmersionList extends PageDialectLearnBase {
   // TODOSL REPLACE THESE PATHS
   fetchData(newProps) {
     newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal')
-    newProps.fetchDocument(newProps.routeParams.dialect_path + '/Dictionary')
+    newProps.fetchDocument(newProps.routeParams.dialect_path + '/Label Dictionary')
     newProps.fetchCategories('/api/v1/path/FV/' + newProps.routeParams.area + '/SharedData/Shared Categories/@children')
   }
 
@@ -282,7 +282,7 @@ class PageDialectImmersionList extends PageDialectLearnBase {
     const { routeParams } = this.props
     const computeDocument = ProviderHelpers.getEntry(
       this.props.computeDocument,
-      `${routeParams.dialect_path}/Dictionary`
+      `${routeParams.dialect_path}/Label Dictionary`
     )
 
     const computePortal = ProviderHelpers.getEntry(this.props.computePortal, `${routeParams.dialect_path}/Portal`)

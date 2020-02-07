@@ -20,7 +20,7 @@ import Immutable, { Map } from 'immutable'
 // REDUX
 import { connect } from 'react-redux'
 // REDUX: actions/dispatch/func
-import { fetchWords } from 'providers/redux/reducers/fvWord'
+import { fetchLabels } from 'providers/redux/reducers/fvLabel'
 import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
 import { pushWindowPath } from 'providers/redux/reducers/windowPath'
 // import { setRouteParams } from 'providers/redux/reducers/navigation'
@@ -87,13 +87,13 @@ class ImmersionListView extends DataListView {
     // // REDUX: reducers/state
     computeDialect2: object.isRequired,
     computeLogin: object.isRequired,
-    computeWords: object.isRequired,
+    computeLabels: object.isRequired,
     // properties: object.isRequired,
     // splitWindowPath: array.isRequired,
     // windowPath: string.isRequired,
     // // REDUX: actions/dispatch/func
     fetchDialect2: func.isRequired,
-    fetchWords: func.isRequired,
+    fetchLabels: func.isRequired,
     pushWindowPath: func.isRequired,
   }
   static defaultProps = {
@@ -280,7 +280,7 @@ class ImmersionListView extends DataListView {
   }
 
   _getPathOrParentID = (newProps) => {
-    return newProps.parentID ? newProps.parentID : `${newProps.routeParams.dialect_path}/Dictionary`
+    return newProps.parentID ? newProps.parentID : `${newProps.routeParams.dialect_path}/Label Dictionary`
   }
 
   getDialect(props = this.props) {
@@ -339,14 +339,14 @@ class ImmersionListView extends DataListView {
     const nql = `${currentAppliedFilter}&currentPageIndex=${pageIndex -
       1}&pageSize=${pageSize}&sortOrder=${sortOrder}&sortBy=${sortBy}&enrichment=category_children${startsWithQuery}`
 
-    props.fetchWords(this._getPathOrParentID(props), nql)
+    props.fetchLabels(this._getPathOrParentID(props), nql)
   }
 
   render() {
     const computeEntities = Immutable.fromJS([
       {
         id: this._getPathOrParentID(this.props),
-        entity: this.props.computeWords,
+        entity: this.props.computeLabels,
       },
     ])
     // If dialect not supplied, promise wrapper will need to wait for compute dialect
@@ -359,16 +359,16 @@ class ImmersionListView extends DataListView {
       )
     }
 
-    const computeWords = ProviderHelpers.getEntry(this.props.computeWords, this._getPathOrParentID(this.props))
+    const computeLabels = ProviderHelpers.getEntry(this.props.computeLabels, this._getPathOrParentID(this.props))
     const computeDialect2 = this.props.dialect || this.getDialect()
 
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
-        {selectn('response.entries', computeWords) && (
+        {selectn('response.entries', computeLabels) && (
           <DocumentListView
             className={'browseDataGrid'}
             columns={this.state.columns}
-            data={computeWords}
+            data={computeLabels}
             dialect={selectn('response', computeDialect2)}
             disablePageSize={this.props.disablePageSize}
             gridListView={this.props.gridListView}
@@ -412,7 +412,7 @@ class ImmersionListView extends DataListView {
                 sortOrder,
               })
             }}
-            type={'FVWord'} // TODO new type?
+            type={'FVLabel'} // TODO new type?
             // List View
             hasViewModeButtons={this.props.hasViewModeButtons}
             rowClickHandler={this.props.rowClickHandler}
@@ -459,7 +459,7 @@ class ImmersionListView extends DataListView {
 const mapStateToProps = (state /*, ownProps*/) => {
   const {
     fvDialect,
-    fvWord,
+    fvLabel,
     navigation,
     nuxeo,
     // windowPath
@@ -470,14 +470,14 @@ const mapStateToProps = (state /*, ownProps*/) => {
     route,
   } = navigation
   const { computeLogin } = nuxeo
-  const { computeWords } = fvWord
+  const { computeLabels } = fvLabel
   const { computeDialect2 } = fvDialect
   // const { splitWindowPath, _windowPath } = windowPath
 
   return {
     computeDialect2,
     computeLogin,
-    computeWords,
+    computeLabels,
     // properties,
     navigationRouteSearch: route.search,
     // splitWindowPath,
@@ -487,7 +487,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
 
 // REDUX: actions/dispatch/func
 const mapDispatchToProps = {
-  fetchWords,
+  fetchLabels,
   fetchDialect2,
   pushWindowPath,
   // setRouteParams,
