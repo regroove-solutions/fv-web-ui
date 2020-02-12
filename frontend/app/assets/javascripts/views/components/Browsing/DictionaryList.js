@@ -260,8 +260,6 @@ const DictionaryList = (props) => {
   const DefaultFetcherParams = { currentPageIndex: 1, pageSize: 10, sortBy: 'fv:custom_order', sortOrder: 'asc' }
   let columnsEnhanced = [...props.columns]
 
-  const [viewMode, setViewMode] = useState(0)
-
   // ============= SORT
   if (props.hasSorting) {
     // If window.location.search has sortOrder & sortBy,
@@ -401,7 +399,7 @@ const DictionaryList = (props) => {
         exportDialectQuery: props.exportDialectQuery,
         hasExportDialect: props.hasExportDialect,
         // View mode
-        clickHandlerViewMode: setViewMode,
+        clickHandlerViewMode: props.dictionaryListClickHandlerViewMode,
         dictionaryListViewMode: props.dictionaryListViewMode,
         hasViewModeButtons: props.hasViewModeButtons,
         viewMode,
@@ -429,7 +427,7 @@ const DictionaryList = (props) => {
 
           //  Flashcard Specified: by view mode button or prop
           // -----------------------------------------
-          if (viewMode === VIEWMODE_FLASHCARD || props.dictionaryListViewMode === VIEWMODE_FLASHCARD) {
+          if (props.dictionaryListViewMode === VIEWMODE_FLASHCARD) {
             // TODO: SPECIFY FlashcardList PROPS
             let flashCards = <FlashcardList {...props} />
             if (props.hasPagination) {
@@ -441,7 +439,7 @@ const DictionaryList = (props) => {
 
           //  Small Screen Specified: by view mode button or prop
           // -----------------------------------------
-          if (viewMode === VIEWMODE_SMALL_SCREEN || props.dictionaryListViewMode === VIEWMODE_SMALL_SCREEN) {
+          if (props.dictionaryListViewMode === VIEWMODE_SMALL_SCREEN) {
             return getListSmallScreen(getListSmallScreenArg)
           }
 
@@ -508,7 +506,7 @@ function generateListButtons({
 
   if (hasViewModeButtons && dictionaryListViewMode === undefined && hasFlashcard) {
     buttonFlashcard =
-      viewMode === VIEWMODE_FLASHCARD ? (
+      dictionaryListViewMode === VIEWMODE_FLASHCARD ? (
         <FVButton
           variant="contained"
           color="primary"
@@ -758,6 +756,7 @@ DictionaryList.propTypes = {
   cssModifier: string,
   dialect: object,
   dictionaryListSmallScreenTemplate: func,
+  dictionaryListClickHandlerViewMode: func,
   dictionaryListViewMode: number,
   fields: instanceOf(Map),
   filteredItems: oneOfType([array, instanceOf(List)]),
@@ -799,6 +798,7 @@ DictionaryList.defaultProps = {
   cols: 3,
   columns: [],
   cssModifier: '',
+  dictionaryListClickHandlerViewMode: () => {},
   // sortHandler: () => {},
   style: null,
   wrapperStyle: null,
@@ -811,7 +811,6 @@ DictionaryList.defaultProps = {
   resetSearch: () => {},
   // REDUX: actions/dispatch/func
   pushWindowPath: () => {},
-  setListViewMode: () => {},
 }
 
 // REDUX: reducers/state
