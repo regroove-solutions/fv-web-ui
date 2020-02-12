@@ -1,4 +1,5 @@
 import { SET_LOCALE } from './actionTypes'
+import IntlService from '../../../../views/services/intl';
 
 const initialState = {
   locale: getLocaleFromStorage()
@@ -39,6 +40,9 @@ export const localeReducer = (state = initialState, action) => {
     case SET_LOCALE: {
       // Update state
       // ------------------------------------------------------------
+
+      IntlService.instance.locale = action.payload;
+
       return Object.assign({}, state, { locale: action.payload })
     }
 

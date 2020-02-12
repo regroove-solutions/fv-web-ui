@@ -445,7 +445,8 @@ export default class IntlService {
   _getImmersiveWords() {
     return new Promise((resolve, reject) => {
       setTimeout(async () => {
-        const output = await DirectoryOperations.getDocumentsViaResultSetQuery("/FV/Workspaces/Data/Test/test 2/Language 1", "FVLabel", "dc:title, fvlabel:labelKey")
+        const output = await DirectoryOperations
+          .getDocumentsViaResultSetQuery("/FV/Workspaces/Data/Test/test 2/Language 1", "FVLabel", "dc:title, fvlabel:labelKey")
           .then(result => result.entries.reduce((holder, entry) => {
             const path = entry["fvlabel:labelKey"].split(".");
             let targetRef = holder;
