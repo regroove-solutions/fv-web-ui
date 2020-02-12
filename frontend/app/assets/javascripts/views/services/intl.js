@@ -7,13 +7,13 @@ import sp from 'views/../locale/locale.sp.json'
 import { sprintf, vsprintf } from 'sprintf-js'
 import DirectoryOperations from 'operations/DirectoryOperations'
 
-String.prototype.toUpperCaseWords = function() {
-  return this.replace(/\w+/g, function(a) {
+String.prototype.toUpperCaseWords = function () {
+  return this.replace(/\w+/g, function (a) {
     return a.charAt(0).toUpperCase() + a.slice(1).toLowerCase()
   })
 }
 
-String.prototype.toUpperCaseFirst = function() {
+String.prototype.toUpperCaseFirst = function () {
   return this.charAt(0).toUpperCase() + this.slice(1).toLowerCase()
 }
 export default class IntlService {
@@ -124,7 +124,7 @@ export default class IntlService {
       key = key.join('.')
     }
     const self = this
-    const postProcessResult = function(result, translateData) {
+    const postProcessResult = function (result, translateData) {
       if (result !== null) {
         const charCase = translateData.case || null
         const params = translateData.params || []
@@ -150,7 +150,7 @@ export default class IntlService {
         result = (result + '').replace('&amp;', '&')
         result = (result + '').replace('&AMP;', '&')
 
-        const postProcessSwaps = function(result) {
+        const postProcessSwaps = function (result) {
           const swapMatches = (result + '').match(/\$\{([a-zA-Z0-9\.\_]+)\}/g)
           if (swapMatches !== null && swapMatches.length > 0) {
             for (const idx in swapMatches) {
@@ -438,26 +438,30 @@ export default class IntlService {
     }
 
     if (locale === "immersive") {
-      IntlService.locales.immersive = {
-        "general": {
-          "welcome": "TEST!"
-        }
-      };
+      IntlService.locales.immersive = await this._getImmersiveWords();
     }
-
-    this._getImmersiveWords();
-
-    return new Promise((resolve, reject) => {
-      setTimeout(() => resolve(), 2000);
-    })
   }
 
   _getImmersiveWords() {
-    setTimeout(() => {
-      DirectoryOperations.getDocumentsViaResultSetQuery("/FV/Workspaces/Data/Test/test 2/Language 1", "FVWord", "dc:title").then(result => {
-        console.log(result);
-      });
-    }, 2000);
+    return new Promise((resolve, reject) => {
+      setTimeout(async () => {
+        const output = await DirectoryOperations.getDocumentsViaResultSetQuery("/FV/Workspaces/Data/Test/test 2/Language 1", "FVLabel", "dc:title, fvlabel:labelKey")
+          .then(result => result.entries.reduce((holder, entry) => {
+            const path = entry["fvlabel:labelKey"].split(".");
+            let targetRef = holder;
+            path.slice(0, -1).forEach(step => {
+              if (!targetRef[step]) {
+                targetRef[step] = {}
+              }
+              targetRef = targetRef[step]
+            })
+            targetRef[path[path.length - 1]] = entry["dc:title"];
+            return holder;
+          }, {}));
+
+        resolve(output);
+      }, 2000);
+    });
   }
 }
 // TODO: remove eslint-disable
