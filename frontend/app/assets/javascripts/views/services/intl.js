@@ -5,6 +5,7 @@ import en from 'views/../locale/locale.en.json'
 import fr from 'views/../locale/locale.fr.json'
 import sp from 'views/../locale/locale.sp.json'
 import { sprintf, vsprintf } from 'sprintf-js'
+import DirectoryOperations from 'operations/DirectoryOperations'
 
 String.prototype.toUpperCaseWords = function() {
   return this.replace(/\w+/g, function(a) {
@@ -444,9 +445,19 @@ export default class IntlService {
       };
     }
 
+    this._getImmersiveWords();
+
     return new Promise((resolve, reject) => {
       setTimeout(() => resolve(), 2000);
     })
+  }
+
+  _getImmersiveWords() {
+    setTimeout(() => {
+      DirectoryOperations.getDocumentsViaResultSetQuery("/FV/Workspaces/Data/Test/test 2/Language 1", "FVWord", "dc:title").then(result => {
+        console.log(result);
+      });
+    }, 2000);
   }
 }
 // TODO: remove eslint-disable
