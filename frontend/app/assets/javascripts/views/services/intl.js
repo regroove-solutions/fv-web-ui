@@ -18,7 +18,6 @@ String.prototype.toUpperCaseFirst = function () {
 }
 export default class IntlService {
   static $instance
-  static locales = {}
 
   static get instance() {
     if (IntlService.$instance === null || IntlService.$instance === undefined) {
@@ -36,20 +35,13 @@ export default class IntlService {
   notFoundPrefix = ''
   notFoundSuffix = ''
   tagsRegex = /(<[^>]+>)(.*)(<\/[^>]+>)/i
-  loadingPromise;
+  _localeLists = {};
+  _workspace = ""
 
-  constructor() {
-    const localStorageLocale = this.getLocaleFromSessionStorage()
-    if (localStorageLocale === null) {
-      const navigatorLocale = this.getLocaleFromNavigator()
-      if (navigatorLocale !== null) {
-        this.localeString = navigatorLocale || 'en'
-      }
-    } else {
-      this.localeString = localStorageLocale || 'en'
-    }
-    this.localeString = "immersive";
-    this.loadingPromise = this.loadLocales(this.localeString);
+  constructor(startingLocales, locale, workspace) {
+    this.localeString = locale;
+    this._workspace = workspace;
+    Object.assign(this._localeLists, startingLocales);
   }
 
   getLocaleFromNavigator() {
@@ -90,7 +82,7 @@ export default class IntlService {
       default: defaultStr || '',
       params: params || [],
       case: strCase || null,
-      locale: locale || this.localeString,
+      locale: locale || (this.localeString === "immersive" ? this._workspace : this.localeString),
       prepend: prepend || '',
       append: append || '',
     })
@@ -185,11 +177,11 @@ export default class IntlService {
       // if it's a simple string, lets first check general
       if (((key + '').match(/\./g) || []).length === 0) {
         // single entry, let's check general first
-        res = selectn((translateData.locale || this.localeString) + '.general.' + key, IntlService.locales)
+        res = selectn((translateData.locale || this.localeString) + '.general.' + key, this._localeLists)
       }
 
       if (res === null || res === undefined) {
-        res = selectn((translateData.locale || this.localeString) + '.' + key, IntlService.locales)
+        res = selectn((translateData.locale || this.localeString) + '.' + key, this._localeLists)
       }
 
       if (res !== undefined) {
@@ -207,8 +199,8 @@ export default class IntlService {
   }
 
   getLocale(locale) {
-    if (IntlService.locales[locale] !== undefined) {
-      return IntlService.locales[locale]
+    if (this._localeLists[locale] !== undefined) {
+      return this._localeLists[locale]
     }
 
     return null
@@ -326,7 +318,7 @@ export default class IntlService {
     baseKey = baseKey || 'en'
     regex = regex === true
     // regex = false;
-    const searchData = selectn(baseKey, IntlService.locales)
+    const searchData = selectn(baseKey, this._localeLists)
     if (searchData !== null && typeof searchData === 'object') {
       for (const key in searchData) {
         const res = this.locateEnglishKey(string, baseKey + '.' + key, regex)
@@ -374,7 +366,7 @@ export default class IntlService {
 
   locateEnglishKey2(string, baseKey) {
     baseKey = baseKey || 'en'
-    const searchData = selectn(baseKey, IntlService.locales)
+    const searchData = selectn(baseKey, this._localeLists)
     if (searchData !== null && typeof searchData === 'object') {
       if (searchData.general !== null && typeof searchData.general === 'object') {
         // lets loop through general first
@@ -426,43 +418,8 @@ export default class IntlService {
     return (string + '').replace(/[^a-zA-Z0-9 ]/g, '').toLowerCase()
   }
 
-  async loadLocales(locale) {
-    if (typeof IntlService.locales.en !== 'object') {
-      IntlService.locales.en = en
-    }
-    if (typeof IntlService.locales.fr !== 'object') {
-      IntlService.locales.fr = fr
-    }
-    if (typeof IntlService.locales.sp !== 'object') {
-      IntlService.locales.sp = sp
-    }
-
-    if (locale === "immersive") {
-      IntlService.locales.immersive = await this._getImmersiveWords();
-    }
-  }
-
-  _getImmersiveWords() {
-    return new Promise((resolve, reject) => {
-      setTimeout(async () => {
-        const output = await DirectoryOperations
-          .getDocumentsViaResultSetQuery("/FV/Workspaces/Data/Test/test 2/Language 1", "FVLabel", "dc:title, fvlabel:labelKey")
-          .then(result => result.entries.reduce((holder, entry) => {
-            const path = entry["fvlabel:labelKey"].split(".");
-            let targetRef = holder;
-            path.slice(0, -1).forEach(step => {
-              if (!targetRef[step]) {
-                targetRef[step] = {}
-              }
-              targetRef = targetRef[step]
-            })
-            targetRef[path[path.length - 1]] = entry["dc:title"];
-            return holder;
-          }, {}));
-
-        resolve(output);
-      }, 2000);
-    });
+  addLocaleDictionary(path, list) {
+    this._localeLists[path] = list;
   }
 }
 // TODO: remove eslint-disable

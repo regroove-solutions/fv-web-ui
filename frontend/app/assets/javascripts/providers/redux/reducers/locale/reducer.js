@@ -1,8 +1,25 @@
-import { SET_LOCALE } from './actionTypes'
+import {
+  SET_LOCALE, FV_LABELS_FETCH_START,
+  FV_LABELS_FETCH_SUCCESS,
+  FV_LABELS_FETCH_ERROR
+} from './actionTypes'
 import IntlService from '../../../../views/services/intl';
+import en from 'views/../locale/locale.en.json'
+import fr from 'views/../locale/locale.fr.json'
+import sp from 'views/../locale/locale.sp.json'
 
 const initialState = {
-  locale: getLocaleFromStorage()
+  localeLists: {
+    en,
+    fr,
+    sp
+  },
+  intlService: new IntlService({
+    en,
+    fr,
+    sp
+  }, getLocaleFromStorage()),
+  workspace: ""
 }
 
 function getLocaleFromStorage() {
@@ -30,23 +47,36 @@ function getLocaleFromStorage() {
   if (locale === null) {
     locale = 'en'
   }
-  locale = "immersive";
+  locale = "en";
 
   return locale;
 }
 
-export const localeReducer = (state = initialState, action) => {
-  switch (action.type) {
-    case SET_LOCALE: {
-      // Update state
-      // ------------------------------------------------------------
+export const localeReducer =
+  (state = initialState, action) => {
+    switch (action.type) {
+      case SET_LOCALE:
+        return Object.assign({}, state, { intlService: new IntlService(state.localeLists, action.payload, state.workspace) });
+      case FV_LABELS_FETCH_START:
+        return { ...state, fvlabelsFetch: { isFetching: true } };
+      case FV_LABELS_FETCH_SUCCESS:
+        const newLocales = {
+          ...state.localeLists
+        };
+        newLocales[action.payload.workspace] = action.payload.labels;
+        return { ...state, fvlabelsFetch: { isFetching: false, success: true }, intlService: new IntlService(newLocales, state.intlService.locale, action.payload.workspace) };
+      case FV_LABELS_FETCH_ERROR:
+        return {
+          ...state,
+          fvlabelsFetch: {
+            isFetching: false,
+            isError: true,
+            error: action.error,
+            errorDismissed: action.type === DISMISS_ERROR ? true : false
+          }
+        }
 
-      IntlService.instance.locale = action.payload;
-
-      return Object.assign({}, state, { locale: action.payload })
+      default:
+        return state
     }
-
-    default:
-      return state
   }
-}

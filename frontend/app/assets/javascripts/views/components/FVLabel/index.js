@@ -1,25 +1,16 @@
 import React from 'react'
 import { connect } from 'react-redux';
-import IntlService from '../../services/intl';
 import { setLocale } from "providers/redux/reducers/locale"
 
-function FVLabel({ locale, dialect_path, setLocale }) {
-
-  console.log(IntlService.instance.trans("general.welcome"));
-
-  if (locale === "immersive") {
-    setLocale("test");
-  }
-
-  return <div>{IntlService.instance.trans("general.welcome")}</div>
+function FVLabel({ setLocale, defaultStr, strCase, params, prepend, append, forceLocale, intl }) {
+  return <div>{intl.trans("general.welcome", defaultStr, strCase, params, prepend, append, forceLocale)}</div>
 }
 
 const mapStateToProps = (state /*, ownProps*/) => {
-  const { locale, navigation } = state
+  const { locale } = state
 
   return {
-    locale: locale.locale,
-    dialect_path: navigation.route.routeParams.dialect_path
+    intl: locale.intlService
   }
 }
 
