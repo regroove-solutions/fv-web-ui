@@ -75,6 +75,9 @@ public class FVUpdateUser {
     @Param(name = "properties", required = false)
     protected Properties properties = new Properties();
 
+    @Param(name = "languagePreference", required = false)
+    protected String languagePreference;
+
     private ObjectMapper mapper = new ObjectMapper();
 
     @OperationMethod
@@ -104,7 +107,8 @@ public class FVUpdateUser {
                 new SimpleEntry<>(EMAIL_COLUMN, email), //
                 new SimpleEntry<>(FIRSTNAME_COLUMN, firstName), //
                 new SimpleEntry<>(LASTNAME_COLUMN, lastName), //
-                new SimpleEntry<>(COMPANY_COLUMN, company))) {
+                new SimpleEntry<>(COMPANY_COLUMN, company),
+                new SimpleEntry<>("languagePreference", languagePreference))) {
             String key = entry.getKey();
             String value = entry.getValue();
             if (StringUtils.isNotBlank(value)) {
