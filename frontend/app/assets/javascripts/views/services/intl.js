@@ -35,6 +35,7 @@ export default class IntlService {
   notFoundPrefix = ''
   notFoundSuffix = ''
   tagsRegex = /(<[^>]+>)(.*)(<\/[^>]+>)/i
+  loadingPromise;
 
   constructor() {
     const localStorageLocale = this.getLocaleFromSessionStorage()
@@ -46,7 +47,8 @@ export default class IntlService {
     } else {
       this.localeString = localStorageLocale || 'en'
     }
-    this.loadLocales()
+    this.localeString = "immersive";
+    this.loadingPromise = this.loadLocales(this.localeString);
   }
 
   getLocaleFromNavigator() {
@@ -423,7 +425,7 @@ export default class IntlService {
     return (string + '').replace(/[^a-zA-Z0-9 ]/g, '').toLowerCase()
   }
 
-  loadLocales(force) {
+  async loadLocales(locale) {
     if (typeof IntlService.locales.en !== 'object') {
       IntlService.locales.en = en
     }
@@ -433,6 +435,18 @@ export default class IntlService {
     if (typeof IntlService.locales.sp !== 'object') {
       IntlService.locales.sp = sp
     }
+
+    if (locale === "immersive") {
+      IntlService.locales.immersive = {
+        "general": {
+          "welcome": "TEST!"
+        }
+      };
+    }
+
+    return new Promise((resolve, reject) => {
+      setTimeout(() => resolve(), 2000);
+    })
   }
 }
 // TODO: remove eslint-disable

@@ -100,9 +100,19 @@ export class AppFrontController extends Component {
     matchedPage: undefined,
   }
 
+  intl = IntlService.instance
+
   constructor(props, context) {
     super(props, context)
     this.state = this._getInitialState()
+
+      intl.loadingPromise.then(() => {
+        this.setState(() => {
+          return {
+            loadingLocale: false
+          }
+        });
+      });
   }
 
   async componentDidMount() {
@@ -150,8 +160,9 @@ export class AppFrontController extends Component {
 
   render() {
     const { matchedPage, routeParams } = this.props
+    const { loadingLocale } = this.state;
     // View during user checking, pre routing
-    if (matchedPage === undefined) {
+    if (matchedPage === undefined || loadingLocale) {
       return (
         <div id="app-loader" className="app-loader">
           <div
@@ -272,6 +283,7 @@ export class AppFrontController extends Component {
     return {
       routes,
       warningsDismissed: false,
+      loadingLocale: true
     }
   }
 
