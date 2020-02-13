@@ -34,18 +34,21 @@ export const fetchDirectory = (name, headers) => {
   }
 }
 
-export const fetchDirectoryEntries = (name, headers, params) => {
+export const fetchDirectoryEntries = (name, map, headers, params) => {
   return (dispatch) => {
     dispatch({ type: DIRECTORY_FETCH_ENTRIES_START })
 
     return DirectoryOperations.getDirectoryEntries(name, { headers: headers }, { params: params })
       .then((response) => {
         const options = (response || []).map((directoryEntry) => {
-          return {
-            value: directoryEntry.id,
-            text: directoryEntry.label,
-            parent: directoryEntry.parent,
+          const entry = {
+            id: directoryEntry.id,
+            label: directoryEntry.label,
           }
+          map.forEach((val) => {
+            entry[val] = directoryEntry[val]
+          })
+          return entry
         })
 
         const directoryEntries = {}
