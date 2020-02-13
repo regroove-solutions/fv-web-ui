@@ -1,7 +1,8 @@
 import {
   SET_LOCALE, FV_LABELS_FETCH_START,
   FV_LABELS_FETCH_SUCCESS,
-  FV_LABELS_FETCH_ERROR
+  FV_LABELS_FETCH_ERROR,
+  SET_WORKSPACE
 } from './actionTypes'
 import IntlService from '../../../../views/services/intl';
 import en from 'views/../locale/locale.en.json'
@@ -57,6 +58,9 @@ export const localeReducer =
     switch (action.type) {
       case SET_LOCALE:
         return Object.assign({}, state, { intlService: new IntlService(state.localeLists, action.payload, state.workspace) });
+      case SET_WORKSPACE:
+        console.log(action.payload);
+        return Object.assign({}, state, { intlService: new IntlService(state.localeLists, state.intlService.locale, action.payload), workspace: action.payload });
       case FV_LABELS_FETCH_START:
         return { ...state, fvlabelsFetch: { isFetching: true } };
       case FV_LABELS_FETCH_SUCCESS:
@@ -64,7 +68,7 @@ export const localeReducer =
           ...state.localeLists
         };
         newLocales[action.payload.workspace] = action.payload.labels;
-        return { ...state, fvlabelsFetch: { isFetching: false, success: true }, intlService: new IntlService(newLocales, state.intlService.locale, action.payload.workspace) };
+        return { ...state, workspace: action.payload.workspace, fvlabelsFetch: { isFetching: false, success: true }, intlService: new IntlService(newLocales, action.payload.locale, action.payload.workspace) };
       case FV_LABELS_FETCH_ERROR:
         return {
           ...state,
@@ -72,7 +76,7 @@ export const localeReducer =
             isFetching: false,
             isError: true,
             error: action.error,
-            errorDismissed: action.type === DISMISS_ERROR ? true : false
+            errorDismissed: false
           }
         }
 

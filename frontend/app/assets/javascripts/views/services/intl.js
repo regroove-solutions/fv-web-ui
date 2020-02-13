@@ -39,7 +39,8 @@ export default class IntlService {
   _workspace = ""
 
   constructor(startingLocales, locale, workspace) {
-    this.localeString = locale;
+    // this.localeString = locale;
+    this.localeString = "immersive";
     this._workspace = workspace;
     Object.assign(this._localeLists, startingLocales);
   }

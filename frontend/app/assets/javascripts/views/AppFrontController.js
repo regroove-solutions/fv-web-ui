@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 // REDUX: actions/dispatch/func
 import { pushWindowPath, replaceWindowPath, updateWindowPath } from 'providers/redux/reducers/windowPath'
 import { changeSiteTheme, setRouteParams } from 'providers/redux/reducers/navigation'
-import { getWorkspaceLabels } from 'providers/redux/reducers/locale'
+import { setIntlWorkspace } from 'providers/redux/reducers/locale'
 import { nuxeoConnect, getCurrentUser } from 'providers/redux/reducers/nuxeo'
 
 import selectn from 'selectn'
@@ -151,11 +151,9 @@ export class AppFrontController extends Component {
       this._route({ props: this.props })
     }
     if (
-      (prevProps.locale !== this.props.locale && this.props.locale === "immersive") ||
-      (this.props.routeParams.dialect_path && this.props.routeParams.dialect_path !== prevProps.routeParams.dialect_path && this.props.locale === "immersive")
+      prevProps.routeParams.dialect_path !== this.props.routeParams.dialect_path
     ) {
-      console.log("let's get those labels!");
-      this.props.getWorkspaceLabels(this.props.routeParams.dialect_path);
+      this.props.setIntlWorkspace(this.props.routeParams.dialect_path);
     }
   }
 
@@ -543,7 +541,7 @@ const mapDispatchToProps = {
   updateWindowPath,
   nuxeoConnect,
   getCurrentUser,
-  getWorkspaceLabels
+  setIntlWorkspace
 }
 
 export default withTheme()(connect(mapStateToProps, mapDispatchToProps)(AppFrontController))
