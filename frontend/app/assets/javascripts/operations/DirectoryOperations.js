@@ -246,6 +246,33 @@ export default class DirectoryOperations {
     })
   }
 
+  static getDirectoryEntries(name = '', headers = {}, params = {}) {
+    const properties = BaseOperations.getProperties()
+
+    return new Promise((resolve, reject) => {
+      const defaultParams = {
+        directoryName: name,
+      }
+      const _params = Object.assign(defaultParams, params)
+      properties.client
+        .operation('Directory.Entries')
+        .params(_params)
+        .execute(headers)
+        .then((directory) => {
+          resolve(directory)
+        })
+        .catch(() => {
+          reject(
+            IntlService.instance.translate({
+              key: 'operations.could_not_retrieve_directory_entries',
+              default: 'Could not retrieve directory entries',
+              case: 'first',
+            })
+          )
+        })
+    })
+  }
+
   // Unused methods below (needs refactoring or removing soon)
   getSubjects(client) {
     return new Promise((resolve, reject) => {
@@ -362,9 +389,7 @@ export default class DirectoryOperations {
       // reject the promise
       (resolve, reject) => {
         const defaultParams = {
-          query: `SELECT * FROM ${
-            documentList.model.prototype.entityTypeName
-          } WHERE (ecm:path STARTSWITH '/${domain}${_path}' AND ${selectDefault}) ORDER BY dc:title`,
+          query: `SELECT * FROM ${documentList.model.prototype.entityTypeName} WHERE (ecm:path STARTSWITH '/${domain}${_path}' AND ${selectDefault}) ORDER BY dc:title`,
         }
 
         const defaultHeaders = {}
