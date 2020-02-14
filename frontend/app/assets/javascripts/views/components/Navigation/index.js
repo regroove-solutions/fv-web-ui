@@ -382,9 +382,9 @@ export class Navigation extends Component {
                     id: 'locale-select',
                   }}
                 >
-                  <MenuItem value="">None</MenuItem>
-                  <MenuItem value="solo">Immersive</MenuItem>
-                  <MenuItem value="duo">Both Languages</MenuItem>
+                  <MenuItem value={0}>None</MenuItem>
+                  <MenuItem value={1}>Immersive</MenuItem>
+                  <MenuItem value={2}>Both Languages</MenuItem>
                 </Select>
               </FormControl>
               <Typography variant="body1" className={`${localePicker} Navigation__localeTitle`}>
