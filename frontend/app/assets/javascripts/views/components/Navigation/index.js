@@ -62,8 +62,9 @@ import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 import { WORKSPACES, SECTIONS } from 'common/Constants'
 
 import '!style-loader!css-loader!./styles.css'
+import FVLabel from '../FVLabel/index'
 
-const { array, func, object, string, bool } = PropTypes
+const { array, func, object, string, bool, number } = PropTypes
 
 export class Navigation extends Component {
   static defaultProps = {
@@ -82,6 +83,9 @@ export class Navigation extends Component {
     properties: object.isRequired,
     splitWindowPath: array.isRequired,
     windowPath: string.isRequired,
+    currentLocale: string.isRequired,
+    currentImmersionMode: number.isRequired,
+    intl: object.isRequired,
     // computeToggleMenuAction: object.isRequired,
     // computeCountTotalTasks: object.isRequired,
     // computeLoadGuide: object.isRequired,
@@ -91,6 +95,9 @@ export class Navigation extends Component {
     pushWindowPath: func.isRequired,
     replaceWindowPath: func.isRequired,
     toggleMenuAction: func.isRequired,
+    setImmersionMode: func.isRequired,
+    setLocale: func.isRequired,
+
     // countTotalTasks: func.isRequired,
   }
 
@@ -105,7 +112,6 @@ export class Navigation extends Component {
       localePopoverOpen: false,
       userRegistrationTasksPath: '/management/registrationRequests/',
       pathOrId: '/' + props.properties.domain + '/' + selectn('routeParams.area', props),
-      locale: this.props.intl.locale,
       searchValue: '',
     }
   }
@@ -210,16 +216,11 @@ export class Navigation extends Component {
                 NavigationHelpers.navigate(hrefPath, this.props.pushWindowPath, false)
               }}
             >
-              {this.props.intl.translate({ key: 'general.explore', default: 'Explore Languages', case: 'upper' })}
+              <FVLabel transKey="general.explore" defaultStr="Explore Languages" transform="upper" />
             </a>
 
             <Login
               routeParams={this.props.routeParams}
-              label={this.props.intl.translate({
-                key: 'views.pages.users.login.sign_in',
-                default: 'Sign In',
-                case: 'words',
-              })}
               className={appBar}
             />
 
@@ -307,7 +308,7 @@ export class Navigation extends Component {
                       }}
                       className={appBar}
                     >
-                      {this.props.intl.translate({ key: 'general.cancel', default: 'Cancel', case: 'first' })}
+                      <FVLabel transKey="general.cancel" defaultStr="Cancel" transform="first" />
                     </FVButton>
                   </span>
                 </div>
@@ -320,7 +321,7 @@ export class Navigation extends Component {
                       {
                         searchPopoverOpen: true,
                       },
-                      () => {}
+                      () => { }
                     )
                   }}
                   onBlur={() => {
@@ -369,7 +370,7 @@ export class Navigation extends Component {
             <div className="Navigation__localeInner">
               <FormControl>
                 <InputLabel>
-                Immersion Mode
+                  Immersion Mode
                 </InputLabel>
                 <Select
                   value={this.props.currentImmersionMode}
@@ -388,7 +389,7 @@ export class Navigation extends Component {
                 </Select>
               </FormControl>
               <Typography variant="body1" className={`${localePicker} Navigation__localeTitle`}>
-                {this.props.intl.trans('choose_lang', 'Choose a Language', 'first')}
+                <FVLabel transKey="choose_lang" defaultStr="Choose a language" transform="first" />
               </Typography>
               <FormControl>
                 <InputLabel htmlFor="locale-select" className={`${localePicker}`}>
@@ -432,6 +433,7 @@ export class Navigation extends Component {
                 <Avatar src={avatarSrc} size={50} />
                 <span className="Navigation__dialectName fontAboriginalSans">
                   {this.props.intl.searchAndReplace(portalTitle)}
+                  {/* TODO: What is this? */}
                 </span>
               </a>
             </h2>
@@ -528,11 +530,7 @@ export class Navigation extends Component {
     return (
       <div className="Navigation__popoverInner">
         <Typography variant="title">
-          {this.props.intl.translate({
-            key: 'views.components.navigation.search_all',
-            default: 'Search all languages & words at FirstVoices.com',
-            case: 'first',
-          })}
+          <FVLabel transKey="views.components.navigation.search_all" defaultStr="Search all languages & words at FirstVoices.com" transform="first" />
         </Typography>
       </div>
     )
@@ -541,11 +539,7 @@ export class Navigation extends Component {
     return (
       <div className="Navigation__popoverInner">
         <Typography variant="body1" gutterBottom>
-          {this.props.intl.translate({
-            key: 'general.select_search_option',
-            default: 'Select Search Option',
-            case: 'words',
-          })}
+          <FVLabel transKey="general.select_search_option" defaultStr="Select Search Option" transform="words" />
         </Typography>
 
         <RadioGroup
@@ -568,12 +562,12 @@ export class Navigation extends Component {
                   FirstVoices.com
                 </Typography>
                 <Typography variant="caption" gutterBottom>
-                  {this.props.intl.translate({
-                    key: 'views.components.navigation.all_languages_and_words',
-                    default: 'All languages & words',
-                    case: 'words',
-                    append: '.',
-                  })}
+                  <FVLabel
+                    transKey="views.components.navigation.all_languages_and_words"
+                    defaultStr="All languages & words"
+                    transform="words"
+                    append="."
+                  />
                 </Typography>
               </div>
             }
@@ -586,27 +580,16 @@ export class Navigation extends Component {
               <div>
                 <Typography variant="body1" gutterBottom>
                   {selectn('routeParams.dialect_name', this.props) ||
-                    this.props.intl.translate({
-                      key: 'views.components.navigation.this_dialect',
-                      default: 'This Dialect',
-                      case: 'words',
-                    })}
+                    <FVLabel
+                      transKey="views.components.navigation.this_dialect"
+                      defaultStr="This Dialect"
+                      transform="words"
+                    />}
                 </Typography>
                 <Typography variant="caption" gutterBottom>
-                  {`${this.props.intl.translate({
-                    key: 'general.words',
-                    default: 'Words',
-                    case: 'first',
-                  })}, ${this.props.intl.translate({
-                    key: 'general.phrases',
-                    default: 'Phrases',
-                    case: 'first',
-                  })}, ${this.props.intl.translate({
-                    key: 'general.songs_and_stories',
-                    default: 'Songs &amp; Stories',
-                    case: 'words',
-                    append: '.',
-                  })}`}
+                  <FVLabel transKey="general.words" defaultStr="'Words" case="first" />,
+                  <FVLabel transKey="general.phrases" defaultStr="'Phrases" case="first" />,
+                  <FVLabel transKey="general.songs_and_stories" defaultStr="'Songs &amp; Stories" case="words" append="."/>
                 </Typography>
               </div>
             }

@@ -37,7 +37,6 @@ export class Login extends Component {
 
   static propTypes = {
     className: string,
-    label: string.isRequired,
     routeParams: object,
     // REDUX: reducers/state
     computeLogin: object.isRequired,
