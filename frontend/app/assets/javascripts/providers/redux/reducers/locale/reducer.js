@@ -2,9 +2,10 @@ import {
   SET_LOCALE, FV_LABELS_FETCH_START,
   FV_LABELS_FETCH_SUCCESS,
   FV_LABELS_FETCH_ERROR,
-  SET_WORKSPACE
+  SET_WORKSPACE,
+  SET_IMMERSION_MODE,
 } from './actionTypes'
-import IntlService from '../../../../views/services/intl';
+import IntlService from '../../../../views/services/intl'
 import en from 'views/../locale/locale.en.json'
 import fr from 'views/../locale/locale.fr.json'
 import sp from 'views/../locale/locale.sp.json'
@@ -13,18 +14,20 @@ const initialState = {
   localeLists: {
     en,
     fr,
-    sp
+    sp,
   },
+  locale: getLocaleFromStorage(), // en, fr, sp
+  immersionMode: '', // none, duo, solo
   intlService: new IntlService({
     en,
     fr,
-    sp
+    sp,
   }, getLocaleFromStorage()),
-  workspace: ""
+  workspace: '',
 }
 
 function getLocaleFromStorage() {
-  let locale;
+  let locale
 
   if (localStorage !== null && localStorage !== undefined) {
     if (localStorage.hasOwnProperty('intl-service-locale')) {
@@ -48,27 +51,44 @@ function getLocaleFromStorage() {
   if (locale === null) {
     locale = 'en'
   }
-  locale = "en";
 
-  return locale;
+  return locale
 }
 
 export const localeReducer =
   (state = initialState, action) => {
     switch (action.type) {
       case SET_LOCALE:
-        return Object.assign({}, state, { intlService: new IntlService(state.localeLists, action.payload, state.workspace) });
+        return Object.assign({}, state, {
+          intlService: new IntlService(state.localeLists, action.payload, state.workspace),
+          locale: action.payload,
+        })
+      case SET_IMMERSION_MODE:
+        return Object.assign({}, state, {
+          intlService: new IntlService(state.localeLists, action.payload, state.workspace),
+          immersionMode: action.payload,
+        })
       case SET_WORKSPACE:
-        console.log(action.payload);
-        return Object.assign({}, state, { intlService: new IntlService(state.localeLists, state.intlService.locale, action.payload), workspace: action.payload });
+        return Object.assign({}, state, {
+          intlService: new IntlService(state.localeLists, state.intlService.locale, action.payload),
+          workspace: action.payload,
+        })
       case FV_LABELS_FETCH_START:
-        return { ...state, fvlabelsFetch: { isFetching: true } };
+        return { ...state, fvlabelsFetch: { isFetching: true } }
       case FV_LABELS_FETCH_SUCCESS:
+        // eslint-disable-next-line no-case-declarations
         const newLocales = {
-          ...state.localeLists
-        };
-        newLocales[action.payload.workspace] = action.payload.labels;
-        return { ...state, workspace: action.payload.workspace, fvlabelsFetch: { isFetching: false, success: true }, intlService: new IntlService(newLocales, action.payload.locale, action.payload.workspace) };
+          ...state.localeLists,
+        }
+        newLocales[action.payload.workspace] = action.payload.labels
+        return {
+          ...state,
+          workspace: action.payload.workspace,
+          locale: action.payload.locale,
+          immersionMode: action.payload.immersionMode,
+          fvlabelsFetch: { isFetching: false, success: true },
+          intlService: new IntlService(newLocales, action.payload.locale, action.payload.workspace),
+        }
       case FV_LABELS_FETCH_ERROR:
         return {
           ...state,
@@ -76,8 +96,8 @@ export const localeReducer =
             isFetching: false,
             isError: true,
             error: action.error,
-            errorDismissed: false
-          }
+            errorDismissed: false,
+          },
         }
 
       default:

@@ -2,47 +2,52 @@ import {
   SET_LOCALE, FV_LABELS_FETCH_START,
   FV_LABELS_FETCH_SUCCESS,
   FV_LABELS_FETCH_ERROR,
-  SET_WORKSPACE
+  SET_WORKSPACE,
+  SET_IMMERSION_MODE,
 } from './actionTypes'
 import DirectoryOperations from 'operations/DirectoryOperations'
 
-export const setLocale = (locale = "") => {
+export const setLocale = (locale = '') => {
+  return (dispatch) => {
+    dispatch({ type: SET_LOCALE, payload: locale })
+  }
+}
+
+export const setImmersionMode = (immersionMode = '') => {
   return (dispatch, getState) => {
-    if (locale === "immersive" && getState().locale.workspace) {
-      getWorkspaceLabels(locale, getState().locale.workspace, dispatch);
+    if (immersionMode && getState().locale.workspace) {
+      getWorkspaceLabels(getState().locale.locale, getState().locale.workspace, immersionMode, dispatch)
     } else {
-      dispatch({ type: SET_LOCALE, payload: locale })
+      dispatch({ type: SET_IMMERSION_MODE, payload: immersionMode })
     }
   }
 }
 
-export const setIntlWorkspace = (workspace = "") => {
+export const setIntlWorkspace = (workspace = '') => {
   return (dispatch, getState) => {
-    if (getState().locale.intlService.locale === "immersive" && workspace) {
-      return getWorkspaceLabels(getState().locale.intlService.locale, workspace, dispatch);
-    } else {
-      dispatch({ type: SET_WORKSPACE, payload: workspace });
+    if (getState().locale.immersionMode && workspace) {
+      return getWorkspaceLabels(getState().locale.intlService.locale, workspace, getState().locale.immersionMode, dispatch)
     }
+    dispatch({ type: SET_WORKSPACE, payload: workspace })
   }
 }
 
-function getWorkspaceLabels(locale, workspace, dispatch) {
-
+function getWorkspaceLabels(locale, workspace, immersionMode, dispatch) {
   function _getImmersiveWords() {
     return DirectoryOperations
-      .getDocumentsViaResultSetQuery(workspace, "FVLabel", "dc:title, fvlabel:labelKey")
+      .getDocumentsViaResultSetQuery(workspace, 'FVLabel', 'dc:title, fvlabel:labelKey')
       .then(result => result.entries.reduce((holder, entry) => {
-        const path = entry["fvlabel:labelKey"].split(".");
-        let targetRef = holder;
+        const path = entry['fvlabel:labelKey'].split('.')
+        let targetRef = holder
         path.slice(0, -1).forEach(step => {
           if (!targetRef[step]) {
             targetRef[step] = {}
           }
           targetRef = targetRef[step]
         })
-        targetRef[path[path.length - 1]] = entry["dc:title"];
-        return holder;
-      }, {}));
+        targetRef[path[path.length - 1]] = entry['dc:title']
+        return holder
+      }, {}))
   }
 
   dispatch({ type: FV_LABELS_FETCH_START })
@@ -53,12 +58,12 @@ function getWorkspaceLabels(locale, workspace, dispatch) {
         type: FV_LABELS_FETCH_SUCCESS, payload: {
           labels,
           workspace,
-          locale
-        }
+          locale,
+          immersionMode,
+        },
       })
     })
     .catch((error) => {
       dispatch({ type: FV_LABELS_FETCH_ERROR, error: error })
     })
-
 }
