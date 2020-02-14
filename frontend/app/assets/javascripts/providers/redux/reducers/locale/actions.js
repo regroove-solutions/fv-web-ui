@@ -26,7 +26,7 @@ export const setImmersionMode = (immersionMode = '') => {
 export const setIntlWorkspace = (workspace = '') => {
   return (dispatch, getState) => {
     if (getState().locale.immersionMode && workspace) {
-      return getWorkspaceLabels(getState().locale.intlService.locale, workspace, getState().locale.immersionMode, dispatch)
+      getWorkspaceLabels(getState().locale.intlService.locale, workspace, getState().locale.immersionMode, dispatch)
     }
     dispatch({ type: SET_WORKSPACE, payload: workspace })
   }

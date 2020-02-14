@@ -36,12 +36,11 @@ export default class IntlService {
   notFoundSuffix = ''
   tagsRegex = /(<[^>]+>)(.*)(<\/[^>]+>)/i
   _localeLists = {};
-  _workspace = ""
+  _fallbackLocale = ""
 
-  constructor(startingLocales, locale, workspace) {
-    // this.localeString = locale;
-    this.localeString = "immersive";
-    this._workspace = workspace;
+  constructor(startingLocales, locale, fallbackLocale) {
+    this.localeString = locale;
+    this._fallbackLocale = fallbackLocale;
     Object.assign(this._localeLists, startingLocales);
   }
 
@@ -83,7 +82,7 @@ export default class IntlService {
       default: defaultStr || '',
       params: params || [],
       case: strCase || null,
-      locale: locale || (this.localeString === "immersive" ? this._workspace : this.localeString),
+      locale: locale || this.localeString,
       prepend: prepend || '',
       append: append || '',
     })
@@ -190,8 +189,8 @@ export default class IntlService {
       }
     }
 
-    if (this.useEnglishAsFallback && (translateData.locale || this.localeString) !== 'en') {
-      translateData.locale = 'en'
+    if (this._fallbackLocale && (translateData.locale || this.localeString) !== this._fallbackLocale) {
+      translateData.locale = this._fallbackLocale;
       return this.fallbackPrefix + this.translate(translateData) + this.fallbackSuffix
     }
 

@@ -10,19 +10,19 @@ import en from 'views/../locale/locale.en.json'
 import fr from 'views/../locale/locale.fr.json'
 import sp from 'views/../locale/locale.sp.json'
 
+const startingLocaleLists = {
+  en,
+  fr,
+  sp,
+}
+
+const startingLocale = getLocaleFromStorage()
+
 const initialState = {
-  localeLists: {
-    en,
-    fr,
-    sp,
-  },
-  locale: getLocaleFromStorage(), // en, fr, sp
+  localeLists: startingLocaleLists,
+  locale: startingLocale, // en, fr, sp
   immersionMode: '', // none, duo, solo
-  intlService: new IntlService({
-    en,
-    fr,
-    sp,
-  }, getLocaleFromStorage()),
+  intlService: new IntlService(startingLocaleLists, startingLocale, startingLocale),
   workspace: '',
 }
 
@@ -55,22 +55,28 @@ function getLocaleFromStorage() {
   return locale
 }
 
+function setLocaleToStorage(locale = '') {
+  localStorage.setItem('intl-service-locale', locale)
+  return
+}
+
 export const localeReducer =
   (state = initialState, action) => {
     switch (action.type) {
       case SET_LOCALE:
+        setLocaleToStorage(action.payload)
         return Object.assign({}, state, {
-          intlService: new IntlService(state.localeLists, action.payload, state.workspace),
+          intlService: new IntlService(state.localeLists, action.payload, action.payload),
           locale: action.payload,
         })
       case SET_IMMERSION_MODE:
         return Object.assign({}, state, {
-          intlService: new IntlService(state.localeLists, action.payload, state.workspace),
+          intlService: new IntlService(state.localeLists, state.locale, state.locale),
           immersionMode: action.payload,
         })
       case SET_WORKSPACE:
         return Object.assign({}, state, {
-          intlService: new IntlService(state.localeLists, state.intlService.locale, action.payload),
+          intlService: new IntlService(state.localeLists, state.locale, state.locale),
           workspace: action.payload,
         })
       case FV_LABELS_FETCH_START:
@@ -81,13 +87,14 @@ export const localeReducer =
           ...state.localeLists,
         }
         newLocales[action.payload.workspace] = action.payload.labels
+        setLocaleToStorage(action.payload.locale)
         return {
           ...state,
           workspace: action.payload.workspace,
           locale: action.payload.locale,
           immersionMode: action.payload.immersionMode,
           fvlabelsFetch: { isFetching: false, success: true },
-          intlService: new IntlService(newLocales, action.payload.locale, action.payload.workspace),
+          intlService: new IntlService(newLocales, action.payload.immersionMode ? action.payload.workspace : action.payload.locale, action.payload.locale),
         }
       case FV_LABELS_FETCH_ERROR:
         return {

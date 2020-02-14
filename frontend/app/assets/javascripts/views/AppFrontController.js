@@ -261,7 +261,6 @@ export class AppFrontController extends Component {
             {footer}
           </div>
         </div>
-        <FVLabel />
       </div>
     )
   }
