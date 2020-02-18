@@ -17,9 +17,6 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Immutable, { Map } from 'immutable'
 
-import { Table, TableHead, TableBody, TableCell, TableRow, TableFooter, IconButton } from '@material-ui/core'
-import { FirstPage, KeyboardArrowLeft, KeyboardArrowRight, LastPage } from '@material-ui/icons'
-
 // REDUX
 import { connect } from 'react-redux'
 // REDUX: actions/dispatch/func
@@ -28,73 +25,21 @@ import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
 
 import selectn from 'selectn'
 import IntlService from 'views/services/intl'
+import FVButton from 'views/components/FVButton'
+
+import Edit from '@material-ui/icons/Edit'
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import ProviderHelpers from 'common/ProviderHelpers'
 const intl = IntlService.instance
 
 import ImmersionTable from 'views/components/ImmersionTable'
+import LabelModal from './Edit'
 
 /**
  * List view for words in immersion
  */
-const { array, bool, func, number, object, string } = PropTypes
-
-class TablePaginationActions extends React.Component {
-  static propTypes = {
-    classes: object.isRequired,
-    count: number.isRequired,
-    onChangePage: func.isRequired,
-    page: number.isRequired,
-    rowsPerPage: number.isRequired,
-    theme: object.isRequired,
-  }
-
-  handleFirstPageButtonClick = (event) => {
-    this.props.onChangePage(event, 0)
-  }
-
-  handleBackButtonClick = (event) => {
-    this.props.onChangePage(event, this.props.page - 1)
-  }
-
-  handleNextButtonClick = (event) => {
-    this.props.onChangePage(event, this.props.page + 1)
-  }
-
-  handleLastPageButtonClick = (event) => {
-    this.props.onChangePage(event, Math.max(0, Math.ceil(this.props.count / this.props.rowsPerPage) - 1))
-  }
-
-  render() {
-    const { classes, count, page, rowsPerPage, theme } = this.props
-
-    return (
-      <div className={classes.root}>
-        <IconButton onClick={this.handleFirstPageButtonClick} disabled={page === 0} aria-label="First Page">
-          {theme.direction === 'rtl' ? <LastPage /> : <FirstPage />}
-        </IconButton>
-        <IconButton onClick={this.handleBackButtonClick} disabled={page === 0} aria-label="Previous Page">
-          {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-        </IconButton>
-        <IconButton
-          onClick={this.handleNextButtonClick}
-          disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-          aria-label="Next Page"
-        >
-          {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-        </IconButton>
-        <IconButton
-          onClick={this.handleLastPageButtonClick}
-          disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-          aria-label="Last Page"
-        >
-          {theme.direction === 'rtl' ? <FirstPage /> : <LastPage />}
-        </IconButton>
-      </div>
-    )
-  }
-}
+const { array, func, number, object, string } = PropTypes
 
 class ImmersionListView extends Component {
   static propTypes = {
@@ -119,6 +64,8 @@ class ImmersionListView extends Component {
 
     this.state = {
       mappedTranslations: null,
+      isEditingOpen: false,
+      editingLabel: null,
     }
   }
 
@@ -152,6 +99,36 @@ class ImmersionListView extends Component {
     newProps.fetchLabels(this._getPathOrParentID(newProps), '')
   }
 
+  openEditModal(label) {
+    this.setState({ isEditingOpen: true, editingLabel: label })
+  }
+
+  closeEditModal = (save = false) => {
+    this.setState({ isEditingOpen: false, editingLabel: null })
+    if (save) {
+      this.fetchData(this.props)
+    }
+  }
+
+  renderEditButton(label) {
+    return (
+      <FVButton
+        type="button"
+        variant="flat"
+        size="small"
+        component="a"
+        className="DictionaryList__linkEdit PrintHide"
+        href={''}
+        onClick={(e) => {
+          e.preventDefault()
+          this.openEditModal(label)
+        }}
+      >
+        <Edit title={intl.trans('edit', 'Edit', 'first')} />
+      </FVButton>
+    )
+  }
+
   mapTranslatedLabels() {
     const { allLabels, allCategories, computeLabels } = this.props
     const computedLabels = ProviderHelpers.getEntry(computeLabels, this._getPathOrParentID(this.props))
@@ -162,21 +139,31 @@ class ImmersionListView extends Component {
       return
     }
     const mappedLabels = allLabels.map((v) => {
+      const strings = v.template_strings.split(',').map((s) => "'" + s + "'")
+
       const label = {
         labelKey: v.id,
         type: v.type,
-        templateStrings: v.template_strings,
+        templateStrings: strings,
         categoryId: v.category,
-        base: intl.translate({ key: v.id, default: 'Translated Label', case: 'first' }),
+        base: intl.translate({ key: v.id, default: 'Translated Label', case: 'first', params: [strings] }),
+        translatedLabel: undefined,
+        category: undefined,
+        editButton: undefined,
+        uid: undefined,
       }
-      const translatedLabel = translatedLabels.find((l) => {
-        return l.properties['fvlabel:labelKey'] === v.id
-      })
-      label.translation = translatedLabel ? translatedLabel.properties['dc:title'] : undefined
       const category = allCategories.find((c) => {
         return c.id === v.category
       })
       label.category = category ? category.label : undefined
+      const translatedLabel = translatedLabels.find((l) => {
+        return l.properties['fvlabel:labelKey'] === v.id
+      })
+      if (translatedLabel) {
+        label.translation = translatedLabel.properties['dc:title']
+        label.uid = translatedLabel.uid
+        label.editButton = this.renderEditButton(label)
+      }
       return label
     })
     this.setState({ mappedTranslations: mappedLabels })
@@ -184,7 +171,7 @@ class ImmersionListView extends Component {
   }
 
   render() {
-    const { mappedTranslations } = this.state
+    const { mappedTranslations, isEditingOpen, editingLabel } = this.state
 
     const computeEntities = Immutable.fromJS([
       {
@@ -207,6 +194,7 @@ class ImmersionListView extends Component {
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
         {!mappedTranslations ? 'Loading...' : <ImmersionTable mappedTranslations={mappedTranslations} />}
+        {<LabelModal open={isEditingOpen} handleClose={(save) => this.closeEditModal(save)} label={editingLabel} />}
       </PromiseWrapper>
     )
   }

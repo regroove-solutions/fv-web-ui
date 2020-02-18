@@ -112,7 +112,16 @@ export default class ImmersionTable extends Component {
               .map((row) => {
                 return (
                   <TableRow key={row.labelKey}>
-                    <TableCell>{row.translation || 'UNTRANSLATED'}</TableCell>
+                    <TableCell>
+                      {row.translation ? (
+                        <>
+                          {row.translation}
+                          {row.editButton}
+                        </>
+                      ) : (
+                        'UNTRANSLATED'
+                      )}
+                    </TableCell>
                     <TableCell>{row.base}</TableCell>
                     <TableCell>{row.type}</TableCell>
                     <TableCell>{row.category || 'UNCATEGORIZED'}</TableCell>
