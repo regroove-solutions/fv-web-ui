@@ -32,11 +32,14 @@ import {
   DialogContentText,
   DialogTitle,
   TextField,
+  Chip,
 } from '@material-ui/core'
 
 import { Document } from 'nuxeo'
 import IntlService from 'views/services/intl'
 import ProviderHelpers from 'common/ProviderHelpers'
+
+import TranslationInput from './translationInput'
 
 const intl = IntlService.instance
 
@@ -116,6 +119,22 @@ class LabelModal extends Component {
     })
   }
 
+  renderTranslation = (label, type = 'base') => {
+    if (label.type === 'phrase') return label[type]
+    var translation = label[type]
+    var count = 0
+    const words = translation.split(/(%s)/g).map((word, i) => {
+      if (word === '%s') {
+        const chip = <Chip key={i} label={label.templateStrings[count]} />
+        count++
+        return chip
+      } else {
+        return <span key={i}>{word}</span>
+      }
+    })
+    return words
+  }
+
   render() {
     const { fullScreen, open, handleClose, label, computeLabel } = this.props
     const { translation } = this.state
@@ -157,6 +176,7 @@ class LabelModal extends Component {
                       readOnly: true,
                     }}
                   />
+                  <span>{this.renderTranslation(label, 'base')}</span>
                   <TextField
                     id="category"
                     label="Category"
@@ -176,22 +196,29 @@ class LabelModal extends Component {
                     Monolingual' for their site experience.
                   </DialogContentText>
                   {/* PHRASE VS TEMPLATE ENTRY */}
-                  <TextField
-                    id="translation"
-                    label="Translation"
-                    fullWidth
-                    multiline
-                    required
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    rowsMax="4"
-                    value={translation}
-                    onChange={this.handleChange('translation')}
-                    margin="normal"
-                  />
-                  {/* OPTIONAL AUDIO FILES */}
-                  <div>audio files</div>
+                  {label.type === 'phrase' ? (
+                    <TextField
+                      id="translation"
+                      label="Translation"
+                      fullWidth
+                      multiline
+                      required
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      rowsMax="4"
+                      value={translation}
+                      onChange={this.handleChange('translation')}
+                      margin="normal"
+                    />
+                  ) : (
+                    <div>
+                      <TranslationInput label={label} />
+                    </div>
+                  )}
+
+                  {/* OPTIONAL AUDIO FILE */}
+                  <div>audio file</div>
                 </DialogContent>
                 <DialogActions>
                   <Button onClick={() => handleClose()} color="primary">

@@ -16,7 +16,7 @@ limitations under the License.
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import { Table, TableBody, TableCell, TableRow, TableFooter, TablePagination } from '@material-ui/core'
+import { Table, TableBody, TableCell, TableRow, TableFooter, TablePagination, Chip } from '@material-ui/core'
 import TablePaginationActions from './tablepagination'
 import SortingHeader from './sortingheader'
 import IntlService from 'views/services/intl'
@@ -87,6 +87,22 @@ export default class ImmersionTable extends Component {
     this.setState({ order, orderBy })
   }
 
+  renderTranslation = (label, type = 'base') => {
+    if (label.type === 'phrase') return label[type]
+    var translation = label[type]
+    var count = 0
+    const words = translation.split(/(%s)/g).map((word, i) => {
+      if (word === '%s') {
+        const chip = <Chip key={i} label={label.templateStrings[count]} />
+        count++
+        return chip
+      } else {
+        return <span key={i}>{word}</span>
+      }
+    })
+    return words
+  }
+
   render() {
     const { mappedTranslations } = this.props
     const { pageSize, pageNumber, order, orderBy } = this.state
@@ -115,14 +131,14 @@ export default class ImmersionTable extends Component {
                     <TableCell>
                       {row.translation ? (
                         <>
-                          {row.translation}
+                          {this.renderTranslation(row, 'translation')}
                           {row.editButton}
                         </>
                       ) : (
                         'UNTRANSLATED'
                       )}
                     </TableCell>
-                    <TableCell>{row.base}</TableCell>
+                    <TableCell>{this.renderTranslation(row, 'base')}</TableCell>
                     <TableCell>{row.type}</TableCell>
                     <TableCell>{row.category || 'UNCATEGORIZED'}</TableCell>
                   </TableRow>
