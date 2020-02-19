@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 // REDUX: actions/dispatch/func
 import { pushWindowPath, replaceWindowPath, updateWindowPath } from 'providers/redux/reducers/windowPath'
 import { changeSiteTheme, setRouteParams } from 'providers/redux/reducers/navigation'
+import { setIntlWorkspace } from 'providers/redux/reducers/locale'
 import { nuxeoConnect, getCurrentUser } from 'providers/redux/reducers/nuxeo'
 
 import selectn from 'selectn'
@@ -35,6 +36,7 @@ import IntlService from 'views/services/intl'
 import { PageError } from 'views/pages'
 
 import '!style-loader!css-loader!./AppFrontController.css'
+import FVLabel from './components/FVLabel/index'
 
 const { any, array, func, object, string } = PropTypes
 
@@ -100,6 +102,8 @@ export class AppFrontController extends Component {
     matchedPage: undefined,
   }
 
+  intl = IntlService.instance
+
   constructor(props, context) {
     super(props, context)
     this.state = this._getInitialState()
@@ -146,12 +150,17 @@ export class AppFrontController extends Component {
     if (_routeHasChanged || loggedIn || sortOrderChanged || sortByChanged) {
       this._route({ props: this.props })
     }
+    if (
+      prevProps.routeParams.dialect_path !== this.props.routeParams.dialect_path
+    ) {
+      this.props.setIntlWorkspace(this.props.routeParams.dialect_path);
+    }
   }
 
   render() {
-    const { matchedPage, routeParams } = this.props
+    const { matchedPage, routeParams, localeLoading } = this.props
     // View during user checking, pre routing
-    if (matchedPage === undefined) {
+    if (matchedPage === undefined || localeLoading) {
       return (
         <div id="app-loader" className="app-loader">
           <div
@@ -271,7 +280,7 @@ export class AppFrontController extends Component {
 
     return {
       routes,
-      warningsDismissed: false,
+      warningsDismissed: false
     }
   }
 
@@ -503,11 +512,12 @@ export class AppFrontController extends Component {
 }
 // REDUX: reducers/state
 const mapStateToProps = (state) => {
-  const { navigation, nuxeo, windowPath } = state
+  const { navigation, nuxeo, windowPath, locale } = state
 
   const { properties, route } = navigation
   const { computeLogin } = nuxeo
   const { splitWindowPath, _windowPath } = windowPath
+
   return {
     computeLogin,
     properties,
@@ -516,6 +526,8 @@ const mapStateToProps = (state) => {
     search: route.search,
     splitWindowPath,
     windowPath: _windowPath,
+    localeLoading: selectn("fvlabelsFetch.isFetching", locale),
+    locale: selectn("intlService.locale", locale)
   }
 }
 
@@ -528,6 +540,7 @@ const mapDispatchToProps = {
   updateWindowPath,
   nuxeoConnect,
   getCurrentUser,
+  setIntlWorkspace
 }
 
 export default withTheme()(connect(mapStateToProps, mapDispatchToProps)(AppFrontController))

@@ -135,6 +135,15 @@ class LabelModal extends Component {
     return words
   }
 
+  scriptTranslation = (label) => {
+    const { translation } = this.state
+    var words = translation
+    label.templateStrings.forEach((string) => {
+      words = words.replace('%s', string)
+    })
+    return words
+  }
+
   render() {
     const { fullScreen, open, handleClose, label, computeLabel } = this.props
     const { translation } = this.state
@@ -214,6 +223,8 @@ class LabelModal extends Component {
                   ) : (
                     <div>
                       <TranslationInput label={label} />
+                      <div>preview</div>
+                      <span>{this.scriptTranslation(label)}</span>
                     </div>
                   )}
 

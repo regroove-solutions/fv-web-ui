@@ -42,6 +42,7 @@ import { fvUserReducer } from './fvUser'
 import { fvVideoReducer } from './fvVideo'
 import { fvWordReducer } from './fvWord'
 import { listViewReducer } from './listView'
+import { localeReducer } from './locale'
 import { navigationReducer } from './navigation'
 import { nuxeoReducer } from './nuxeo'
 import { reportsReducer } from './reports'
@@ -75,6 +76,7 @@ export default combineReducers({
   fvUser: fvUserReducer,
   fvVideo: fvVideoReducer,
   fvWord: fvWordReducer,
+  locale: localeReducer,
   listView: listViewReducer,
   navigation: navigationReducer,
   nuxeo: nuxeoReducer,

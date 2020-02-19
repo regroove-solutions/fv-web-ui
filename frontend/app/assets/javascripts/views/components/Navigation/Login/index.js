@@ -28,6 +28,7 @@ import NavigationHelpers from 'common/NavigationHelpers'
 import IntlService from 'views/services/intl'
 
 import '!style-loader!css-loader!./styles.css'
+import FVLabel from '../../FVLabel/index'
 
 const { func, object, string } = PropTypes
 
@@ -36,7 +37,6 @@ export class Login extends Component {
 
   static propTypes = {
     className: string,
-    label: string.isRequired,
     routeParams: object,
     // REDUX: reducers/state
     computeLogin: object.isRequired,
@@ -118,7 +118,9 @@ export class Login extends Component {
     if (this.props.computeLogin.success && this.props.computeLogin.isConnected) {
       return (
         <div className={`Login Login--welcome hidden-xs ${className}`}>
-          {this.intl.translate({ key: 'general.welcome', default: 'WELCOME', case: 'upper' })},{' '}
+          <FVLabel transKey="general.welcome" defaultStr="WELCOME" transform="upper"/>,
+          {this.intl.translate({ key: 'general.welcome', default: 'WELCOME', case: 'upper' })},
+          {' '}
           {selectn('response.properties.firstName', this.props.computeLogin)}
         </div>
       )

@@ -502,7 +502,7 @@ function generateListButtons({
   let buttonFlashcard = null
   let exportDialect = null
 
-  if (hasViewModeButtons && hasFlashcard) {
+  if (hasViewModeButtons && dictionaryListViewMode === undefined && hasFlashcard) {
     buttonFlashcard =
       dictionaryListViewMode === VIEWMODE_FLASHCARD ? (
         <FVButton
