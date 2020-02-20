@@ -21,6 +21,7 @@ import { connect } from 'react-redux'
 import { loadNavigation, toggleMenuAction } from 'providers/redux/reducers/navigation'
 import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
 import { setImmersionMode, setLocale } from 'providers/redux/reducers/locale'
+import { updateCurrentUser } from 'providers/redux/reducers/nuxeo/index'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers, { routeHasChanged } from 'common/NavigationHelpers'
@@ -97,6 +98,7 @@ export class Navigation extends Component {
     toggleMenuAction: func.isRequired,
     setImmersionMode: func.isRequired,
     setLocale: func.isRequired,
+    updateCurrentUser: func.isRequired,
 
     // countTotalTasks: func.isRequired,
   }
@@ -502,6 +504,7 @@ export class Navigation extends Component {
   }
 
   _handleChangeImmersion = (value) => {
+    this.props.updateCurrentUser(value)
     this.props.setImmersionMode(value)
   }
 
@@ -589,7 +592,7 @@ export class Navigation extends Component {
                 <Typography variant="caption" gutterBottom>
                   <FVLabel transKey="general.words" defaultStr="'Words" case="first" />,
                   <FVLabel transKey="general.phrases" defaultStr="'Phrases" case="first" />,
-                  <FVLabel transKey="general.songs_and_stories" defaultStr="'Songs &amp; Stories" case="words" append="."/>
+                  <FVLabel transKey="general.songs_and_stories" defaultStr="'Songs &amp; Stories" case="words" append="." />
                 </Typography>
               </div>
             }
@@ -633,6 +636,7 @@ const mapDispatchToProps = {
   toggleMenuAction,
   setImmersionMode,
   setLocale,
+  updateCurrentUser,
 }
 
 const styles = (theme) => {
