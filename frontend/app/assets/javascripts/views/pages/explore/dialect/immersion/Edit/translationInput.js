@@ -18,17 +18,13 @@ import PropTypes from 'prop-types'
 
 import { Input, Chip } from '@material-ui/core'
 
-import IntlService from 'views/services/intl'
-
-const intl = IntlService.instance
-
 /**
  * List view for words in immersion
  */
-const { bool, func, object } = PropTypes
+const { bool, func, array } = PropTypes
 
 class TranslationInput extends Component {
-  static propTypes = { label: object }
+  static propTypes = { templateStrings: array, translation: array, onChange: func }
   static defaultProps = {}
 
   constructor(props, context) {
@@ -43,37 +39,26 @@ class TranslationInput extends Component {
 
   handleChange = (name) => (event) => {}
 
-  renderTranslation = (label) => {
+  renderTranslation = () => {
+    const { translation, templateStrings, onChange } = this.props
     var count = 0
-    var inputCount = 0
-    const words = label.translation.split(/(%s)/g)
-    const translation = words.map((word, i) => {
+    const words = translation.map((word, i) => {
       const output = []
       if (word === '%s') {
-        if (i === 0) {
-          output.push(<Input key={inputCount.toString()} id={inputCount.toString()} value={''} />)
-          inputCount++
-        }
-        output.push(<Chip key={count.toString()} label={label.templateStrings[count]} />)
-        if (i === words.length - 1) {
-          output.push(<Input key={inputCount.toString()} id={inputCount.toString()} value={''} />)
-          inputCount++
-        }
+        output.push(<Chip key={i.toString()} label={templateStrings[count]} />)
         count++
       } else {
-        output.push(<Input key={inputCount.toString()} id={inputCount.toString()} value={word} />)
-        inputCount++
+        output.push(
+          <Input key={i.toString()} id={i.toString()} value={word} onChange={(event) => onChange(event, i)} />
+        )
       }
       return output
     })
-    return translation
+    return words
   }
 
   render() {
-    const { label } = this.props
-    const {} = this.state
-
-    return <div>{label && this.renderTranslation(label)}</div>
+    return <div>{this.renderTranslation()}</div>
   }
 }
 

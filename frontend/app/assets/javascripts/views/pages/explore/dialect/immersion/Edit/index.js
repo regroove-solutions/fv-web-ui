@@ -36,12 +36,9 @@ import {
 } from '@material-ui/core'
 
 import { Document } from 'nuxeo'
-import IntlService from 'views/services/intl'
 import ProviderHelpers from 'common/ProviderHelpers'
 
 import TranslationInput from './translationInput'
-
-const intl = IntlService.instance
 
 /**
  * List view for words in immersion
@@ -66,7 +63,7 @@ class LabelModal extends Component {
     super(props, context)
 
     this.state = {
-      translation: this.props.label ? label.translation : '',
+      translation: this.props.label ? this.mapTranslation(label.translation) : [],
     }
   }
 
@@ -75,20 +72,33 @@ class LabelModal extends Component {
   componentDidUpdate(prevProps) {
     if (prevProps.label && this.props.label && prevProps.label.translation !== this.props.label.translation) {
       //   change label
-      this.setState({ translation: this.props.label.translation })
+      this.setState({ translation: this.mapTranslation(this.props.label.translation) })
     } else if (prevProps.label && !this.props.label) {
       // empty label
-      this.setState({ translation: '' })
+      this.setState({ translation: [] })
     } else if (!prevProps.label && this.props.label) {
       // new label
       this.props.fetchLabel(this.props.label.uid)
-      this.setState({ translation: this.props.label.translation })
+      this.setState({ translation: this.mapTranslation(this.props.label.translation) })
     }
   }
 
-  handleChange = (name) => (event) => {
+  mapTranslation = (translation) => {
+    const mappedTranslation = translation.split(/(%s)/g)
+    if (mappedTranslation[0] === '%s') {
+      mappedTranslation.splice(0, 0, '')
+    }
+    if (mappedTranslation[-1] === '%s') {
+      mappedTranslation.push('')
+    }
+    return mappedTranslation
+  }
+
+  handleChange = (event, index) => {
+    const newState = [...this.state.translation]
+    newState[index] = event.target.value
     this.setState({
-      [name]: event.target.value,
+      translation: newState,
     })
   }
 
@@ -112,7 +122,7 @@ class LabelModal extends Component {
       nuxeo: word.response._nuxeo,
     })
 
-    newDocument.set({ 'dc:title': translation })
+    newDocument.set({ 'dc:title': translation.join('') })
 
     updateLabel(newDocument, null, null).then(() => {
       handleClose(true)
@@ -137,7 +147,7 @@ class LabelModal extends Component {
 
   scriptTranslation = (label) => {
     const { translation } = this.state
-    var words = translation
+    var words = translation.join('')
     label.templateStrings.forEach((string) => {
       words = words.replace('%s', string)
     })
@@ -216,13 +226,17 @@ class LabelModal extends Component {
                         shrink: true,
                       }}
                       rowsMax="4"
-                      value={translation}
-                      onChange={this.handleChange('translation')}
+                      value={translation[0]}
+                      onChange={(ev) => this.handleChange(ev, 0)}
                       margin="normal"
                     />
                   ) : (
                     <div>
-                      <TranslationInput label={label} />
+                      <TranslationInput
+                        templateStrings={label.templateStrings}
+                        translation={translation}
+                        onChange={this.handleChange}
+                      />
                       <div>preview</div>
                       <span>{this.scriptTranslation(label)}</span>
                     </div>
