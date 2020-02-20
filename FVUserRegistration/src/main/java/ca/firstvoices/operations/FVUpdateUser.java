@@ -84,13 +84,12 @@ public class FVUpdateUser {
         NuxeoPrincipal currentUser = (NuxeoPrincipal) session.getPrincipal();
         UserManager userManager = Framework.getService(UserManager.class);
         DocumentModel userDoc = userManager.getUserModel(username);
-        DocumentModel selfDoc = userManager.getUserModel(currentUser.getName());
 
         if (userDoc == null) {
             throw new DocumentNotFoundException("Cannot update non-existent user: " + username);
         }
 
-        if (!userDoc.equals(selfDoc)) {
+        if (!userManager.getPrincipal(username).equals(currentUser)) {
             throw new DocumentSecurityException("You can only edit yourself");
         }
 
