@@ -32,7 +32,6 @@ import { searchDialectUpdate } from 'providers/redux/reducers/searchDialect'
 import selectn from 'selectn'
 
 import ProviderHelpers from 'common/ProviderHelpers'
-// import IntlService from 'views/services/intl'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base'
@@ -41,8 +40,6 @@ import { withTheme } from '@material-ui/core/styles'
 // Immersion specific
 import ImmersionListView from 'views/pages/explore/dialect/immersion/list-view'
 import ImmersionFilterList from 'views/components/ImmersionFilterList'
-
-// const intl = IntlService.instance
 
 const { array, bool, func, object } = PropTypes
 class PageDialectImmersionList extends PageDialectLearnBase {

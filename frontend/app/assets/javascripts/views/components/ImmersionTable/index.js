@@ -19,9 +19,6 @@ import PropTypes from 'prop-types'
 import { Table, TableBody, TableCell, TableRow, TableFooter, TablePagination, Chip } from '@material-ui/core'
 import TablePaginationActions from './tablepagination'
 import SortingHeader from './sortingheader'
-import IntlService from 'views/services/intl'
-
-const intl = IntlService.instance
 
 /**
  * List view for words in immersion

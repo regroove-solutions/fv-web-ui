@@ -31,7 +31,6 @@ import Edit from '@material-ui/icons/Edit'
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import ProviderHelpers from 'common/ProviderHelpers'
-const intl = IntlService.instance
 
 import ImmersionTable from 'views/components/ImmersionTable'
 import LabelModal from './Edit'
@@ -52,6 +51,7 @@ class ImmersionListView extends Component {
 
     // // Search
     // // REDUX: reducers/state
+    intl: object.isRequired,
     computeDialect2: object.isRequired,
     computeLabels: object.isRequired,
     fetchDialect2: func.isRequired,
@@ -111,6 +111,7 @@ class ImmersionListView extends Component {
   }
 
   renderEditButton(label) {
+    const { intl } = this.props
     return (
       <FVButton
         type="button"
@@ -130,7 +131,7 @@ class ImmersionListView extends Component {
   }
 
   mapTranslatedLabels() {
-    const { allLabels, allCategories, computeLabels } = this.props
+    const { allLabels, allCategories, computeLabels, intl } = this.props
     const computedLabels = ProviderHelpers.getEntry(computeLabels, this._getPathOrParentID(this.props))
     const translatedLabels = selectn('response.entries', computedLabels)
 
@@ -141,7 +142,6 @@ class ImmersionListView extends Component {
     const mappedLabels = allLabels.map((v) => {
       const strings = v.template_strings.split(',').map((s) => '%s')
       const templateStrings = v.template_strings.split(',')
-
       const label = {
         labelKey: v.id,
         type: v.type,
@@ -203,14 +203,16 @@ class ImmersionListView extends Component {
 
 // REDUX: reducers/state
 const mapStateToProps = (state /*, ownProps*/) => {
-  const { fvDialect, fvLabel } = state
+  const { fvDialect, fvLabel, locale } = state
 
   const { computeLabels } = fvLabel
   const { computeDialect2 } = fvDialect
+  const { intlService } = locale
 
   return {
     computeDialect2,
     computeLabels,
+    intl: intlService,
   }
 }
 
