@@ -66,7 +66,7 @@ export const localeReducer =
       case SET_LOCALE:
         setLocaleToStorage(action.payload)
         return Object.assign({}, state, {
-          intlService: new IntlService(state.localeLists, action.payload, action.payload),
+          intlService: new IntlService(state.localeLists, state.workspace && state.immersionMode ? state.workspace : action.payload, action.payload),
           locale: action.payload,
         })
       case SET_IMMERSION_MODE:
@@ -93,6 +93,7 @@ export const localeReducer =
           workspace: action.payload.workspace,
           locale: action.payload.locale,
           immersionMode: action.payload.immersionMode,
+          localeLists: newLocales,
           fvlabelsFetch: { isFetching: false, success: true },
           intlService: new IntlService(newLocales, action.payload.immersionMode ? action.payload.workspace : action.payload.locale, action.payload.locale),
         }
