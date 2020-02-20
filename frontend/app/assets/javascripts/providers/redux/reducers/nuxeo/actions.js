@@ -1,3 +1,4 @@
+import selectn from 'selectn'
 import BaseOperations from 'operations/BaseOperations'
 import UserOperations from 'operations/UserOperations'
 import { setImmersionMode } from './../locale/actions'
@@ -34,9 +35,9 @@ export const getCurrentUser = () => {
 }
 
 export const updateCurrentUser = (languagePreference = 0) => {
-  return (dispatch) => {
+  return (dispatch, getState) => {
     dispatch({ type: GET_CURRENT_USER_START })
-    return UserOperations.fvUpdateUser('lworkman', languagePreference.toString()).then(() => {
+    return UserOperations.fvUpdateUser(selectn('nuxeo.computeLogin.response.id', getState()), languagePreference.toString()).then(() => {
       return UserOperations.getCurrentUser()
         .then((response) => {
           dispatch({ type: GET_CURRENT_USER_SUCCESS, user: response, isAnonymous: response.isAnonymous })
