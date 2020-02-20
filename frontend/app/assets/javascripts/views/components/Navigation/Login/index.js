@@ -119,7 +119,6 @@ export class Login extends Component {
       return (
         <div className={`Login Login--welcome hidden-xs ${className}`}>
           <FVLabel transKey="general.welcome" defaultStr="WELCOME" transform="upper"/>,
-          {this.intl.translate({ key: 'general.welcome', default: 'WELCOME', case: 'upper' })},
           {' '}
           {selectn('response.properties.firstName', this.props.computeLogin)}
         </div>

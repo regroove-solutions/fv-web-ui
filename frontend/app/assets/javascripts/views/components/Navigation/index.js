@@ -20,7 +20,7 @@ import selectn from 'selectn'
 import { connect } from 'react-redux'
 import { loadNavigation, toggleMenuAction } from 'providers/redux/reducers/navigation'
 import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
-import { setImmersionMode, setLocale } from 'providers/redux/reducers/locale'
+import { setLocale } from 'providers/redux/reducers/locale'
 import { updateCurrentUser } from 'providers/redux/reducers/nuxeo/index'
 
 import ProviderHelpers from 'common/ProviderHelpers'
@@ -96,7 +96,6 @@ export class Navigation extends Component {
     pushWindowPath: func.isRequired,
     replaceWindowPath: func.isRequired,
     toggleMenuAction: func.isRequired,
-    setImmersionMode: func.isRequired,
     setLocale: func.isRequired,
     updateCurrentUser: func.isRequired,
 
@@ -505,7 +504,6 @@ export class Navigation extends Component {
 
   _handleChangeImmersion = (value) => {
     this.props.updateCurrentUser(value)
-    this.props.setImmersionMode(value)
   }
 
   _handleOpenMenuRequest = () => {
@@ -634,7 +632,6 @@ const mapDispatchToProps = {
   pushWindowPath,
   replaceWindowPath,
   toggleMenuAction,
-  setImmersionMode,
   setLocale,
   updateCurrentUser,
 }
