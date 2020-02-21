@@ -16,7 +16,8 @@ limitations under the License.
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import { Input, Chip } from '@material-ui/core'
+import { InputLabel, Chip } from '@material-ui/core'
+import '!style-loader!css-loader!./translationInput.css'
 
 /**
  * List view for words in immersion
@@ -31,11 +32,18 @@ class TranslationInput extends Component {
     super(props, context)
 
     this.state = {}
+    this.translations = this.renderTranslation()
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.addListeners()
+  }
 
   componentDidUpdate(prevProps) {}
+
+  componentWillUnmount() {
+    this.removeListeners()
+  }
 
   handleChange = (name) => (event) => {}
 
@@ -49,7 +57,11 @@ class TranslationInput extends Component {
         count++
       } else {
         output.push(
-          <Input key={i.toString()} id={i.toString()} value={word} onChange={(event) => onChange(event, i)} />
+          <div key={i.toString()} className="editable-span">
+            <span contentEditable="true" id={i.toString() + ' editable'}>
+              {word.toString()}
+            </span>
+          </div>
         )
       }
       return output
@@ -57,8 +69,34 @@ class TranslationInput extends Component {
     return words
   }
 
+  addListeners = () => {
+    const { translation } = this.props
+    translation.forEach((word, i) => {
+      if (word === '%s') return
+      document.getElementById(i.toString() + ' editable').addEventListener('input', this.changeListener)
+    })
+  }
+
+  changeListener = (ev) => {
+    const { onChange } = this.props
+    onChange({ target: { value: ev.target.textContent } }, ev.target.id[0])
+  }
+
+  removeListeners = () => {
+    const { translation } = this.props
+    translation.forEach((word, i) => {
+      if (word === '%s') return
+      document.getElementById(i.toString() + ' editable').removeEventListener('input', this.changeListener)
+    })
+  }
+
   render() {
-    return <div>{this.renderTranslation()}</div>
+    return (
+      <div>
+        <InputLabel>Enter the translation</InputLabel>
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>{this.translations}</div>
+      </div>
+    )
   }
 }
 

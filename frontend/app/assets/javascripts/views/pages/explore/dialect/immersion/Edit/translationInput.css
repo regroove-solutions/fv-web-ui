@@ -1,0 +1,59 @@
+.editable-span {
+  color: rgba(0, 0, 0, 0.87);
+  display: inline-flex;
+  position: relative;
+  font-size: 1.2857142857142858rem;
+  font-family: Arial, sans-serif;
+  line-height: 1.1875em;
+  padding: 0 2px;
+  min-width: 15px;
+  height: 28px;
+}
+.editable-span ::before {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  content: '\00a0';
+  position: absolute;
+  transition: border-bottom-color 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.42);
+  pointer-events: none;
+}
+
+.editable-span:hover:not(:focus-within) ::before {
+  border-bottom: 2px solid rgba(0, 0, 0, 0.87);
+}
+
+.editable-span:focus-within ::after {
+  transform: scaleX(1);
+}
+
+.editable-span ::after {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  content: '';
+  position: absolute;
+  transform: scaleX(0);
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1) 0ms;
+  border-bottom: 2px solid #00766c;
+  pointer-events: none;
+}
+
+.editable-span span {
+  font: inherit;
+  color: currentColor;
+  border: 0;
+  margin: 0;
+  padding: 6px 0 7px;
+  display: block;
+  min-width: 0;
+  flex-grow: 1;
+  box-sizing: content-box;
+  background: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.editable-span span:focus {
+  outline: none;
+}
