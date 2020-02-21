@@ -181,7 +181,10 @@ export default class ImmersionTable extends Component {
                           {row.editButton}
                         </>
                       ) : (
-                        'UNTRANSLATED'
+                        <>
+                          UNTRANSLATED
+                          {row.editButton}
+                        </>
                       )}
                     </TableCell>
                     <TableCell>{this.renderTranslation(row, 'base')}</TableCell>

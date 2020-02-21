@@ -33,7 +33,8 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import ProviderHelpers from 'common/ProviderHelpers'
 
 import ImmersionTable from 'views/components/ImmersionTable'
-import LabelModal from './Edit'
+import EditLabelModal from './Edit'
+import CreateLabelModal from './Create'
 
 /**
  * List view for words in immersion
@@ -65,6 +66,8 @@ class ImmersionListView extends Component {
       mappedTranslations: null,
       isEditingOpen: false,
       editingLabel: null,
+      isCreatingOpen: false,
+      creatingLabel: null,
     }
   }
 
@@ -98,18 +101,22 @@ class ImmersionListView extends Component {
     newProps.fetchLabels(this._getPathOrParentID(newProps), '')
   }
 
-  openEditModal(label) {
-    this.setState({ isEditingOpen: true, editingLabel: label })
+  openModal(label, isNew) {
+    if (isNew) {
+      this.setState({ isCreatingOpen: true, creatingLabel: label })
+    } else {
+      this.setState({ isEditingOpen: true, editingLabel: label })
+    }
   }
 
-  closeEditModal = (save = false) => {
-    this.setState({ isEditingOpen: false, editingLabel: null })
+  closeModal = (save = false) => {
+    this.setState({ isEditingOpen: false, editingLabel: null, isCreatingOpen: false, creatingLabel: null })
     if (save) {
       this.fetchData(this.props)
     }
   }
 
-  renderEditButton(label) {
+  renderEditButton(label, isNew) {
     const { intl } = this.props
     return (
       <FVButton
@@ -121,7 +128,7 @@ class ImmersionListView extends Component {
         href={''}
         onClick={(e) => {
           e.preventDefault()
-          this.openEditModal(label)
+          this.openModal(label, isNew)
         }}
       >
         <Edit title={intl.trans('edit', 'Edit', 'first')} />
@@ -162,8 +169,9 @@ class ImmersionListView extends Component {
       if (translatedLabel) {
         label.translation = translatedLabel.properties['dc:title']
         label.uid = translatedLabel.uid
-        label.editButton = this.renderEditButton(label)
       }
+      label.editButton = this.renderEditButton(label, !translatedLabel)
+
       return label
     })
     this.setState({ mappedTranslations: mappedLabels })
@@ -172,7 +180,7 @@ class ImmersionListView extends Component {
 
   render() {
     const { computeLabels, computeDialect2, routeParams, dialect, selectedCategory, selectedFilter } = this.props
-    const { mappedTranslations, isEditingOpen, editingLabel } = this.state
+    const { mappedTranslations, isEditingOpen, editingLabel, isCreatingOpen, creatingLabel } = this.state
 
     const computeEntities = Immutable.fromJS([
       {
@@ -190,8 +198,6 @@ class ImmersionListView extends Component {
       )
     }
 
-    const computeDialect = dialect || this.getDialect()
-
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
         {!mappedTranslations ? (
@@ -204,7 +210,15 @@ class ImmersionListView extends Component {
             selectedFilter={selectedFilter}
           />
         )}
-        {<LabelModal open={isEditingOpen} handleClose={(save) => this.closeEditModal(save)} label={editingLabel} />}
+        {<EditLabelModal open={isEditingOpen} handleClose={(save) => this.closeModal(save)} label={editingLabel} />}
+        {
+          <CreateLabelModal
+            dialectPath={routeParams.dialect_path + '/Label Dictionary'}
+            open={isCreatingOpen}
+            handleClose={(save) => this.closeModal(save)}
+            label={creatingLabel}
+          />
+        }
       </PromiseWrapper>
     )
   }

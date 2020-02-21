@@ -45,7 +45,7 @@ import TranslationInput from './translationInput'
  */
 const { bool, func, object } = PropTypes
 
-class LabelModal extends Component {
+class EditLabelModal extends Component {
   static propTypes = {
     fullscreen: bool.isRequired,
     open: bool,
@@ -280,4 +280,4 @@ const mapDispatchToProps = {
   updateLabel,
 }
 
-export default withMobileDialog()(connect(mapStateToProps, mapDispatchToProps)(LabelModal))
+export default withMobileDialog()(connect(mapStateToProps, mapDispatchToProps)(EditLabelModal))
