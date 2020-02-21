@@ -25,7 +25,6 @@ import selectn from 'selectn'
 import { isMobile } from 'react-device-detect'
 
 import NavigationHelpers from 'common/NavigationHelpers'
-import IntlService from 'views/services/intl'
 
 import '!style-loader!css-loader!./styles.css'
 import FVLabel from '../../FVLabel/index'
@@ -33,7 +32,6 @@ import FVLabel from '../../FVLabel/index'
 const { func, object, string } = PropTypes
 
 export class Login extends Component {
-  intl = IntlService.instance
 
   static propTypes = {
     className: string,
@@ -104,11 +102,11 @@ export class Login extends Component {
     if (this.props.computeLogin.isFetching) {
       return (
         <div className={`Login Login--busy ${className}`}>
-          {this.intl.translate({
-            key: 'views.components.navigation.processing_request',
-            default: 'Processing request',
-            case: 'first',
-          })}
+          <FVLabel
+            transKey="views.components.navigation.processing_request"
+            defaultStr="Processing request"
+            transform="first"
+          />
           ...
         </div>
       )
@@ -124,16 +122,16 @@ export class Login extends Component {
         </div>
       )
     }
-    if (this.state.loginAttempted) {
-      loginFeedbackMessage = this.intl.translate({
-        key: 'pages.users.login.incorrect_username_password',
-        default: 'Username or password incorrect',
-        case: 'first',
-      })
-      if (this.props.computeLogin.isError) {
-        loginFeedbackMessage = this.props.computeLogin.error
-      }
-    }
+    // if (this.state.loginAttempted) {
+    //   loginFeedbackMessage = this.intl.translate({
+    //     key: 'pages.users.login.incorrect_username_password',
+    //     default: 'Username or password incorrect',
+    //     case: 'first',
+    //   })
+    //   if (this.props.computeLogin.isError) {
+    //     loginFeedbackMessage = this.props.computeLogin.error
+    //   }
+    // }
 
     // console.log('NOTE: no-unused-vars', loginFeedbackMessage)
 

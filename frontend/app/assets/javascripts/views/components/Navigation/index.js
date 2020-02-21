@@ -61,9 +61,9 @@ import AppLeftNav from 'views/components/Navigation/AppLeftNav/index.v2'
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 
 import { WORKSPACES, SECTIONS } from 'common/Constants'
+import FVLabel from '../FVLabel/index'
 
 import '!style-loader!css-loader!./styles.css'
-import FVLabel from '../FVLabel/index'
 
 const { array, func, object, string, bool, number } = PropTypes
 
