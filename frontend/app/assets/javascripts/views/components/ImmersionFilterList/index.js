@@ -6,8 +6,7 @@ import selectn from 'selectn'
 // REDUX
 import { connect } from 'react-redux'
 import { pushWindowPath } from 'providers/redux/reducers/windowPath'
-
-import NavigationHelpers from 'common/NavigationHelpers'
+import { FormControl, FormLabel, FormGroup, FormControlLabel, Checkbox } from '@material-ui/core'
 
 const { any, array, func, string } = PropTypes
 
@@ -16,6 +15,8 @@ export class ImmersionFilterList extends Component {
     categories: array.isRequired,
     title: string.isRequired,
     routeParams: any,
+    selectedCategory: string,
+    changeCategory: func.isRequired,
     // REDUX: reducers/state
     splitWindowPath: array,
     // REDUX: actions/dispatch/func
@@ -25,6 +26,7 @@ export class ImmersionFilterList extends Component {
   static defaultProps = {
     title: 'Categories',
     categories: [],
+    changeCategory: () => {},
   }
 
   filtersSorted = []
@@ -57,6 +59,8 @@ export class ImmersionFilterList extends Component {
 
   constructor(props, context) {
     super(props, context)
+
+    this.title = props.title
   }
 
   componentDidMount() {
@@ -77,11 +81,37 @@ export class ImmersionFilterList extends Component {
     }
   }
 
+  _generateListItems = (filters) => {
+    const _filters = filters.map((filter) => {
+      return (
+        <div key={filter.id}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={filter.id.startsWith(this.props.selectedCategory)}
+                onChange={() => this.props.changeCategory(this.props.selectedCategory === filter.id ? null : filter.id)}
+                value={filter.id}
+              />
+            }
+            label={filter.label}
+          />
+          {filter.children.length !== 0 && (
+            <div style={{ marginLeft: '15px' }}>{this._generateListItems(filter.children)}</div>
+          )}
+        </div>
+      )
+    })
+
+    return _filters
+  }
+
   render() {
     return (
       <div className="DialectFilterList" data-testid="DialectFilterList">
-        <h2>{this.title}</h2>
-        <ul className="DialectFilterListList DialectFilterListList--root">list of categories</ul>
+        <FormControl>
+          <FormLabel>{this.title}</FormLabel>
+          <FormGroup>{this._generateListItems(this.filtersSorted)}</FormGroup>
+        </FormControl>
       </div>
     )
   }
@@ -99,8 +129,8 @@ export class ImmersionFilterList extends Component {
   }
 
   _sortByTitle(a, b) {
-    if (a.label > b.label) return -1
-    if (a.label < b.label) return 1
+    if (a.label < b.label) return -1
+    if (a.label > b.label) return 1
     return 0
   }
 

@@ -35,6 +35,7 @@ import ProviderHelpers from 'common/ProviderHelpers'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base'
+import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from '@material-ui/core'
 import { withTheme } from '@material-ui/core/styles'
 
 // Immersion specific
@@ -73,7 +74,7 @@ class PageDialectImmersionList extends PageDialectLearnBase {
   constructor(props, context) {
     super(props, context)
 
-    let filterInfo = this.initialFilterInfo()
+    let selectedCategory = this.initialFilterInfo()
 
     const computeEntities = Immutable.fromJS([
       {
@@ -88,7 +89,8 @@ class PageDialectImmersionList extends PageDialectLearnBase {
 
     this.state = {
       computeEntities,
-      filterInfo,
+      selectedCategory,
+      translateFilter: 'either',
     }
 
     // Bind methods to 'this'
@@ -103,13 +105,10 @@ class PageDialectImmersionList extends PageDialectLearnBase {
     ].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
-  // NOTE: PageDialectLearnBase calls `_getPageKey`
   _getPageKey = () => {
     return `${this.props.routeParams.area}_${this.props.routeParams.dialect_name}_immersion`
   }
 
-  // NOTE: PageDialectLearnBase calls `fetchData`
-  // TODOSL REPLACE THESE PATHS
   fetchData(newProps) {
     newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal')
     newProps.fetchDocument(newProps.routeParams.dialect_path + '/Label Dictionary')
@@ -152,21 +151,28 @@ class PageDialectImmersionList extends PageDialectLearnBase {
     return tree
   }
 
-  handleCategoryClick = async () => {}
-
   handleSearch = () => {}
 
   resetSearch = () => {}
 
   // FILTERS
-  initialFilterInfo = () => {}
+  initialFilterInfo = () => {
+    const routeParamsCategory = this.props.routeParams.handleCategoryClick
+    return routeParamsCategory || null
+  }
 
-  changeFilter = () => {}
+  changeCategory = (selectedCategory) => {
+    this.setState({ selectedCategory })
+  }
+
+  changeFilter = (translateFilter) => {
+    this.setState({ translateFilter })
+  }
 
   clearFilter = () => {}
 
   render() {
-    const { computeEntities, filterInfo } = this.state
+    const { computeEntities, selectedCategory, translateFilter } = this.state
 
     const { routeParams } = this.props
     const computeDocument = ProviderHelpers.getEntry(
@@ -183,9 +189,7 @@ class PageDialectImmersionList extends PageDialectLearnBase {
     const allLabels = selectn('directoryEntries.fv_labels', this.props.computeDirectory) || []
 
     const pageTitle = `${selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) ||
-      ''} Immersion Portal` // TODOSL add localization tag
-
-    const { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } = this._getURLPageProps() // via base > pulled from routeParams
+      ''} Immersion Portal`
 
     const wordListView = selectn('response.uid', computeDocument) ? (
       <ImmersionListView
@@ -193,8 +197,8 @@ class PageDialectImmersionList extends PageDialectLearnBase {
         routeParams={this.props.routeParams}
         allLabels={allLabels}
         allCategories={categories}
-        urlPageNumber={DEFAULT_PAGE}
-        urlPageSize={DEFAULT_PAGE_SIZE}
+        selectedCategory={selectedCategory}
+        selectedFilter={translateFilter}
       />
     ) : null
 
@@ -204,12 +208,29 @@ class PageDialectImmersionList extends PageDialectLearnBase {
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <div className="row">
           <div className={classNames('col-xs-12', 'col-md-3', categoriesSize === 0 ? 'hidden' : null, 'PrintHide')}>
-            <div>TODOSL Filter by whether word is translated or not yet TODO HERE</div>
+            <div>
+              <FormControl>
+                <FormLabel>Translation</FormLabel>
+                <RadioGroup
+                  name="translated"
+                  value={translateFilter}
+                  onChange={(ev) => {
+                    this.changeFilter(ev.target.value)
+                  }}
+                >
+                  <FormControlLabel value="either" control={<Radio />} label="All Labels" />
+                  <FormControlLabel value="translated" control={<Radio />} label="Translated Labels" />
+                  <FormControlLabel value="untranslated" control={<Radio />} label="Untranslated Labels" />
+                </RadioGroup>
+              </FormControl>
+            </div>
             <div>
               <ImmersionFilterList
                 title={'Browse Categories'}
                 categories={mappedCategories}
                 routeParams={this.props.routeParams}
+                selectedCategory={selectedCategory}
+                changeCategory={this.changeCategory}
               />
             </div>
           </div>

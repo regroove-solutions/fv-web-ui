@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import IconButton from '@material-ui/core/IconButton'
+import { IconButton, Select, MenuItem } from '@material-ui/core'
 import FirstPageIcon from '@material-ui/icons/FirstPage'
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft'
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight'
@@ -31,9 +31,31 @@ export default class TablePaginationActions extends React.Component {
 
   render() {
     const { count, page, rowsPerPage } = this.props
-
+    const maxPage = Math.ceil(count / rowsPerPage)
+    const pageNumbers = Array(maxPage).fill('')
     return (
-      <div style={{ flexShrink: 0, display: 'flex' }}>
+      <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>
+        <div style={{ marginLeft: '15px' }}>
+          Page:
+          <Select
+            style={{ paddingLeft: '5px', marginLeft: '5px' }}
+            value={page}
+            onChange={(ev) => this.props.onChangePage(event, ev.target.value)}
+            inputProps={{
+              name: 'page',
+              id: 'page',
+            }}
+          >
+            {pageNumbers.map((m, i) => {
+              return (
+                <MenuItem key={i.toString()} value={i}>
+                  {(i + 1).toString()}
+                </MenuItem>
+              )
+            })}
+          </Select>
+          / {maxPage}
+        </div>
         <IconButton onClick={this.handleFirstPageButtonClick} disabled={page === 0} aria-label="First Page">
           <FirstPageIcon />
         </IconButton>

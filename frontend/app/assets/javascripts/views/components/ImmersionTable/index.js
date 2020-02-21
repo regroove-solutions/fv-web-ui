@@ -15,15 +15,18 @@ limitations under the License.
 */
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import selectn from 'selectn'
 
 import { Table, TableBody, TableCell, TableRow, TableFooter, TablePagination, Chip } from '@material-ui/core'
 import TablePaginationActions from './tablepagination'
 import SortingHeader from './sortingheader'
 
+import { windowLocationPathnameWithoutPagination } from 'common/NavigationHelpers'
+
 /**
  * List view for words in immersion
  */
-const { array } = PropTypes
+const { array, number, object, string } = PropTypes
 
 function desc(a, b, orderBy) {
   if (!a[orderBy] && !b[orderBy]) {
@@ -44,7 +47,10 @@ function getSorting(order, orderBy) {
 
 export default class ImmersionTable extends Component {
   static propTypes = {
+    routeParams: object.isRequired,
     mappedTranslations: array.isRequired,
+    selectedCategory: string,
+    selectedFilter: string,
   }
   static defaultProps = {
     mappedTranslations: [],
@@ -53,11 +59,13 @@ export default class ImmersionTable extends Component {
   constructor(props, context) {
     super(props, context)
 
+    const { pageNumber, pageSize } = this._getURLPageProps()
+
     this.state = {
-      pageNumber: 0,
-      pageSize: 10,
       order: 'desc',
       orderBy: 'translation',
+      pageNumber: pageNumber,
+      pageSize: pageSize,
     }
   }
 
@@ -65,12 +73,36 @@ export default class ImmersionTable extends Component {
 
   componentDidUpdate(prevProps) {}
 
+  _getURLPageProps() {
+    const pageProps = { pageNumber: 1, pageSize: 10 }
+    const page = selectn('page', this.props.routeParams)
+    const pageSize = selectn('pageSize', this.props.routeParams)
+
+    if (page) {
+      pageProps.pageNumber = parseInt(page, 10) - 1
+    }
+    if (pageSize) {
+      pageProps.pageSize = parseInt(pageSize, 10)
+    }
+
+    return pageProps
+  }
+
   handleChangePage = (event, pageNumber) => {
+    const { pageSize } = this.state
+    const newUrl =
+      window.location.origin + '/' + windowLocationPathnameWithoutPagination() + '/' + pageSize + '/' + (pageNumber + 1)
+    window.history.pushState({}, '', newUrl)
     this.setState({ pageNumber })
   }
 
   handleChangeRowsPerPage = (event) => {
-    this.setState({ pageSize: event.target.value })
+    const pageSize = event.target.value
+    const { pageNumber } = this.state
+    const newUrl =
+      window.location.origin + '/' + windowLocationPathnameWithoutPagination() + '/' + pageSize + '/' + (pageNumber + 1)
+    window.history.pushState({}, '', newUrl)
+    this.setState({ pageSize })
   }
 
   handleRequestSort = (event, property) => {
@@ -101,9 +133,26 @@ export default class ImmersionTable extends Component {
   }
 
   render() {
-    const { mappedTranslations } = this.props
-    const { pageSize, pageNumber, order, orderBy } = this.state
+    const { mappedTranslations, selectedCategory, selectedFilter } = this.props
+    const { order, orderBy, pageNumber, pageSize } = this.state
     const emptyRows = pageSize - Math.min(pageSize, mappedTranslations.length - pageNumber * pageSize)
+    const filteredTranslations = mappedTranslations
+      .filter((label) => {
+        if (!selectedCategory) {
+          return true
+        }
+        return label.categoryId.startsWith(selectedCategory)
+      })
+      .filter((label) => {
+        if (selectedFilter === 'untranslated') {
+          return !label.translation
+        }
+        if (selectedFilter === 'translated') {
+          return label.translation !== undefined
+        }
+        return true
+      })
+
     return (
       <div style={{ flexShrink: 0 }}>
         <Table>
@@ -119,7 +168,7 @@ export default class ImmersionTable extends Component {
             ]}
           />
           <TableBody>
-            {mappedTranslations
+            {filteredTranslations
               .sort(getSorting(order, orderBy))
               .slice(pageNumber * pageSize, pageNumber * pageSize + pageSize)
               .map((row) => {
@@ -151,12 +200,15 @@ export default class ImmersionTable extends Component {
             <TableRow>
               <TablePagination
                 colSpan={6}
-                count={mappedTranslations.length}
+                count={filteredTranslations.length}
                 rowsPerPage={pageSize}
                 page={pageNumber}
                 onChangePage={this.handleChangePage}
                 onChangeRowsPerPage={this.handleChangeRowsPerPage}
                 ActionsComponent={TablePaginationActions}
+                labelDisplayedRows={({ from, to, count }) => {
+                  return `Results: ${from}-${to} of ${count}`
+                }}
               />
             </TableRow>
           </TableFooter>

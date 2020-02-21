@@ -46,9 +46,8 @@ class ImmersionListView extends Component {
     routeParams: object.isRequired,
     allLabels: array,
     allCategories: array,
-    urlPageNumber: number,
-    urlPageSize: number,
-
+    selectedCategory: string,
+    selectedFilter: string,
     // // Search
     // // REDUX: reducers/state
     intl: object.isRequired,
@@ -148,7 +147,7 @@ class ImmersionListView extends Component {
         templateStrings,
         categoryId: v.category,
         base: intl.trans(v.id, 'Translated Label', null, strings),
-        translatedLabel: undefined,
+        translation: undefined,
         category: undefined,
         editButton: undefined,
         uid: undefined,
@@ -172,29 +171,39 @@ class ImmersionListView extends Component {
   }
 
   render() {
+    const { computeLabels, computeDialect2, routeParams, dialect, selectedCategory, selectedFilter } = this.props
     const { mappedTranslations, isEditingOpen, editingLabel } = this.state
 
     const computeEntities = Immutable.fromJS([
       {
         id: this._getPathOrParentID(this.props),
-        entity: this.props.computeLabels,
+        entity: computeLabels,
       },
     ])
     // If dialect not supplied, promise wrapper will need to wait for compute dialect
-    if (!this.props.dialect) {
+    if (!dialect) {
       computeEntities.push(
         new Map({
-          id: this.props.routeParams.dialect_path,
-          entity: this.props.computeDialect2,
+          id: routeParams.dialect_path,
+          entity: computeDialect2,
         })
       )
     }
 
-    const computeDialect2 = this.props.dialect || this.getDialect()
+    const computeDialect = dialect || this.getDialect()
 
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
-        {!mappedTranslations ? 'Loading...' : <ImmersionTable mappedTranslations={mappedTranslations} />}
+        {!mappedTranslations ? (
+          'Loading...'
+        ) : (
+          <ImmersionTable
+            mappedTranslations={mappedTranslations}
+            routeParams={routeParams}
+            selectedCategory={selectedCategory}
+            selectedFilter={selectedFilter}
+          />
+        )}
         {<LabelModal open={isEditingOpen} handleClose={(save) => this.closeEditModal(save)} label={editingLabel} />}
       </PromiseWrapper>
     )
