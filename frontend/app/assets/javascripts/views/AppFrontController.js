@@ -31,7 +31,6 @@ import KidsNavigation from 'views/components/Kids/navigation'
 import Footer from 'views/components/Navigation/Footer'
 import Breadcrumb from 'views/components/Breadcrumb'
 
-import IntlService from 'views/services/intl'
 
 import { PageError } from 'views/pages'
 
@@ -40,42 +39,6 @@ import FVLabel from './components/FVLabel/index'
 
 const { any, array, func, object, string } = PropTypes
 
-const intl = IntlService.instance
-
-const PAGE_NOT_FOUND_TITLE =
-  '404 - ' +
-  intl.translate({
-    key: 'errors.page_not_found',
-    default: 'Page Not Found',
-    case: 'first',
-  })
-
-const PAGE_NOT_FOUND_BODY = (
-  <div>
-    <p>
-      {intl.translate({
-        key: 'errors.report_via_feedback',
-        default: 'Please report this error so that we can fix it',
-        case: 'first',
-      })}
-      .
-    </p>
-    <p>
-      {intl.translate({
-        key: 'errors.feedback_include_link',
-        default: 'Include what link or action you took to get to this page',
-      })}
-      .
-    </p>
-    <p>
-      {intl.translate({
-        key: 'thank_you!',
-        default: 'Thank You!',
-        case: 'words',
-      })}
-    </p>
-  </div>
-)
 
 export class AppFrontController extends Component {
   static propTypes = {
@@ -102,7 +65,40 @@ export class AppFrontController extends Component {
     matchedPage: undefined,
   }
 
-  intl = IntlService.instance
+  PAGE_NOT_FOUND_TITLE =
+    '404 - ' +
+    this.props.intl.translate({
+      key: 'errors.page_not_found',
+      default: 'Page Not Found',
+      case: 'first',
+    })
+
+  PAGE_NOT_FOUND_BODY = (
+    <div>
+      <p>
+        {this.props.intl.translate({
+          key: 'errors.report_via_feedback',
+          default: 'Please report this error so that we can fix it',
+          case: 'first',
+        })}
+        .
+      </p>
+      <p>
+        {this.props.intl.translate({
+          key: 'errors.feedback_include_link',
+          default: 'Include what link or action you took to get to this page',
+        })}
+        .
+      </p>
+      <p>
+        {this.props.intl.translate({
+          key: 'thank_you!',
+          default: 'Thank You!',
+          case: 'words',
+        })}
+      </p>
+    </div>
+  )
 
   constructor(props, context) {
     super(props, context)
@@ -153,7 +149,7 @@ export class AppFrontController extends Component {
     if (
       prevProps.routeParams.dialect_path !== this.props.routeParams.dialect_path
     ) {
-      this.props.setIntlWorkspace(this.props.routeParams.dialect_path);
+      this.props.setIntlWorkspace(this.props.routeParams.dialect_path)
     }
   }
 
@@ -240,11 +236,11 @@ export class AppFrontController extends Component {
               >
                 {selectn(warning, this.props.warnings)}
                 <FVButton onClick={() => this.setState({ warningsDismissed: true })}>
-                  {intl.translate({
-                    key: 'dismiss',
-                    default: 'Dismiss',
-                    case: 'words',
-                  })}
+                  <FVLabel
+                    transKey="dismiss"
+                    defaultStr="Dismiss"
+                    transform="words"
+                  />
                 </FVButton>
               </div>
             )
@@ -280,7 +276,7 @@ export class AppFrontController extends Component {
 
     return {
       routes,
-      warningsDismissed: false
+      warningsDismissed: false,
     }
   }
 
@@ -459,8 +455,8 @@ export class AppFrontController extends Component {
     // No match found (i.e. 404)
     // ----------------------------------------------
     const notFoundPage = Immutable.fromJS({
-      title: PAGE_NOT_FOUND_TITLE,
-      page: <PageError title={PAGE_NOT_FOUND_TITLE} body={PAGE_NOT_FOUND_BODY} />,
+      title: this.PAGE_NOT_FOUND_TITLE,
+      page: <PageError title={this.PAGE_NOT_FOUND_TITLE} body={this.PAGE_NOT_FOUND_BODY} />,
     })
 
     this.props.setRouteParams({
@@ -502,7 +498,7 @@ export class AppFrontController extends Component {
 
       let i
       for (i in parts) {
-        newTitle.push(intl.searchAndReplace(parts[i].trim()))
+        newTitle.push(this.props.intl.searchAndReplace(parts[i].trim()))
       }
       title = newTitle.join(' | ')
     }
@@ -526,8 +522,8 @@ const mapStateToProps = (state) => {
     search: route.search,
     splitWindowPath,
     windowPath: _windowPath,
-    localeLoading: selectn("fvlabelsFetch.isFetching", locale),
-    locale: selectn("intlService.locale", locale)
+    localeLoading: selectn('fvlabelsFetch.isFetching', locale),
+    intl: locale.intlService,
   }
 }
 
@@ -540,7 +536,7 @@ const mapDispatchToProps = {
   updateWindowPath,
   nuxeoConnect,
   getCurrentUser,
-  setIntlWorkspace
+  setIntlWorkspace,
 }
 
 export default withTheme()(connect(mapStateToProps, mapDispatchToProps)(AppFrontController))
