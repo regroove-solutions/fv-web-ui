@@ -58,7 +58,7 @@ class TranslationInput extends Component {
       } else {
         output.push(
           <div key={i.toString()} className="editable-span">
-            <span contentEditable="true" id={i.toString() + ' editable'}>
+            <span contentEditable="true" id={i.toString() + ' editable'} suppressContentEditableWarning={true}>
               {word.toString()}
             </span>
           </div>
