@@ -26,7 +26,7 @@ import { windowLocationPathnameWithoutPagination } from 'common/NavigationHelper
 /**
  * List view for words in immersion
  */
-const { array, number, object, string } = PropTypes
+const { array, object, string } = PropTypes
 
 function desc(a, b, orderBy) {
   if (!a[orderBy] && !b[orderBy]) {
@@ -135,7 +135,6 @@ export default class ImmersionTable extends Component {
   render() {
     const { mappedTranslations, selectedCategory, selectedFilter } = this.props
     const { order, orderBy, pageNumber, pageSize } = this.state
-    const emptyRows = pageSize - Math.min(pageSize, mappedTranslations.length - pageNumber * pageSize)
     const filteredTranslations = mappedTranslations
       .filter((label) => {
         if (!selectedCategory) {
@@ -152,6 +151,7 @@ export default class ImmersionTable extends Component {
         }
         return true
       })
+    const emptyRows = pageSize - Math.min(pageSize, (filteredTranslations.length || 1) - pageNumber * pageSize)
 
     return (
       <div style={{ flexShrink: 0 }}>
@@ -168,25 +168,33 @@ export default class ImmersionTable extends Component {
             ]}
           />
           <TableBody>
-            {filteredTranslations
-              .sort(getSorting(order, orderBy))
-              .slice(pageNumber * pageSize, pageNumber * pageSize + pageSize)
-              .map((row) => {
-                return (
-                  <TableRow key={row.labelKey}>
-                    <TableCell padding="none">{row.editButton}</TableCell>
-                    <TableCell>
-                      {row.translation ? <>{this.renderTranslation(row, 'translation')}</> : <>UNTRANSLATED</>}
-                    </TableCell>
-                    <TableCell>{this.renderTranslation(row, 'base')}</TableCell>
-                    <TableCell>{row.type}</TableCell>
-                    <TableCell>{row.category || 'UNCATEGORIZED'}</TableCell>
-                  </TableRow>
-                )
-              })}
+            {filteredTranslations.length !== 0 ? (
+              <>
+                {filteredTranslations
+                  .sort(getSorting(order, orderBy))
+                  .slice(pageNumber * pageSize, pageNumber * pageSize + pageSize)
+                  .map((row) => {
+                    return (
+                      <TableRow key={row.labelKey}>
+                        <TableCell padding="none">{row.editButton}</TableCell>
+                        <TableCell>
+                          {row.translation ? <>{this.renderTranslation(row, 'translation')}</> : <>UNTRANSLATED</>}
+                        </TableCell>
+                        <TableCell>{this.renderTranslation(row, 'base')}</TableCell>
+                        <TableCell>{row.type}</TableCell>
+                        <TableCell>{row.category || 'UNCATEGORIZED'}</TableCell>
+                      </TableRow>
+                    )
+                  })}
+              </>
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5}>No results, sorry</TableCell>
+              </TableRow>
+            )}
             {emptyRows > 0 && (
               <TableRow style={{ height: 48 * emptyRows }}>
-                <TableCell colSpan={4} />
+                <TableCell colSpan={5} />
               </TableRow>
             )}
           </TableBody>

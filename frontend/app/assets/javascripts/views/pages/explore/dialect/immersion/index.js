@@ -35,18 +35,28 @@ import ProviderHelpers from 'common/ProviderHelpers'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base'
-import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from '@material-ui/core'
-import { withTheme } from '@material-ui/core/styles'
+import { FormControl, RadioGroup, FormControlLabel, Radio } from '@material-ui/core'
+import { withStyles } from '@material-ui/core/styles'
 
 // Immersion specific
-import ImmersionListView from 'views/pages/explore/dialect/immersion/list-view'
-import ImmersionFilterList from 'views/components/ImmersionFilterList'
+import ImmersionListView from './list-view'
+import ImmersionFilterList from './ImmersionFilterList'
+
+const styles = (theme) => ({
+  label: {
+    fontSize: '1.6rem',
+  },
+  labelRoot: {
+    height: '32px',
+  },
+})
 
 const { array, bool, func, object } = PropTypes
 class PageDialectImmersionList extends PageDialectLearnBase {
   static propTypes = {
     hasPagination: bool,
     routeParams: object.isRequired,
+    classes: object.isRequired,
     // // REDUX: reducers/state
     computeDocument: object.isRequired,
     computePortal: object.isRequired,
@@ -172,6 +182,7 @@ class PageDialectImmersionList extends PageDialectLearnBase {
   clearFilter = () => {}
 
   render() {
+    const { classes } = this.props
     const { computeEntities, selectedCategory, translateFilter } = this.state
 
     const { routeParams } = this.props
@@ -210,7 +221,7 @@ class PageDialectImmersionList extends PageDialectLearnBase {
           <div className={classNames('col-xs-12', 'col-md-3', categoriesSize === 0 ? 'hidden' : null, 'PrintHide')}>
             <div>
               <FormControl>
-                <FormLabel>Translation</FormLabel>
+                <h2>Translation</h2>
                 <RadioGroup
                   name="translated"
                   value={translateFilter}
@@ -218,9 +229,24 @@ class PageDialectImmersionList extends PageDialectLearnBase {
                     this.changeFilter(ev.target.value)
                   }}
                 >
-                  <FormControlLabel value="either" control={<Radio />} label="All Labels" />
-                  <FormControlLabel value="translated" control={<Radio />} label="Translated Labels" />
-                  <FormControlLabel value="untranslated" control={<Radio />} label="Untranslated Labels" />
+                  <FormControlLabel
+                    value="either"
+                    control={<Radio />}
+                    label="All Labels"
+                    classes={{ label: classes.label, root: classes.labelRoot }}
+                  />
+                  <FormControlLabel
+                    value="translated"
+                    control={<Radio />}
+                    label="Translated Labels"
+                    classes={{ label: classes.label, root: classes.labelRoot }}
+                  />
+                  <FormControlLabel
+                    value="untranslated"
+                    control={<Radio />}
+                    label="Untranslated Labels"
+                    classes={{ label: classes.label, root: classes.labelRoot }}
+                  />
                 </RadioGroup>
               </FormControl>
             </div>
@@ -274,4 +300,4 @@ const mapDispatchToProps = {
   searchDialectUpdate,
 }
 
-export default withTheme()(connect(mapStateToProps, mapDispatchToProps)(PageDialectImmersionList))
+export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(PageDialectImmersionList))
