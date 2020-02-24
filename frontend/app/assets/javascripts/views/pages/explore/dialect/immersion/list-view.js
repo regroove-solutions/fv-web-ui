@@ -32,9 +32,10 @@ import Edit from '@material-ui/icons/Edit'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import ProviderHelpers from 'common/ProviderHelpers'
 
-import ImmersionTable from 'views/components/ImmersionTable'
+import ImmersionTable from './ImmersionTable'
 import EditLabelModal from './Edit'
 import CreateLabelModal from './Create'
+import SearchFields from './Search'
 
 /**
  * List view for words in immersion
@@ -63,6 +64,7 @@ class ImmersionListView extends Component {
     super(props, context)
 
     this.state = {
+      allTranslations: null,
       mappedTranslations: null,
       isEditingOpen: false,
       editingLabel: null,
@@ -174,13 +176,24 @@ class ImmersionListView extends Component {
 
       return label
     })
-    this.setState({ mappedTranslations: mappedLabels })
+    this.setState({ mappedTranslations: mappedLabels, allTranslations: mappedLabels })
     return
+  }
+
+  setMappedTranslations = (mappedTranslations) => {
+    this.setState({ mappedTranslations })
   }
 
   render() {
     const { computeLabels, computeDialect2, routeParams, dialect, selectedCategory, selectedFilter } = this.props
-    const { mappedTranslations, isEditingOpen, editingLabel, isCreatingOpen, creatingLabel } = this.state
+    const {
+      mappedTranslations,
+      allTranslations,
+      isEditingOpen,
+      editingLabel,
+      isCreatingOpen,
+      creatingLabel,
+    } = this.state
 
     const computeEntities = Immutable.fromJS([
       {
@@ -200,15 +213,18 @@ class ImmersionListView extends Component {
 
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
-        {!mappedTranslations ? (
+        {!allTranslations ? (
           'Loading...'
         ) : (
-          <ImmersionTable
-            mappedTranslations={mappedTranslations}
-            routeParams={routeParams}
-            selectedCategory={selectedCategory}
-            selectedFilter={selectedFilter}
-          />
+          <div>
+            <SearchFields items={allTranslations} setResults={this.setMappedTranslations} />
+            <ImmersionTable
+              mappedTranslations={mappedTranslations}
+              routeParams={routeParams}
+              selectedCategory={selectedCategory}
+              selectedFilter={selectedFilter}
+            />
+          </div>
         )}
         {<EditLabelModal open={isEditingOpen} handleClose={(save) => this.closeModal(save)} label={editingLabel} />}
         {
