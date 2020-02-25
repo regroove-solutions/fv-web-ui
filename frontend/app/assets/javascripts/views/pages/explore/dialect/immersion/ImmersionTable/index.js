@@ -24,7 +24,7 @@ import SortingHeader from './sortingheader'
 
 import { windowLocationPathnameWithoutPagination } from 'common/NavigationHelpers'
 import { withStyles } from '@material-ui/core/styles'
-import '!style-loader!css-loader!./immersiontable.css'
+import '!style-loader!css-loader!./immersionTable.css'
 
 /**
  * List view for words in immersion

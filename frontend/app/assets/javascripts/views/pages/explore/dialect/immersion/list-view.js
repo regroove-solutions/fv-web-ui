@@ -221,7 +221,7 @@ class ImmersionListView extends Component {
           <div>
             <SearchFields items={allTranslations} setResults={this.setMappedTranslations} />
             <ImmersionTable
-              mappedTranslations={mappedTranslations}
+              mappedTranslations={mappedTranslations || []}
               routeParams={routeParams}
               selectedCategory={selectedCategory}
               selectedFilter={selectedFilter}

@@ -9,6 +9,7 @@ import { pushWindowPath } from 'providers/redux/reducers/windowPath'
 import { FormControl, FormGroup, FormControlLabel, Checkbox } from '@material-ui/core'
 
 const { any, array, func, string } = PropTypes
+import '!style-loader!css-loader!./immersionFilter.css'
 
 export class ImmersionFilterList extends Component {
   static propTypes = {
@@ -81,23 +82,20 @@ export class ImmersionFilterList extends Component {
     }
   }
 
-  _generateListItems = (filters) => {
+  _generateListItems = (filters, depth = 0) => {
     const _filters = filters.map((filter) => {
+      const checked = this.props.selectedCategory ? this.props.selectedCategory.startsWith(filter.id) : false
+      const selected = filter.id === this.props.selectedCategory
       return (
-        <div key={filter.id}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={filter.id.startsWith(this.props.selectedCategory)}
-                onChange={() => this.props.changeCategory(this.props.selectedCategory === filter.id ? null : filter.id)}
-                value={filter.id}
-              />
-            }
-            label={filter.label}
-          />
-          {filter.children.length !== 0 && (
-            <div style={{ marginLeft: '15px' }}>{this._generateListItems(filter.children)}</div>
-          )}
+        <div key={filter.id} className={`category-parent ${selected ? 'active' : ''} ${checked ? 'checked' : ''}`}>
+          <a
+            style={{ paddingLeft: 15 * depth + 10 }}
+            className={`category-link ${selected ? 'active' : ''}`}
+            onClick={() => this.props.changeCategory(selected ? null : filter.id)}
+          >
+            {filter.label}
+          </a>
+          {filter.children.length !== 0 && <div>{this._generateListItems(filter.children, depth + 1)}</div>}
         </div>
       )
     })
@@ -108,7 +106,7 @@ export class ImmersionFilterList extends Component {
   render() {
     return (
       <div className="DialectFilterList" data-testid="DialectFilterList">
-        <FormControl>
+        <FormControl style={{ width: '100%' }}>
           <h2>{this.title}</h2>
           <FormGroup>{this._generateListItems(this.filtersSorted)}</FormGroup>
         </FormControl>
