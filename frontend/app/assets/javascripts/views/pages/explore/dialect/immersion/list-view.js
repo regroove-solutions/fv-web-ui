@@ -34,7 +34,6 @@ import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
 import DataListView from 'views/pages/explore/dialect/learn/base/data-list-view'
 import DocumentListView from 'views/components/Document/DocumentListView'
 import FVButton from 'views/components/FVButton'
-import IntlService from 'views/services/intl'
 import NavigationHelpers, { getSearchObject } from 'common/NavigationHelpers'
 import Preview from 'views/components/Editor/Preview'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
@@ -46,7 +45,6 @@ import {
   dictionaryListSmallScreenColumnDataTemplateCustomInspectChildrenCellRender,
   dictionaryListSmallScreenColumnDataTemplateCustomAudio,
 } from 'views/components/Browsing/DictionaryListSmallScreen'
-const intl = IntlService.instance
 
 /**
  * List view for words in immersion
@@ -124,7 +122,7 @@ class ImmersionListView extends DataListView {
       columns: [
         {
           name: 'title',
-          title: intl.trans('word', 'Word', 'first'),
+          title: props.intl.trans('word', 'Word', 'first'),
           columnDataTemplate: dictionaryListSmallScreenColumnDataTemplate.cellRender,
           render: (v, data) => {
             const isWorkspaces = this.props.routeParams.area === WORKSPACES
@@ -164,8 +162,8 @@ class ImmersionListView extends DataListView {
                       NavigationHelpers.navigate(hrefEditRedirect, this.props.pushWindowPath, false)
                     }}
                   >
-                    <Edit title={intl.trans('edit', 'Edit', 'first')} />
-                    {/* <span>{intl.trans('edit', 'Edit', 'first')}</span> */}
+                    <Edit title={props.intl.trans('edit', 'Edit', 'first')} />
+                    {/* <span>{props.intl.trans('edit', 'Edit', 'first')}</span> */}
                   </FVButton>
                 </AuthorizationFilter>
               ) : null
@@ -184,7 +182,7 @@ class ImmersionListView extends DataListView {
         },
         {
           name: 'fv:definitions',
-          title: intl.trans('definitions', 'Definitions', 'first'),
+          title: props.intl.trans('definitions', 'Definitions', 'first'),
           columnDataTemplate: dictionaryListSmallScreenColumnDataTemplate.custom,
           columnDataTemplateCustom: dictionaryListSmallScreenColumnDataTemplateCustomInspectChildrenCellRender,
           render: (v, data, cellProps) => {
@@ -204,7 +202,7 @@ class ImmersionListView extends DataListView {
         },
         {
           name: 'related_audio',
-          title: intl.trans('audio', 'Audio', 'first'),
+          title: props.intl.trans('audio', 'Audio', 'first'),
           columnDataTemplate: dictionaryListSmallScreenColumnDataTemplate.custom,
           columnDataTemplateCustom: dictionaryListSmallScreenColumnDataTemplateCustomAudio,
           render: (v, data, cellProps) => {
@@ -227,7 +225,7 @@ class ImmersionListView extends DataListView {
         {
           name: 'dc:modified',
           width: 210,
-          title: intl.trans('date_modified', 'Date Modified'),
+          title: props.intl.trans('date_modified', 'Date Modified'),
           render: (v, data) => {
             return StringHelpers.formatUTCDateString(selectn('lastModified', data))
           },
@@ -235,14 +233,14 @@ class ImmersionListView extends DataListView {
         {
           name: 'dc:created',
           width: 210,
-          title: intl.trans('date_created', 'Date Created'),
+          title: props.intl.trans('date_created', 'Date Created'),
           render: (v, data) => {
             return StringHelpers.formatUTCDateString(selectn('properties.dc:created', data))
           },
         },
         {
           name: 'fv-word:categories',
-          title: intl.trans('categories', 'Categories', 'first'),
+          title: props.intl.trans('categories', 'Categories', 'first'),
           render: (v, data) => {
             return UIHelpers.generateDelimitedDatumFromDataset({
               dataSet: selectn('contextParameters.word.categories', data),
@@ -462,6 +460,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
     fvWord,
     navigation,
     nuxeo,
+    locale,
     // windowPath
   } = state
 
@@ -472,6 +471,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
   const { computeLogin } = nuxeo
   const { computeWords } = fvWord
   const { computeDialect2 } = fvDialect
+  const { intlService } = locale
   // const { splitWindowPath, _windowPath } = windowPath
 
   return {
@@ -480,6 +480,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
     computeWords,
     // properties,
     navigationRouteSearch: route.search,
+    intl: intlService
     // splitWindowPath,
     // windowPath: _windowPath,
   }
