@@ -159,6 +159,7 @@ class ImmersionListView extends Component {
         translation: undefined,
         category: undefined,
         editButton: undefined,
+        editClick: () => {},
         uid: undefined,
       }
       const category = allCategories.find((c) => {
@@ -173,6 +174,7 @@ class ImmersionListView extends Component {
         label.uid = translatedLabel.uid
       }
       label.editButton = this.renderEditButton(label, !translatedLabel)
+      label.editClick = () => this.openModal(label, !translatedLabel)
 
       return label
     })

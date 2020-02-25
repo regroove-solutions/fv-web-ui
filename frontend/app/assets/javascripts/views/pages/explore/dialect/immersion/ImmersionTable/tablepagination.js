@@ -5,13 +5,29 @@ import FirstPageIcon from '@material-ui/icons/FirstPage'
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft'
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight'
 import LastPageIcon from '@material-ui/icons/LastPage'
+import { withStyles } from '@material-ui/core/styles'
 
-export default class TablePaginationActions extends React.Component {
+const styles = (theme) => ({
+  select: {
+    paddingRight: '24px',
+  },
+  icon: {
+    top: '1px',
+  },
+  root: {
+    color: 'rgba(0, 0, 0, 0.54)',
+    fontSize: '1.6rem',
+    fontWeight: '700',
+  },
+})
+
+class TablePaginationActions extends React.Component {
   static propTypes = {
     count: PropTypes.number.isRequired,
     onChangePage: PropTypes.func.isRequired,
     page: PropTypes.number.isRequired,
     rowsPerPage: PropTypes.number.isRequired,
+    classes: PropTypes.object.isRequired,
   }
   handleFirstPageButtonClick = (event) => {
     this.props.onChangePage(event, 0)
@@ -30,14 +46,15 @@ export default class TablePaginationActions extends React.Component {
   }
 
   render() {
-    const { count, page, rowsPerPage } = this.props
+    const { count, page, rowsPerPage, classes } = this.props
     const maxPage = Math.ceil(count / rowsPerPage)
     const pageNumbers = Array(maxPage).fill('')
     return (
-      <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>
-        <div style={{ marginLeft: '15px' }}>
+      <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', fontSize: '1.6rem', fontWeight: '700' }}>
+        <div style={{ marginLeft: '15px', marginTop: '3px' }}>
           Page:
           <Select
+            classes={{ root: classes.root, select: classes.select, icon: classes.icon }}
             style={{ paddingLeft: '5px', marginLeft: '5px' }}
             value={page}
             onChange={(ev) => this.props.onChangePage(event, ev.target.value)}
@@ -45,6 +62,7 @@ export default class TablePaginationActions extends React.Component {
               name: 'page',
               id: 'page',
             }}
+            disableUnderline={true}
           >
             {pageNumbers.map((m, i) => {
               return (
@@ -80,3 +98,5 @@ export default class TablePaginationActions extends React.Component {
     )
   }
 }
+
+export default withStyles(styles)(TablePaginationActions)

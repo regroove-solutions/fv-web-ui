@@ -18,10 +18,13 @@ import PropTypes from 'prop-types'
 import selectn from 'selectn'
 
 import { Table, TableBody, TableCell, TableRow, TableFooter, TablePagination, Chip } from '@material-ui/core'
+import { Error } from '@material-ui/icons'
 import TablePaginationActions from './tablepagination'
 import SortingHeader from './sortingheader'
 
 import { windowLocationPathnameWithoutPagination } from 'common/NavigationHelpers'
+import { withStyles } from '@material-ui/core/styles'
+import '!style-loader!css-loader!./immersiontable.css'
 
 /**
  * List view for words in immersion
@@ -45,12 +48,26 @@ function getSorting(order, orderBy) {
   return order === 'desc' ? (a, b) => desc(a, b, orderBy) : (a, b) => -desc(a, b, orderBy)
 }
 
-export default class ImmersionTable extends Component {
+const styles = (theme) => ({
+  icon: {
+    color: '#b40000',
+  },
+  font: {
+    fontSize: '1.6rem',
+    fontWeight: '700',
+  },
+  select: {
+    paddingRight: '24px',
+  },
+})
+
+class ImmersionTable extends Component {
   static propTypes = {
     routeParams: object.isRequired,
     mappedTranslations: array.isRequired,
     selectedCategory: string,
     selectedFilter: string,
+    classes: object.isRequired,
   }
   static defaultProps = {
     mappedTranslations: [],
@@ -122,7 +139,11 @@ export default class ImmersionTable extends Component {
     var count = 0
     const words = translation.split(/(%s)/g).map((word, i) => {
       if (word === '%s') {
-        const chip = <Chip key={i} label={label.templateStrings[count]} />
+        const chip = (
+          <span className="template-span" key={i}>
+            {label.templateStrings[count]}
+          </span>
+        )
         count++
         return chip
       } else {
@@ -133,7 +154,7 @@ export default class ImmersionTable extends Component {
   }
 
   render() {
-    const { mappedTranslations, selectedCategory, selectedFilter } = this.props
+    const { mappedTranslations, selectedCategory, selectedFilter, classes } = this.props
     const { order, orderBy, pageNumber, pageSize } = this.state
     const filteredTranslations = mappedTranslations
       .filter((label) => {
@@ -155,7 +176,7 @@ export default class ImmersionTable extends Component {
 
     return (
       <div style={{ flexShrink: 0 }}>
-        <Table>
+        <Table className="DictionaryList data-table fontAboriginalSans">
           <SortingHeader
             order={order}
             orderBy={orderBy}
@@ -175,21 +196,43 @@ export default class ImmersionTable extends Component {
                   .slice(pageNumber * pageSize, pageNumber * pageSize + pageSize)
                   .map((row) => {
                     return (
-                      <TableRow key={row.labelKey}>
-                        <TableCell padding="none">{row.editButton}</TableCell>
-                        <TableCell>
-                          {row.translation ? <>{this.renderTranslation(row, 'translation')}</> : <>UNTRANSLATED</>}
+                      <TableRow
+                        key={row.labelKey}
+                        className="DictionaryList__row DictionaryList__row--a"
+                        style={{ background: 'white' }}
+                      >
+                        <TableCell className="DictionaryList__data DictionaryList__data--translation DictionaryList__data--title">
+                          <a
+                            className="translation-cell DictionaryList__link DictionaryList__link--indigenous"
+                            onClick={row.editClick}
+                          >
+                            {row.translation ? (
+                              this.renderTranslation(row, 'translation')
+                            ) : (
+                              <div>
+                                <Error className={classes.icon} />
+                                <div className="untranslated">UNTRANSLATED</div>
+                              </div>
+                            )}
+                          </a>
+                          {row.editButton}
                         </TableCell>
-                        <TableCell>{this.renderTranslation(row, 'base')}</TableCell>
-                        <TableCell>{row.type}</TableCell>
-                        <TableCell>{row.category || 'UNCATEGORIZED'}</TableCell>
+                        <TableCell className="DictionaryList__data DictionaryList__data--base">
+                          {this.renderTranslation(row, 'base')}
+                        </TableCell>
+                        <TableCell className="DictionaryList__data DictionaryList__data--type"> {row.type}</TableCell>
+                        <TableCell className="DictionaryList__data DictionaryList__data--category">
+                          {row.category || 'UNCATEGORIZED'}
+                        </TableCell>
                       </TableRow>
                     )
                   })}
               </>
             ) : (
-              <TableRow>
-                <TableCell colSpan={5}>No results, sorry</TableCell>
+              <TableRow style={{ background: 'white' }}>
+                <TableCell colSpan={5} className="DictionaryList__data">
+                  No results found.
+                </TableCell>
               </TableRow>
             )}
             {emptyRows > 0 && (
@@ -201,6 +244,7 @@ export default class ImmersionTable extends Component {
           <TableFooter>
             <TableRow>
               <TablePagination
+                classes={{ caption: classes.font, input: classes.font, select: classes.select }}
                 colSpan={6}
                 count={filteredTranslations.length}
                 rowsPerPage={pageSize}
@@ -219,3 +263,5 @@ export default class ImmersionTable extends Component {
     )
   }
 }
+
+export default withStyles(styles)(ImmersionTable)

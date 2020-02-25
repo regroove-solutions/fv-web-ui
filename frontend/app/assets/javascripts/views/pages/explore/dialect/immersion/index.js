@@ -42,14 +42,17 @@ import { withStyles } from '@material-ui/core/styles'
 import ImmersionListView from './list-view'
 import ImmersionFilterList from './ImmersionFilterList'
 
-const styles = (theme) => ({
-  label: {
-    fontSize: '1.6rem',
-  },
-  labelRoot: {
-    height: '32px',
-  },
-})
+const styles = (theme) => {
+  const {
+    tab: { label },
+  } = theme
+  return {
+    label,
+    labelRoot: {
+      height: '32px',
+    },
+  }
+}
 
 const { array, bool, func, object } = PropTypes
 class PageDialectImmersionList extends PageDialectLearnBase {
@@ -231,19 +234,19 @@ class PageDialectImmersionList extends PageDialectLearnBase {
                 >
                   <FormControlLabel
                     value="either"
-                    control={<Radio />}
+                    control={<Radio color="primary" />}
                     label="All Labels"
                     classes={{ label: classes.label, root: classes.labelRoot }}
                   />
                   <FormControlLabel
                     value="translated"
-                    control={<Radio />}
+                    control={<Radio color="primary" />}
                     label="Translated Labels"
                     classes={{ label: classes.label, root: classes.labelRoot }}
                   />
                   <FormControlLabel
                     value="untranslated"
-                    control={<Radio />}
+                    control={<Radio color="primary" />}
                     label="Untranslated Labels"
                     classes={{ label: classes.label, root: classes.labelRoot }}
                   />

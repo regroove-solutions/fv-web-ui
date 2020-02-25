@@ -22,12 +22,12 @@ export default class SortingHeader extends Component {
     const { order, orderBy, columns } = this.props
 
     return (
-      <TableHead>
-        <TableRow>
-          <TableCell padding="none" />
+      <TableHead className="data-table">
+        <TableRow className="DictionaryList__row DictionaryList__row--header">
           {columns.map((column) => {
             return (
               <TableCell
+                className={`DictionaryList__data DictionaryList__data--${column.id} DictionaryList__header`}
                 key={column.id}
                 numeric={column.numeric}
                 padding={column.disablePadding ? 'none' : 'default'}
@@ -38,6 +38,7 @@ export default class SortingHeader extends Component {
                     active={orderBy === column.id}
                     direction={order}
                     onClick={this.createSortHandler(column.id)}
+                    className={`DictionaryList__data`}
                   >
                     {column.label}
                   </TableSortLabel>
