@@ -7,12 +7,12 @@ import TranslateIcon from '@material-ui/icons/Translate'
 import CloseIcon from '@material-ui/icons/Close'
 import '!style-loader!css-loader!./HelperModeToggle.css'
 
-const HelperModeToggle = ({handleToggleHelpMode, isInHelpMode}) => {
+const HelperModeToggle = ({handleToggleHelpMode, isInHelpMode, isImmersionModeOn}) => {
   return <div className="helper-mode-toggle">
-    <FVButton variant="fab" color="primary" onClick={handleToggleHelpMode}>
+    {isImmersionModeOn && <FVButton variant="fab" color="primary" onClick={handleToggleHelpMode}>
       {!isInHelpMode && <TranslateIcon/>}
       {isInHelpMode && <CloseIcon/>}
-    </FVButton>
+    </FVButton>}
   </div>
 }
 
@@ -22,6 +22,7 @@ const mapStateToProps = (state) => {
 
   return {
     isInHelpMode,
+    isImmersionModeOn: locale.immersionMode && locale.workspace,
   }
 }
 
@@ -33,6 +34,7 @@ const { bool, func } = propTypes
 
 HelperModeToggle.propTypes = {
   isInHelpMode: bool.isRequired,
+  isImmersionModeOn: bool.isRequired,
   handleToggleHelpMode: func.isRequired,
 }
 
