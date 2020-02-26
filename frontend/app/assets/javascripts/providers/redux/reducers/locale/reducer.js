@@ -4,6 +4,7 @@ import {
   FV_LABELS_FETCH_ERROR,
   SET_WORKSPACE,
   SET_IMMERSION_MODE,
+  SET_HELP_MODE,
 } from './actionTypes'
 import IntlService from '../../../../views/services/intl'
 import en from 'views/../locale/locale.en.json'
@@ -24,6 +25,7 @@ const initialState = {
   immersionMode: 0, // 1: none, 2: solo, 3: duo
   intlService: new IntlService(startingLocaleLists, startingLocale, startingLocale),
   workspace: '',
+  isInHelpMode: false,
 }
 
 function getLocaleFromStorage() {
@@ -107,7 +109,11 @@ export const localeReducer =
             errorDismissed: false,
           },
         }
-
+      case SET_HELP_MODE:
+        return {
+          ...state,
+          isInHelpMode: action.payload,
+        }
       default:
         return state
     }

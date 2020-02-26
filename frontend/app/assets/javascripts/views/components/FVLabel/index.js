@@ -5,8 +5,7 @@ import Menu from '@material-ui/core/Menu'
 import ListItem from '@material-ui/core/ListItem'
 import '!style-loader!css-loader!./FVLabel.css'
 
-function FVLabel({ transKey, defaultStr, transform, params, prepend, append, forceLocale, intl, locale }) {
-  const isInHelpMode = true
+function FVLabel({ transKey, defaultStr, transform, params, prepend, append, forceLocale, intl, locale, isInHelpMode }) {
   const [anchorElement, setAnchorElement] = useState()
 
   const handleClick = (event) => {
@@ -52,7 +51,7 @@ function FVLabel({ transKey, defaultStr, transform, params, prepend, append, for
   )
 }
 
-const { string, array, object } = proptypes
+const { string, array, object, bool } = proptypes
 
 FVLabel.propTypes = {
   transKey: string.isRequired,
@@ -64,6 +63,7 @@ FVLabel.propTypes = {
   forceLocale: string,
   locale: string,
   intl: object.isRequired,
+  isInHelpMode: bool.isRequired,
 }
 
 const mapStateToProps = (state /*, ownProps*/) => {
@@ -72,6 +72,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
   return {
     intl: locale.intlService,
     locale: locale.locale,
+    isInHelpMode: locale.isInHelpMode,
   }
 }
 

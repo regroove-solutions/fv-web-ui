@@ -4,6 +4,7 @@ import {
   FV_LABELS_FETCH_ERROR,
   SET_WORKSPACE,
   SET_IMMERSION_MODE,
+  SET_HELP_MODE,
 } from './actionTypes'
 import DirectoryOperations from 'operations/DirectoryOperations'
 
@@ -66,4 +67,13 @@ function getWorkspaceLabels(locale, workspace, immersionMode, dispatch) {
     .catch((error) => {
       dispatch({ type: FV_LABELS_FETCH_ERROR, error: error })
     })
+}
+
+export const setHelpMode = () => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: SET_HELP_MODE,
+      payload: !getState().locale.isInHelpMode,
+    })
+  }
 }
