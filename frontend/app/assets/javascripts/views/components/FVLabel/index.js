@@ -8,7 +8,7 @@ import DocumentOperations from 'operations/DocumentOperations'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import '!style-loader!css-loader!./FVLabel.css'
 
-function FVLabel({ transKey, defaultStr, transform, params, prepend, append, forceLocale, intl, locale, isInHelpMode }) {
+function FVLabel({ transKey, defaultStr, transform, params, prepend, append, forceLocale, intl, locale, isInHelpMode, labelIds }) {
   const [anchorElement, setAnchorElement] = useState()
   const [audioId, setAudioId] = useState('')
   const [isFetchingAudio, setIsFetchingAudio] = useState('')
@@ -29,18 +29,20 @@ function FVLabel({ transKey, defaultStr, transform, params, prepend, append, for
       if (anchorElement) {
         setAnchorElement(undefined)
       } else {
+        const translationId = selectn(transKey, labelIds)
         setAnchorElement(event.currentTarget)
-        setIsFetchingAudio(true)
-        DocumentOperations.getDocument('d7ec7c47-47d7-495f-a08e-6c8ba7863c93', 'FVLabel').then(data => {
-          if (isMounted) {
-            setAudioId(selectn('properties.fv:related_audio[0]', data))
-            setIsFetchingAudio(false)
-          } else {
-            console.log("Ahh I'm not mounted!")
-          }
-        })
+        if (translationId) {
+          setIsFetchingAudio(true)
+          DocumentOperations.getDocument(translationId, 'FVLabel').then(data => {
+            if (isMounted) {
+              setAudioId(selectn('properties.fv:related_audio[0]', data))
+              setIsFetchingAudio(false)
+            } else {
+              console.log("Ahh I'm not mounted!")
+            }
+          })
+        }
       }
-      console.log(transKey)
     }
   }
 
@@ -89,6 +91,7 @@ FVLabel.propTypes = {
   locale: string,
   intl: object.isRequired,
   isInHelpMode: bool.isRequired,
+  labelIds: object.isRequired,
 }
 
 const mapStateToProps = (state /*, ownProps*/) => {
@@ -98,6 +101,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
     intl: locale.intlService,
     locale: locale.locale,
     isInHelpMode: locale.isInHelpMode,
+    labelIds: locale.labelIds,
   }
 }
 

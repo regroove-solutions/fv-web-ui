@@ -26,6 +26,7 @@ const initialState = {
   intlService: new IntlService(startingLocaleLists, startingLocale, startingLocale),
   workspace: '',
   isInHelpMode: false,
+  labelIds: {},
 }
 
 function getLocaleFromStorage() {
@@ -98,6 +99,7 @@ export const localeReducer =
           localeLists: newLocales,
           fvlabelsFetch: { isFetching: false, success: true },
           intlService: new IntlService(newLocales, action.payload.immersionMode ? action.payload.workspace : action.payload.locale, action.payload.locale),
+          labelIds: action.payload.labelIds,
         }
       case FV_LABELS_FETCH_ERROR:
         return {
