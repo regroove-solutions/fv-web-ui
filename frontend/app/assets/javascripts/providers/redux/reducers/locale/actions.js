@@ -69,7 +69,7 @@ function getWorkspaceLabels(locale, workspace, immersionMode, dispatch) {
     })
 }
 
-export const setHelpMode = () => {
+export const toggleHelpMode = () => {
   return (dispatch, getState) => {
     dispatch({
       type: SET_HELP_MODE,

@@ -40,7 +40,7 @@ function FVLabel({ transKey, defaultStr, transform, params, prepend, append, for
       {intl.trans(transKey, defaultStr, transform, params, prepend, append, forceLocale)}
       {isInHelpMode && (
         <span onClick={handleClick} className="fv-label-click-cover">
-          <Menu id="simple-menu" anchorEl={anchorElement} open={!!anchorElement} onClose={handleClose}  anchorOrigin={{vertical: 'top', horizontal: 'right'}}>
+          <Menu id="simple-menu" anchorEl={anchorElement} open={!!anchorElement} onClose={handleClose} getContentAnchorEl={null} anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}>
             <ListItem>Translation: {intl.trans(transKey, defaultStr, transform, params, prepend, append, locale)}</ListItem>
             <ListItem button onClick={playAudio}>Play Audio</ListItem>
             <ListItem button onClick={openEdit}>Edit</ListItem>

@@ -36,6 +36,7 @@ import { PageError } from 'views/pages'
 
 import '!style-loader!css-loader!./AppFrontController.css'
 import FVLabel from './components/FVLabel/index'
+import HelperModeToggle from 'views/components/HelperModeToggle/index'
 
 const { any, array, func, object, string } = PropTypes
 
@@ -257,6 +258,7 @@ export class AppFrontController extends Component {
             {footer}
           </div>
         </div>
+        <HelperModeToggle/>
       </div>
     )
   }
