@@ -24,7 +24,6 @@ import { fetchLabels } from 'providers/redux/reducers/fvLabel'
 import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
 
 import selectn from 'selectn'
-import IntlService from 'views/services/intl'
 import FVButton from 'views/components/FVButton'
 
 import Edit from '@material-ui/icons/Edit'
@@ -33,8 +32,7 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import ProviderHelpers from 'common/ProviderHelpers'
 
 import ImmersionTable from './ImmersionTable'
-import EditLabelModal from './Edit'
-import CreateLabelModal from './Create'
+import LabelModal from './Modal'
 import SearchFields from './Search'
 
 /**
@@ -68,8 +66,7 @@ class ImmersionListView extends Component {
       mappedTranslations: null,
       isEditingOpen: false,
       editingLabel: null,
-      isCreatingOpen: false,
-      creatingLabel: null,
+      isNew: false,
     }
   }
 
@@ -104,15 +101,11 @@ class ImmersionListView extends Component {
   }
 
   openModal(label, isNew) {
-    if (isNew) {
-      this.setState({ isCreatingOpen: true, creatingLabel: label })
-    } else {
-      this.setState({ isEditingOpen: true, editingLabel: label })
-    }
+    this.setState({ isEditingOpen: true, editingLabel: label, isNew })
   }
 
   closeModal = (save = false) => {
-    this.setState({ isEditingOpen: false, editingLabel: null, isCreatingOpen: false, creatingLabel: null })
+    this.setState({ isEditingOpen: false, editingLabel: null })
     if (save) {
       this.fetchData(this.props)
     }
@@ -188,14 +181,7 @@ class ImmersionListView extends Component {
 
   render() {
     const { computeLabels, computeDialect2, routeParams, dialect, selectedCategory, selectedFilter } = this.props
-    const {
-      mappedTranslations,
-      allTranslations,
-      isEditingOpen,
-      editingLabel,
-      isCreatingOpen,
-      creatingLabel,
-    } = this.state
+    const { mappedTranslations, allTranslations, isEditingOpen, editingLabel, isNew } = this.state
 
     const computeEntities = Immutable.fromJS([
       {
@@ -228,15 +214,13 @@ class ImmersionListView extends Component {
             />
           </div>
         )}
-        {<EditLabelModal open={isEditingOpen} handleClose={(save) => this.closeModal(save)} label={editingLabel} />}
-        {
-          <CreateLabelModal
-            dialectPath={routeParams.dialect_path + '/Label Dictionary'}
-            open={isCreatingOpen}
-            handleClose={(save) => this.closeModal(save)}
-            label={creatingLabel}
-          />
-        }
+        <LabelModal
+          isNew={isNew}
+          dialectPath={routeParams.dialect_path + '/Label Dictionary'}
+          open={isEditingOpen}
+          handleClose={(save) => this.closeModal(save)}
+          label={editingLabel}
+        />
       </PromiseWrapper>
     )
   }

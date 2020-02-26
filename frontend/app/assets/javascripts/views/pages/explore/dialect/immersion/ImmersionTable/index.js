@@ -229,14 +229,14 @@ class ImmersionTable extends Component {
                   })}
               </>
             ) : (
-              <TableRow style={{ background: 'white' }}>
+              <TableRow style={{ background: 'white', height: '69px' }}>
                 <TableCell colSpan={5} className="DictionaryList__data">
                   No results found.
                 </TableCell>
               </TableRow>
             )}
             {emptyRows > 0 && (
-              <TableRow style={{ height: 48 * emptyRows }}>
+              <TableRow style={{ height: 69 * emptyRows }}>
                 <TableCell colSpan={5} />
               </TableRow>
             )}
