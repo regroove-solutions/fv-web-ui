@@ -42,6 +42,15 @@ export default class IntlService {
     this.localeString = locale;
     this._fallbackLocale = fallbackLocale;
     Object.assign(this._localeLists, startingLocales);
+
+    // Fallback for code that can't access the redux store
+    if (IntlService.$instance) {
+      IntlService.$instance.localeString = locale;
+      IntlService.$instance._fallbackLocale = fallbackLocale;
+      Object.assign(this._localeLists, IntlService.$instance.startingLocales);
+    } else {
+      IntlService.$instance = this;
+    }
   }
 
   getLocaleFromNavigator() {
