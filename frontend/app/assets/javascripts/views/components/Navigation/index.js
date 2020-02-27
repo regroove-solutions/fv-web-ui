@@ -20,7 +20,8 @@ import selectn from 'selectn'
 import { connect } from 'react-redux'
 import { loadNavigation, toggleMenuAction } from 'providers/redux/reducers/navigation'
 import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
-import { setImmersionMode, setLocale } from 'providers/redux/reducers/locale'
+import { setLocale } from 'providers/redux/reducers/locale'
+import { updateCurrentUser } from 'providers/redux/reducers/nuxeo/index'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers, { routeHasChanged } from 'common/NavigationHelpers'
@@ -46,6 +47,7 @@ import TextField from '@material-ui/core/TextField'
 import Toolbar from '@material-ui/core/Toolbar'
 import Tooltip from '@material-ui/core/Tooltip'
 import Typography from '@material-ui/core/Typography'
+import Switch from '@material-ui/core/Switch'
 
 // MAT-UI: Icons
 import Clear from '@material-ui/icons/Clear'
@@ -60,9 +62,9 @@ import AppLeftNav from 'views/components/Navigation/AppLeftNav/index.v2'
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 
 import { WORKSPACES, SECTIONS } from 'common/Constants'
+import FVLabel from '../FVLabel/index'
 
 import '!style-loader!css-loader!./styles.css'
-import FVLabel from '../FVLabel/index'
 
 const { array, func, object, string, bool, number } = PropTypes
 
@@ -84,7 +86,7 @@ export class Navigation extends Component {
     splitWindowPath: array.isRequired,
     windowPath: string.isRequired,
     currentLocale: string.isRequired,
-    currentImmersionMode: number.isRequired,
+    currentImmersionMode: bool.isRequired,
     intl: object.isRequired,
     // computeToggleMenuAction: object.isRequired,
     // computeCountTotalTasks: object.isRequired,
@@ -95,8 +97,8 @@ export class Navigation extends Component {
     pushWindowPath: func.isRequired,
     replaceWindowPath: func.isRequired,
     toggleMenuAction: func.isRequired,
-    setImmersionMode: func.isRequired,
     setLocale: func.isRequired,
+    updateCurrentUser: func.isRequired,
 
     // countTotalTasks: func.isRequired,
   }
@@ -183,7 +185,7 @@ export class Navigation extends Component {
     const hrefPath = NavigationHelpers.generateDynamicURL('page_explore_dialects', this.props.routeParams)
 
     const { classes } = this.props
-    const { appBarIcon = {}, appBar = {}, dialectContainer = {}, localePicker = {} } = classes
+    const { appBarIcon = {}, appBar = {}, dialectContainer = {}, localePicker = {}, immersionSwitch = {} } = classes
 
     return (
       <AppBar position="static" color="primary" className="Navigation" classes={{ colorPrimary: appBar }}>
@@ -219,10 +221,7 @@ export class Navigation extends Component {
               <FVLabel transKey="general.explore" defaultStr="Explore Languages" transform="upper" />
             </a>
 
-            <Login
-              routeParams={this.props.routeParams}
-              className={appBar}
-            />
+            <Login routeParams={this.props.routeParams} className={appBar} />
 
             <div className="Navigation__separator" />
 
@@ -321,7 +320,7 @@ export class Navigation extends Component {
                       {
                         searchPopoverOpen: true,
                       },
-                      () => { }
+                      () => {}
                     )
                   }}
                   onBlur={() => {
@@ -368,11 +367,29 @@ export class Navigation extends Component {
         >
           <Toolbar>
             <div className="Navigation__localeInner">
-              <FormControl>
+              <div className="Navigation__immersionSwitch">
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={this.props.currentImmersionMode}
+                      onChange={() => this._handleChangeImmersion()}
+                      classes={{
+                        switchBase: immersionSwitch,
+                      }}
+                    />
+                  }
+                  classes={{
+                    label: immersionSwitch,
+                  }}
+                  label="Immersion Mode"
+                />
+              </div>
+              {/* <FormControl>
                 <InputLabel>
                   Immersion Mode
                 </InputLabel>
-                <Select
+                <Switch checked={this.props.currentImmersionMode === 1} onChange={() => this._handleChangeImmersion()} /> */}
+              {/* <Select
                   value={this.props.currentImmersionMode}
                   onChange={(event) => {
                     this._handleChangeImmersion(event.target.value)
@@ -386,8 +403,8 @@ export class Navigation extends Component {
                   <MenuItem value={0}>None</MenuItem>
                   <MenuItem value={1}>Immersive</MenuItem>
                   <MenuItem value={2}>Both Languages</MenuItem>
-                </Select>
-              </FormControl>
+                </Select> */}
+              {/* </FormControl> */}
               <Typography variant="body1" className={`${localePicker} Navigation__localeTitle`}>
                 <FVLabel transKey="choose_lang" defaultStr="Choose a language" transform="first" />
               </Typography>
@@ -501,8 +518,8 @@ export class Navigation extends Component {
     this.props.setLocale(value)
   }
 
-  _handleChangeImmersion = (value) => {
-    this.props.setImmersionMode(value)
+  _handleChangeImmersion = () => {
+    this.props.updateCurrentUser(!this.props.currentImmersionMode)
   }
 
   _handleOpenMenuRequest = () => {
@@ -530,7 +547,11 @@ export class Navigation extends Component {
     return (
       <div className="Navigation__popoverInner">
         <Typography variant="title">
-          <FVLabel transKey="views.components.navigation.search_all" defaultStr="Search all languages & words at FirstVoices.com" transform="first" />
+          <FVLabel
+            transKey="views.components.navigation.search_all"
+            defaultStr="Search all languages & words at FirstVoices.com"
+            transform="first"
+          />
         </Typography>
       </div>
     )
@@ -579,17 +600,23 @@ export class Navigation extends Component {
             label={
               <div>
                 <Typography variant="body1" gutterBottom>
-                  {selectn('routeParams.dialect_name', this.props) ||
+                  {selectn('routeParams.dialect_name', this.props) || (
                     <FVLabel
                       transKey="views.components.navigation.this_dialect"
                       defaultStr="This Dialect"
                       transform="words"
-                    />}
+                    />
+                  )}
                 </Typography>
                 <Typography variant="caption" gutterBottom>
                   <FVLabel transKey="general.words" defaultStr="'Words" case="first" />,
                   <FVLabel transKey="general.phrases" defaultStr="'Phrases" case="first" />,
-                  <FVLabel transKey="general.songs_and_stories" defaultStr="'Songs &amp; Stories" case="words" append="."/>
+                  <FVLabel
+                    transKey="general.songs_and_stories"
+                    defaultStr="'Songs &amp; Stories"
+                    case="words"
+                    append="."
+                  />
                 </Typography>
               </div>
             }
@@ -631,17 +658,18 @@ const mapDispatchToProps = {
   pushWindowPath,
   replaceWindowPath,
   toggleMenuAction,
-  setImmersionMode,
   setLocale,
+  updateCurrentUser,
 }
 
 const styles = (theme) => {
-  const { appBar, appBarIcon, dialectContainer, localePicker } = theme
+  const { appBar, appBarIcon, dialectContainer, localePicker, immersionSwitch } = theme
   return {
     appBar,
     appBarIcon,
     dialectContainer,
     localePicker,
+    immersionSwitch,
   }
 }
 export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(Navigation))

@@ -235,7 +235,6 @@ import {
   getUidsThatAreNotDeleted,
 } from 'common/ListView'
 import withPagination from 'views/hoc/grid-list/with-pagination'
-import IntlService from 'views/services/intl'
 import FVButton from 'views/components/FVButton'
 import { dictionaryListSmallScreenColumnDataTemplate } from 'views/components/Browsing/DictionaryListSmallScreen'
 import { getSearchObject } from 'common/NavigationHelpers'
@@ -246,6 +245,7 @@ const DictionaryListSmallScreen = React.lazy(() => import('views/components/Brow
 const DictionaryListLargeScreen = React.lazy(() => import('views/components/Browsing/DictionaryListLargeScreen'))
 const ExportDialect = React.lazy(() => import('views/components/ExportDialect'))
 import '!style-loader!css-loader!./DictionaryList.css'
+import FVLabel from '../FVLabel/index'
 
 // ===============================================================
 // DictionaryList
@@ -256,7 +256,6 @@ const VIEWMODE_SMALL_SCREEN = 2
 const VIEWMODE_LARGE_SCREEN = 3
 
 const DictionaryList = (props) => {
-  const intl = IntlService.instance
   const DefaultFetcherParams = { currentPageIndex: 1, pageSize: 10, sortBy: 'fv:custom_order', sortOrder: 'asc' }
   let columnsEnhanced = [...props.columns]
 
@@ -325,12 +324,7 @@ const DictionaryList = (props) => {
   const noResults =
     selectn('length', items) === 0 ? (
       <div className={`DictionaryList DictionaryList--noData  ${props.cssModifier}`}>
-        {intl.translate({
-          key: 'no_results_found',
-          default: 'No Results Found',
-          case: 'first',
-          append: '.',
-        })}
+        <FVLabel transKey="no_results_found" defaultStr="No Results Found" transform="first" append="." />
       </div>
     ) : null
 
@@ -402,6 +396,7 @@ const DictionaryList = (props) => {
         clickHandlerViewMode: props.dictionaryListClickHandlerViewMode,
         dictionaryListViewMode: props.dictionaryListViewMode,
         hasViewModeButtons: props.hasViewModeButtons,
+        viewMode,
         hasFlashcard: props.hasFlashcard,
       })}
 
@@ -497,6 +492,7 @@ function generateListButtons({
   clickHandlerViewMode = () => {},
   dictionaryListViewMode,
   hasViewModeButtons,
+  viewMode,
   hasFlashcard,
 }) {
   let buttonFlashcard = null

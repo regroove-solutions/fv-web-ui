@@ -48,10 +48,8 @@ import DocumentView from 'views/components/Document/view'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
 import GroupAssignmentDialog from 'views/pages/users/group-assignment-dialog'
-import IntlService from 'views/services/intl'
 import '!style-loader!css-loader!./Tasks.css'
-
-const intl = IntlService.instance
+import FVLabel from '../../components/FVLabel/index'
 
 const { func, object } = PropTypes
 export class Tasks extends React.Component {
@@ -153,7 +151,7 @@ export class Tasks extends React.Component {
             </button>
           </TableCell>
           <TableCell className="Tasks__taskTypeContainer">
-            <span className="Tasks__taskType">{intl.searchAndReplace(task.name)}</span>
+            <span className="Tasks__taskType">{this.props.intl.searchAndReplace(task.name)}</span>
           </TableCell>
           <TableCell>
             <div data-testid="Tasks__approveRejectContainer" className="Tasks__approveRejectContainer">
@@ -166,7 +164,11 @@ export class Tasks extends React.Component {
                   this._handleTaskActions(task.id, 'approve')
                 }}
               >
-                {intl.trans('approve', 'Approve', 'first')}
+                <FVLabel
+                  transKey="approve"
+                  defaultStr="Approve"
+                  transform="first"
+                />
               </FVButton>
 
               <FVButton
@@ -178,7 +180,11 @@ export class Tasks extends React.Component {
                   this._handleTaskActions(task.id, 'reject')
                 }}
               >
-                {intl.trans('reject', 'Reject', 'first')}
+                <FVLabel
+                  transKey="reject"
+                  defaultStr="Reject"
+                  transform="first"
+                />
               </FVButton>
             </div>
           </TableCell>
@@ -210,7 +216,12 @@ export class Tasks extends React.Component {
 
     const noUserTasks =
       userTasks.length === 0 && userRegistrationTasks.length === 0 ? (
-        <h2>{intl.trans('views.pages.tasks.no_tasks', 'There are currently No tasks.')}</h2>
+        <h2>
+          <FVLabel
+            transKey="views.pages.tasks.no_tasks"
+            defaultStr="There are currently No tasks."
+          />
+        </h2>
       ) : null
 
     const userRegistrationTaskList = userRegistrationTasks.length > 0 ? <ul>{userRegistrationTasks}</ul> : null
@@ -220,18 +231,40 @@ export class Tasks extends React.Component {
           <TableHead>
             <TableRow>
               <TableCell>
-                <span className="Tasks__colHeader">{intl.trans('document_title', 'Document Title', 'words')}</span>
-              </TableCell>
-              <TableCell>
-                <span className="Tasks__colHeader">{intl.trans('task_type', 'Task Type', 'words')}</span>
-              </TableCell>
-              <TableCell>
-                <span className="Tasks__colHeader Tasks__colHeader--actions">
-                  {intl.trans('actions', 'Actions', 'words')}
+                <span className="Tasks__colHeader">
+                  <FVLabel
+                    transKey="document_title"
+                    defaultStr="Document Title"
+                    transform="words"
+                  />
                 </span>
               </TableCell>
               <TableCell>
-                <span className="Tasks__colHeader">{intl.trans('task_due_date', 'Task Due Date', 'words')}</span>
+                <span className="Tasks__colHeader">
+                  <FVLabel
+                    transKey="task_type"
+                    defaultStr="Task Type"
+                    transform="words"
+                  />
+                </span>
+              </TableCell>
+              <TableCell>
+                <span className="Tasks__colHeader Tasks__colHeader--actions">
+                  <FVLabel
+                    transKey="actions"
+                    defaultStr="Actions"
+                    transform="words"
+                  />
+                </span>
+              </TableCell>
+              <TableCell>
+                <span className="Tasks__colHeader">
+                  <FVLabel
+                    transKey="task_due_date"
+                    defaultStr="Task Due Date"
+                    transform="words"
+                  />
+                </span>
               </TableCell>
             </TableRow>
           </TableHead>
@@ -242,7 +275,13 @@ export class Tasks extends React.Component {
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <div>
-          <h1>{intl.trans('tasks', 'Tasks', 'first')}</h1>
+          <h1>
+            <FVLabel
+              transKey="tasks"
+              defaultStr="Tasks"
+              transform="first"
+            />
+          </h1>
 
           {noUserTasks}
 
@@ -255,7 +294,7 @@ export class Tasks extends React.Component {
           </Dialog>
 
           <GroupAssignmentDialog
-            title={intl.trans('approve', 'Approve', 'first')}
+            title={this.props.intl.trans('approve', 'Approve', 'first')}
             fieldMapping={{
               id: 'uid',
               title: 'properties.dc:title',
@@ -299,7 +338,7 @@ export class Tasks extends React.Component {
             value: 'approve',
           },
           null,
-          intl.trans('views.pages.tasks.request_approved', 'Request Approved Successfully', 'words')
+          this.props.intl.trans('views.pages.tasks.request_approved', 'Request Approved Successfully', 'words')
         )
         break
 
@@ -310,7 +349,7 @@ export class Tasks extends React.Component {
             value: 'reject',
           },
           null,
-          intl.trans('views.pages.tasks.request_rejected', 'Request Rejected Successfully', 'words')
+          this.props.intl.trans('views.pages.tasks.request_rejected', 'Request Rejected Successfully', 'words')
         )
         break
       default: // NOTE: do nothing
@@ -329,7 +368,7 @@ export class Tasks extends React.Component {
             status: 'validate',
           },
           null,
-          intl.trans('views.pages.tasks.request_approved', 'Request Approved Successfully', 'words')
+          this.props.intl.trans('views.pages.tasks.request_approved', 'Request Approved Successfully', 'words')
         )
         break
 
@@ -341,7 +380,7 @@ export class Tasks extends React.Component {
             status: 'reject',
           },
           null,
-          intl.trans('views.pages.tasks.request_rejected', 'Request Rejected Successfully', 'words')
+          this.props.intl.trans('views.pages.tasks.request_rejected', 'Request Rejected Successfully', 'words')
         )
         break
       default: // NOTE: do nothing
@@ -359,7 +398,7 @@ export class Tasks extends React.Component {
         appurl: NavigationHelpers.getBaseWebUIURL(),
       },
       null,
-      intl.trans('views.pages.tasks.request_approved', 'Request Approved Successfully', 'words')
+      this.props.intl.trans('views.pages.tasks.request_approved', 'Request Approved Successfully', 'words')
     )
 
     this.setState({
@@ -371,7 +410,7 @@ export class Tasks extends React.Component {
 
 // REDUX: reducers/state
 const mapStateToProps = (state /*, ownProps*/) => {
-  const { fvDialect, fvUser, tasks, nuxeo } = state
+  const { fvDialect, fvUser, tasks, nuxeo, locale } = state
 
   const { computeLogin } = nuxeo
   const { computeDialect2 } = fvDialect
@@ -383,6 +422,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
     computeUserTasksApprove,
     computeUserTasksReject,
   } = tasks
+  const { intlService } = locale
 
   return {
     computeDialect2,
@@ -393,6 +433,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
     computeUserTasks,
     computeUserTasksApprove,
     computeUserTasksReject,
+    intl: intlService,
   }
 }
 
