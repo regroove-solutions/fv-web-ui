@@ -22,6 +22,7 @@ import { Error } from '@material-ui/icons'
 import TablePaginationActions from './tablepagination'
 import SortingHeader from './sortingheader'
 
+import Preview from 'views/components/Editor/Preview'
 import { windowLocationPathnameWithoutPagination } from 'common/NavigationHelpers'
 import { withStyles } from '@material-ui/core/styles'
 import '!style-loader!css-loader!./immersionTable.css'
@@ -184,6 +185,7 @@ class ImmersionTable extends Component {
             columns={[
               { id: 'translation', label: 'Translation' },
               { id: 'base', label: 'Base' },
+              { id: 'audio', label: 'Audio', noSort: true },
               { id: 'type', label: 'Type' },
               { id: 'category', label: 'Category' },
             ]}
@@ -219,6 +221,18 @@ class ImmersionTable extends Component {
                         </TableCell>
                         <TableCell className="DictionaryList__data DictionaryList__data--base">
                           {this.renderTranslation(row, 'base')}
+                        </TableCell>
+                        <TableCell className="DictionaryList__data DictionaryList__data--audio">
+                          {row.relatedAudio && (
+                            <Preview
+                              id={row.relatedAudio}
+                              minimal
+                              tagProps={{ preload: 'none' }}
+                              styles={{ padding: 0 }}
+                              tagStyles={{ width: '100%', minWidth: '230px' }}
+                              type="FVAudio"
+                            />
+                          )}
                         </TableCell>
                         <TableCell className="DictionaryList__data DictionaryList__data--type"> {row.type}</TableCell>
                         <TableCell className="DictionaryList__data DictionaryList__data--category">

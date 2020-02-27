@@ -154,6 +154,7 @@ class ImmersionListView extends Component {
         editButton: undefined,
         editClick: () => {},
         uid: undefined,
+        relatedAudio: undefined,
       }
       const category = allCategories.find((c) => {
         return c.id === v.category
@@ -165,6 +166,7 @@ class ImmersionListView extends Component {
       if (translatedLabel) {
         label.translation = translatedLabel.properties['dc:title']
         label.uid = translatedLabel.uid
+        label.relatedAudio = translatedLabel.properties['fv:related_audio'][0]
       }
       label.editButton = this.renderEditButton(label, !translatedLabel)
       label.editClick = () => this.openModal(label, !translatedLabel)
@@ -216,7 +218,7 @@ class ImmersionListView extends Component {
         )}
         <LabelModal
           isNew={isNew}
-          dialectPath={routeParams.dialect_path + '/Label Dictionary'}
+          dialectPath={routeParams.dialect_path}
           open={isEditingOpen}
           handleClose={(save) => this.closeModal(save)}
           label={editingLabel}

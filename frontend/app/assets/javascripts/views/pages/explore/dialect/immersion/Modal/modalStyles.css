@@ -57,3 +57,8 @@
 .editable-span span:focus {
   outline: none;
 }
+
+.related-audio > fieldset {
+  border: none;
+  padding: 0;
+}

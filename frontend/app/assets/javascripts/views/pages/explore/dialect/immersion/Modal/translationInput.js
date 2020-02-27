@@ -17,12 +17,12 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 import { InputLabel, Chip } from '@material-ui/core'
-import '!style-loader!css-loader!./translationInput.css'
+import '!style-loader!css-loader!./modalStyles.css'
 
 /**
  * List view for words in immersion
  */
-const { bool, func, array } = PropTypes
+const { func, array } = PropTypes
 
 class TranslationInput extends Component {
   static propTypes = { templateStrings: array, translation: array, onChange: func }

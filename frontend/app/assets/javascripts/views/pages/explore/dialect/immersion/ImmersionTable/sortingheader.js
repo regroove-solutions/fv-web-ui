@@ -33,16 +33,20 @@ export default class SortingHeader extends Component {
                 padding={column.disablePadding ? 'none' : 'default'}
                 sortDirection={orderBy === column.id ? order : false}
               >
-                <Tooltip title="Sort" placement={column.numeric ? 'bottom-end' : 'bottom-start'} enterDelay={300}>
-                  <TableSortLabel
-                    active={orderBy === column.id}
-                    direction={order}
-                    onClick={this.createSortHandler(column.id)}
-                    className={`DictionaryList__data`}
-                  >
-                    {column.label}
-                  </TableSortLabel>
-                </Tooltip>
+                {!column.noSort ? (
+                  <Tooltip title="Sort" placement={column.numeric ? 'bottom-end' : 'bottom-start'} enterDelay={300}>
+                    <TableSortLabel
+                      active={orderBy === column.id}
+                      direction={order}
+                      onClick={this.createSortHandler(column.id)}
+                      className="DictionaryList__data"
+                    >
+                      {column.label}
+                    </TableSortLabel>
+                  </Tooltip>
+                ) : (
+                  <div className="DictionaryList__data">{column.label}</div>
+                )}
               </TableCell>
             )
           }, this)}

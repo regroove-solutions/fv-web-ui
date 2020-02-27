@@ -20,6 +20,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import Immutable from 'immutable'
 import { createLabel, fetchLabel, updateLabel } from 'providers/redux/reducers/fvLabel'
+import { fetchDialect, fetchDialect2 } from 'providers/redux/reducers/fvDialect'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import { Document } from 'nuxeo'
 import ProviderHelpers from 'common/ProviderHelpers'
@@ -42,6 +43,8 @@ class LabelModal extends Component {
     dialectPath: string,
     isNew: bool.isRequired,
     // REDUX: actions/dispatch/func
+    computeDialect2: object.isRequired,
+    computeLabel: object.isRequired,
     createLabel: func.isRequired,
     fetchLabel: func.isRequired,
     updateLabel: func.isRequired,
@@ -53,6 +56,9 @@ class LabelModal extends Component {
 
   constructor(props, context) {
     super(props, context)
+
+    this.audioRef = React.createRef()
+    this.dictionaryPath = this.props.dialectPath + '/Label Dictionary'
   }
 
   componentDidMount() {}
@@ -60,22 +66,28 @@ class LabelModal extends Component {
   componentDidUpdate(prevProps) {
     if (!prevProps.label && this.props.label && !this.props.isNew) {
       this.props.fetchLabel(this.props.label.uid)
+      this.props.fetchDialect(`/${this.props.dialectPath}`)
+      this.props.fetchDialect2(this.props.dialectPath)
     }
   }
 
   handleCreateSave = (translation) => {
-    const { label, createLabel, handleClose, dialectPath } = this.props
+    const { label, createLabel, handleClose } = this.props
 
     const now = Date.now()
 
+    const relatedAudioValue = this.audioRef.current.getValue()
+    const relatedAudio = relatedAudioValue ? relatedAudioValue['fv:related_audio'] : null
+
     createLabel(
-      dialectPath,
+      this.dictionaryPath,
       {
         type: 'FVLabel',
         name: now.toString(),
         properties: {
           'dc:title': translation.join(''),
           'fvlabel:labelKey': label.labelKey,
+          'fv:related_audio': relatedAudio,
         },
       },
       null,
@@ -103,7 +115,10 @@ class LabelModal extends Component {
       nuxeo: word.response._nuxeo,
     })
 
-    newDocument.set({ 'dc:title': translation.join('') })
+    const relatedAudioValue = this.audioRef.current.getValue()
+    const relatedAudio = relatedAudioValue ? relatedAudioValue['fv:related_audio'] : null
+
+    newDocument.set({ 'dc:title': translation.join(''), 'fv:related_audio': relatedAudio })
 
     updateLabel(newDocument, null, null).then(() => {
       handleClose(true)
@@ -111,13 +126,15 @@ class LabelModal extends Component {
   }
 
   renderContent = () => {
-    const { isNew, label, handleClose } = this.props
+    const { isNew, label, handleClose, dialectPath } = this.props
     return label ? (
       <ModalContent
         handleClose={() => handleClose()}
         handleSave={(translation) => (isNew ? this.handleCreateSave(translation) : this.handleEditSave(translation))}
         label={label}
         type={isNew ? 'base' : 'translation'}
+        audioRef={this.audioRef}
+        dialectPath={dialectPath}
       />
     ) : (
       <div />
@@ -125,12 +142,16 @@ class LabelModal extends Component {
   }
 
   render() {
-    const { fullScreen, open, handleClose, label, computeLabel, isNew } = this.props
+    const { fullScreen, open, handleClose, label, computeLabel, isNew, dialectPath, computeDialect2 } = this.props
     const computeEntities = label
       ? Immutable.fromJS([
           {
             id: label.uid,
             entity: computeLabel,
+          },
+          {
+            id: dialectPath,
+            entity: computeDialect2,
           },
         ])
       : null
@@ -162,11 +183,13 @@ class LabelModal extends Component {
 
 // REDUX: reducers/state
 const mapStateToProps = (state /*, ownProps*/) => {
-  const { fvLabel } = state
+  const { fvLabel, fvDialect } = state
 
+  const { computeDialect2 } = fvDialect
   const { computeLabel } = fvLabel
   return {
     computeLabel,
+    computeDialect2,
   }
 }
 
@@ -175,6 +198,8 @@ const mapDispatchToProps = {
   createLabel,
   fetchLabel,
   updateLabel,
+  fetchDialect,
+  fetchDialect2,
 }
 
 export default withMobileDialog()(connect(mapStateToProps, mapDispatchToProps)(LabelModal))

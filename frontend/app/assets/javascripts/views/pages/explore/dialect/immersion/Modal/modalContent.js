@@ -15,6 +15,14 @@ limitations under the License.
 */
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import t from 'tcomb-form'
+
+import { connect } from 'react-redux'
+import ProviderHelpers from 'common/ProviderHelpers'
+
+import selectn from 'selectn'
+import options from 'models/schemas/options'
+import fields from 'models/schemas/fields'
 
 import {
   Button,
@@ -27,6 +35,7 @@ import {
 } from '@material-ui/core'
 
 import TranslationInput from './translationInput'
+import '!style-loader!css-loader!./modalStyles.css'
 
 /**
  * List view for words in immersion
@@ -39,6 +48,10 @@ class ModalContent extends Component {
     handleSave: func,
     label: object,
     type: string.isRequired,
+    dialectPath: string.isRequired,
+    audioRef: object.isRequired,
+    // redux
+    computeDialect2: object.isRequired,
   }
   static defaultProps = {
     type: 'base',
@@ -49,8 +62,13 @@ class ModalContent extends Component {
 
     const { label, type } = this.props
 
+    this.fields = Object.assign({}, selectn('FVLabel', fields))
+
+    this.options = Object.assign({}, selectn('FVLabel', options))
+
     this.state = {
       translation: label ? this.mapTranslation(label[type]) : [],
+      formValue: null,
     }
   }
 
@@ -122,9 +140,11 @@ class ModalContent extends Component {
   }
 
   render() {
-    const { handleClose, label } = this.props
-    const { translation } = this.state
+    const { handleClose, label, audioRef, dialectPath, computeDialect2 } = this.props
+    const { translation, formValue } = this.state
 
+    const _computeDialect2 = ProviderHelpers.getEntry(computeDialect2, dialectPath)
+    const context = selectn('response', _computeDialect2)
     return (
       <>
         <DialogTitle id="responsive-dialog-title">Edit Label</DialogTitle>
@@ -191,9 +211,15 @@ class ModalContent extends Component {
               <span>{this.scriptTranslation(label)}</span>
             </div>
           )}
-
-          {/* OPTIONAL AUDIO FILE */}
-          <div>audio file</div>
+          <div className="related-audio">
+            <t.form.Form
+              ref={audioRef}
+              type={t.struct(this.fields)}
+              context={selectn('response', _computeDialect2)}
+              value={label.relatedAudio ? { 'fv:related_audio': [label.relatedAudio] } : formValue}
+              options={this.options}
+            />
+          </div>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => handleClose()} color="primary">
@@ -208,4 +234,17 @@ class ModalContent extends Component {
   }
 }
 
-export default ModalContent
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect } = state
+
+  const { computeDialect2 } = fvDialect
+  return {
+    computeDialect2,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ModalContent)
