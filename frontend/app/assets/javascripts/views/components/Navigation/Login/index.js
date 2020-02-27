@@ -32,7 +32,6 @@ import FVLabel from '../../FVLabel/index'
 const { func, object, string } = PropTypes
 
 export class Login extends Component {
-
   static propTypes = {
     className: string,
     routeParams: object,
@@ -116,8 +115,7 @@ export class Login extends Component {
     if (this.props.computeLogin.success && this.props.computeLogin.isConnected) {
       return (
         <div className={`Login Login--welcome hidden-xs ${className}`}>
-          <FVLabel transKey="general.welcome" defaultStr="WELCOME" transform="upper"/>,
-          {' '}
+          <FVLabel transKey="general.welcome" defaultStr="WELCOME" transform="upper" />,{' '}
           {selectn('response.properties.firstName', this.props.computeLogin)}
         </div>
       )
@@ -163,7 +161,4 @@ const mapDispatchToProps = {
   pushWindowPath,
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Login)
+export default connect(mapStateToProps, mapDispatchToProps)(Login)

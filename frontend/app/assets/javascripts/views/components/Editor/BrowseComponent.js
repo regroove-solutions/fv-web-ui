@@ -80,8 +80,8 @@ export class BrowseComponent extends Component {
     const providedTitleFilter = selectn('otherContext.providedFilter', this.props.dialect)
     const appliedParams = providedTitleFilter
       ? Object.assign({}, DefaultFetcherParams, {
-        filters: { 'properties.dc:title': { appliedFilter: providedTitleFilter } },
-      })
+          filters: { 'properties.dc:title': { appliedFilter: providedTitleFilter } },
+        })
       : DefaultFetcherParams
 
     this.state = {
@@ -96,11 +96,7 @@ export class BrowseComponent extends Component {
 
     const actions = [
       <button className="FlatButton" key="action1" onClick={this._handleClose} type="button">
-        <FVLabel
-          transKey="cancel"
-          defaultStr="Cancel"
-          transform="first"
-        />
+        <FVLabel transKey="cancel" defaultStr="Cancel" transform="first" />
       </button>,
     ]
 
@@ -237,11 +233,7 @@ export class BrowseComponent extends Component {
           </DialogContent>
           <DialogActions>
             <FVButton variant="contained" color="secondary" onClick={this._handleClose}>
-              <FVLabel
-                transKey="cancel"
-                defaultStr="Cancel"
-                transform="first"
-              />
+              <FVLabel transKey="cancel" defaultStr="Cancel" transform="first" />
             </FVButton>
           </DialogActions>
         </Dialog>

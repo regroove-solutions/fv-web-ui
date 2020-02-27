@@ -280,7 +280,7 @@ export class PhrasesListView extends DataListView {
     }
 
     // Bind methods to 'this'
-    [
+    ;[
       '_onEntryNavigateRequest',
       '_handleRefetch',
       '_handleSortChange',

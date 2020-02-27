@@ -301,7 +301,7 @@ class WordsListView extends DataListView {
     }
 
     // Bind methods to 'this'
-    [
+    ;[
       '_onNavigateRequest', // no references in file
       '_handleRefetch', // Note: comes from DataListView
       '_handleSortChange', // Note: comes from DataListView
@@ -428,7 +428,7 @@ class WordsListView extends DataListView {
                 preserveSearch: true,
               })
             }}
-            sortHandler={async({ page, pageSize, sortBy, sortOrder } = {}) => {
+            sortHandler={async ({ page, pageSize, sortBy, sortOrder } = {}) => {
               /*
               NOTE: TOWER OF INDIRECTION!
 

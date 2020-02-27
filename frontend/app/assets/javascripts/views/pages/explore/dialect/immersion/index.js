@@ -15,59 +15,63 @@ limitations under the License.
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import Immutable, { Set, Map, is } from 'immutable'
+import Immutable from 'immutable'
 
 import classNames from 'classnames'
 
 // REDUX
 import { connect } from 'react-redux'
 // REDUX: actions/dispatch/func
-import { fetchCategories } from 'providers/redux/reducers/fvCategory'
 import { fetchDocument } from 'providers/redux/reducers/document'
 import { fetchPortal } from 'providers/redux/reducers/fvPortal'
+import { fetchDirectory } from 'providers/redux/reducers/directory'
+import { fetchDirectoryEntries } from 'providers/redux/reducers/directory'
 import { pushWindowPath } from 'providers/redux/reducers/windowPath'
 import { searchDialectUpdate } from 'providers/redux/reducers/searchDialect'
 
 import selectn from 'selectn'
 
 import ProviderHelpers from 'common/ProviderHelpers'
-import { SEARCH_PART_OF_SPEECH_ANY, SEARCH_BY_CATEGORY } from 'views/components/SearchDialect/constants'
-import DialectFilterList from 'views/components/DialectFilterList'
-// import IntlService from 'views/services/intl'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base'
-import NavigationHelpers from 'common/NavigationHelpers'
-import { withTheme } from '@material-ui/core/styles'
+import { FormControl, RadioGroup, FormControlLabel, Radio } from '@material-ui/core'
+import { withStyles } from '@material-ui/core/styles'
 
 // Immersion specific
-import ImmersionListView from 'views/pages/explore/dialect/immersion/list-view'
+import ImmersionListView from './list-view'
+import ImmersionFilterList from './ImmersionFilterList'
 
-// const intl = IntlService.instance
+const styles = (theme) => {
+  const {
+    tab: { label },
+  } = theme
+  return {
+    label,
+    labelRoot: {
+      height: '32px',
+    },
+  }
+}
 
 const { array, bool, func, object } = PropTypes
 class PageDialectImmersionList extends PageDialectLearnBase {
   static propTypes = {
     hasPagination: bool,
     routeParams: object.isRequired,
+    classes: object.isRequired,
     // // REDUX: reducers/state
-    computeCategories: object.isRequired,
     computeDocument: object.isRequired,
-    // computeLogin: object.isRequired,
     computePortal: object.isRequired,
     computeSearchDialect: object,
     properties: object.isRequired,
     splitWindowPath: array.isRequired,
-    // windowPath: string.isRequired,
     // // REDUX: actions/dispatch/func
-    fetchCategories: func.isRequired,
     fetchDocument: func.isRequired,
     fetchPortal: func.isRequired,
-    // overrideBreadcrumbs: func.isRequired,
+    fetchDirectory: func.isRequired,
     pushWindowPath: func.isRequired,
-    // replaceWindowPath: func.isRequired,
     searchDialectUpdate: func,
-    // updatePageProperties: func.isRequired,
   }
   static defaultProps = {
     searchDialectUpdate: () => {},
@@ -83,14 +87,7 @@ class PageDialectImmersionList extends PageDialectLearnBase {
   constructor(props, context) {
     super(props, context)
 
-    let filterInfo = this.initialFilterInfo()
-    // If no filters are applied via URL, use props
-    if (filterInfo.get('currentCategoryFilterIds').isEmpty()) {
-      const pagePropertiesFilterInfo = selectn([[this._getPageKey()], 'filterInfo'], props.properties.pageProperties)
-      if (pagePropertiesFilterInfo) {
-        filterInfo = pagePropertiesFilterInfo
-      }
-    }
+    let selectedCategory = this.initialFilterInfo()
 
     const computeEntities = Immutable.fromJS([
       {
@@ -98,18 +95,15 @@ class PageDialectImmersionList extends PageDialectLearnBase {
         entity: props.computePortal,
       },
       {
-        id: `${props.routeParams.dialect_path}/Dictionary`,
+        id: `${props.routeParams.dialect_path}/Label Dictionary`,
         entity: props.computeDocument,
-      },
-      {
-        id: `/api/v1/path/FV/${props.routeParams.area}/SharedData/Shared Categories/@children`,
-        entity: props.computeCategories,
       },
     ])
 
     this.state = {
       computeEntities,
-      filterInfo,
+      selectedCategory,
+      translateFilter: 'either',
     }
 
     // Bind methods to 'this'
@@ -124,210 +118,101 @@ class PageDialectImmersionList extends PageDialectLearnBase {
     ].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
-  // NOTE: PageDialectLearnBase calls `_getPageKey`
   _getPageKey = () => {
     return `${this.props.routeParams.area}_${this.props.routeParams.dialect_name}_immersion`
   }
 
-  // NOTE: PageDialectLearnBase calls `fetchData`
-  // TODOSL REPLACE THESE PATHS
   fetchData(newProps) {
     newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal')
-    newProps.fetchDocument(newProps.routeParams.dialect_path + '/Dictionary')
-    newProps.fetchCategories('/api/v1/path/FV/' + newProps.routeParams.area + '/SharedData/Shared Categories/@children')
+    newProps.fetchDocument(newProps.routeParams.dialect_path + '/Label Dictionary')
+    if (newProps.computeDirectory.isFetching !== true && newProps.computeDirectory.success !== true) {
+      newProps.fetchDirectoryEntries('fv_label_categories', ['parent'])
+      newProps.fetchDirectoryEntries('fv_labels', ['type', 'template_strings', 'category'])
+    }
   }
 
-  handleCategoryClick = async ({ facetField, selected, unselected, href }, updateHistory = true) => {
-    await this.props.searchDialectUpdate({
-      searchByAlphabet: '',
-      searchByMode: SEARCH_BY_CATEGORY,
-      searchingDialectFilter: selected.checkedFacetUid,
-      searchBySettings: {
-        searchByTitle: true,
-        searchByDefinitions: false,
-        searchByTranslations: false,
-        searchPartOfSpeech: SEARCH_PART_OF_SPEECH_ANY,
-      },
-      searchTerm: '',
-    })
+  listToTree(arr) {
+    var tree = [],
+      mappedArr = {},
+      arrElem,
+      mappedElem
 
-    this.changeFilter({ href, updateHistory })
+    // First map the nodes of the array to an object -> create a hash table.
+    for (var i = 0, len = arr.length; i < len; i++) {
+      arrElem = arr[i]
+      mappedArr[arrElem.id] = arrElem
+      mappedArr[arrElem.id]['children'] = []
+    }
 
-    this.handleDialectFilterList(facetField, selected, unselected, this.DIALECT_FILTER_TYPE)
-  }
-
-  handleSearch = () => {
-    this.changeFilter()
-  }
-
-  resetSearch = () => {
-    let newFilter = this.state.filterInfo
-    // newFilter = newFilter.deleteIn(['currentAppliedFilter', 'categories'], null)
-    // newFilter = newFilter.deleteIn(['currentAppliedFilter', 'contains'], null)
-    // newFilter = newFilter.deleteIn(['currentAppliedFilter', 'startsWith'], null)
-    newFilter = newFilter.set('currentAppliedFilter', new Map())
-
-    // newFilter = newFilter.deleteIn(['currentAppliedFiltersDesc', 'categories'], null)
-    // newFilter = newFilter.deleteIn(['currentAppliedFiltersDesc', 'contains'], null)
-    // newFilter = newFilter.deleteIn(['currentAppliedFiltersDesc', 'startsWith'], null)
-    newFilter = newFilter.set('currentAppliedFiltersDesc', new Map())
-
-    newFilter = newFilter.set('currentCategoryFilterIds', new Set())
-
-    this.setState(
-      {
-        filterInfo: newFilter,
-        // searchNxqlSort: 'fv:custom_order', // TODO: IS THIS BREAKING SOMETHING?
-      },
-      () => {
-        // When facets change, pagination should be reset.
-        // In these pages (words/phrase), list views are controlled via URL
-        this._resetURLPagination()
-
-        // Remove alphabet/category filter urls
-        if (selectn('routeParams.category', this.props) || selectn('routeParams.letter', this.props)) {
-          let resetUrl = `/${this.props.splitWindowPath.join('/')}`
-          const _splitWindowPath = [...this.props.splitWindowPath]
-          const learnIndex = _splitWindowPath.indexOf('learn')
-          if (learnIndex !== -1) {
-            _splitWindowPath.splice(learnIndex + 2)
-            resetUrl = `/${_splitWindowPath.join('/')}`
+    for (var id in mappedArr) {
+      if (mappedArr.hasOwnProperty(id)) {
+        mappedElem = mappedArr[id]
+        // If the element is not at the root level, add it to its parent array of children.
+        if (mappedElem.parent !== '') {
+          if (mappedArr[mappedElem['parent']]) {
+            mappedArr[mappedElem['parent']]['children'].push(mappedElem)
+          } else {
+            console.log(mappedElem, ' is wrong parent')
           }
-
-          NavigationHelpers.navigate(resetUrl, this.props.pushWindowPath, false)
+        }
+        // If the element is at the root level, add it to first level elements array.
+        else {
+          tree.push(mappedElem)
         }
       }
-    )
+    }
+    return tree
   }
+
+  handleSearch = () => {}
+
+  resetSearch = () => {}
 
   // FILTERS
   initialFilterInfo = () => {
-    const routeParamsCategory = this.props.routeParams.category
-    const initialCategories = routeParamsCategory ? new Set([routeParamsCategory]) : new Set()
-    const currentAppliedFilterCategoriesParam1 = ProviderHelpers.switchWorkspaceSectionKeys(
-      'fv-word:categories',
-      this.props.routeParams.area
-    )
-    const currentAppliedFilterCategories = routeParamsCategory
-      ? ` AND ${currentAppliedFilterCategoriesParam1}/* IN ("${routeParamsCategory}")`
-      : ''
-
-    return new Map({
-      currentCategoryFilterIds: initialCategories,
-      currentAppliedFilter: new Map({
-        categories: currentAppliedFilterCategories,
-      }),
-    })
+    const routeParamsCategory = this.props.routeParams.handleCategoryClick
+    return routeParamsCategory || null
   }
 
-  changeFilter = ({ href, updateUrl = true } = {}) => {
-    const { searchByMode, searchNxqlQuery } = this.props.computeSearchDialect
-    let searchType
-    let newFilter = this.state.filterInfo
-
-    switch (searchByMode) {
-      case SEARCH_BY_CATEGORY: {
-        searchType = 'categories'
-        // Remove other settings
-        // newFilter = newFilter.deleteIn(['currentAppliedFilter', 'contains'], null)
-        // newFilter = newFilter.deleteIn(['currentAppliedFilter', 'startsWith'], null)
-        break
-      }
-      default: {
-        searchType = 'contains'
-        // Remove other settings
-        // newFilter = newFilter.deleteIn(['currentAppliedFilter', 'startsWith'], null)
-        // newFilter = newFilter.deleteIn(['currentAppliedFilter', 'categories'], null)
-        // newFilter = newFilter.set('currentCategoryFilterIds', new Set())
-      }
-    }
-
-    // Remove all old settings...
-    newFilter = newFilter.set('currentAppliedFilter', new Map())
-    newFilter = newFilter.set('currentCategoryFilterIds', new Set())
-
-    // Add new search query
-    newFilter = newFilter.updateIn(['currentAppliedFilter', searchType], () => {
-      return searchNxqlQuery && searchNxqlQuery !== '' ? ` AND ${searchNxqlQuery}` : ''
-    })
-
-    // When facets change, pagination should be reset.
-    // In these pages (words/phrase), list views are controlled via URL
-    if (is(this.state.filterInfo, newFilter) === false) {
-      this.setState({ filterInfo: newFilter }, () => {
-        // NOTE: `_resetURLPagination` below can trigger FW-256:
-        // "Back button is not working properly when paginating within alphabet chars
-        // (Navigate to /learn/words/alphabet/a/1/1 - go to page 2, 3, 4. Use back button.
-        // You will be sent to the first page)"
-        //
-        // The above test (`is(...) === false`) prevents updates triggered by back or forward buttons
-        // and any other unnecessary updates (ie: the filter didn't change)
-        this._resetURLPagination({ preserveSearch: true })
-
-        // See about updating url
-        if (href && updateUrl) {
-          NavigationHelpers.navigate(href, this.props.pushWindowPath, false)
-        }
-      })
-    }
+  changeCategory = (selectedCategory) => {
+    this.setState({ selectedCategory })
   }
 
-  clearDialectFilter = () => {
-    this.setState({ filterInfo: this.initialFilterInfo() })
+  changeFilter = (translateFilter) => {
+    this.setState({ translateFilter })
   }
+
+  clearFilter = () => {}
 
   render() {
-    const { computeEntities, filterInfo } = this.state
+    const { classes } = this.props
+    const { computeEntities, selectedCategory, translateFilter } = this.state
 
     const { routeParams } = this.props
     const computeDocument = ProviderHelpers.getEntry(
       this.props.computeDocument,
-      `${routeParams.dialect_path}/Dictionary`
+      `${routeParams.dialect_path}/Label Dictionary`
     )
 
     const computePortal = ProviderHelpers.getEntry(this.props.computePortal, `${routeParams.dialect_path}/Portal`)
 
-    const computeCategories = ProviderHelpers.getEntry(
-      this.props.computeCategories,
-      `/api/v1/path/FV/${routeParams.area}/SharedData/Shared Categories/@children`
-    )
-    const computeCategoriesSize = selectn('response.entries.length', computeCategories) || 1 // 0
+    const categories = selectn('directoryEntries.fv_label_categories', this.props.computeDirectory) || []
+    const mappedCategories = this.listToTree(categories)
+
+    const categoriesSize = mappedCategories.length
+    const allLabels = selectn('directoryEntries.fv_labels', this.props.computeDirectory) || []
 
     const pageTitle = `${selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) ||
-      ''} Immersion Portal` // TODOSL add localization tag
-
-    const { searchNxqlSort = {} } = this.props.computeSearchDialect
-    const { DEFAULT_SORT_COL, DEFAULT_SORT_TYPE } = searchNxqlSort
-    const { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } = this._getURLPageProps() // via base > pulled from routeParams
+      ''} Immersion Portal`
 
     const wordListView = selectn('response.uid', computeDocument) ? (
       <ImmersionListView
-        controlViaURL
-        DEFAULT_PAGE={DEFAULT_PAGE}
-        DEFAULT_PAGE_SIZE={DEFAULT_PAGE_SIZE}
-        DEFAULT_SORT_COL={DEFAULT_SORT_COL}
-        DEFAULT_SORT_TYPE={DEFAULT_SORT_TYPE}
-        disableClickItem={false}
-        filter={filterInfo}
-        flashcard={false}
-        flashcardTitle={pageTitle}
         parentID={selectn('response.uid', computeDocument)}
         routeParams={this.props.routeParams}
-        // Search:
-        handleSearch={this.handleSearch}
-        resetSearch={this.resetSearch}
-        hasSearch
-        searchUi={[
-          {
-            defaultChecked: true,
-            idName: 'searchByTitle',
-            labelText: 'Word',
-          },
-          {
-            idName: 'searchByDefinitions',
-            labelText: 'Definitions',
-          },
-        ]}
+        allLabels={allLabels}
+        allCategories={categories}
+        selectedCategory={selectedCategory}
+        selectedFilter={translateFilter}
       />
     ) : null
 
@@ -336,28 +221,49 @@ class PageDialectImmersionList extends PageDialectLearnBase {
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <div className="row">
-          <div
-            className={classNames('col-xs-12', 'col-md-3', computeCategoriesSize === 0 ? 'hidden' : null, 'PrintHide')}
-          >
-            <div>TODOSL Filter by whether word is translated or not yet TODO HERE</div>
+          <div className={classNames('col-xs-12', 'col-md-3', categoriesSize === 0 ? 'hidden' : null, 'PrintHide')}>
             <div>
-              <DialectFilterList
-                type={this.DIALECT_FILTER_TYPE}
-                title={'Browse Section Categories'}
-                appliedFilterIds={filterInfo.get('currentCategoryFilterIds')}
-                facetField={ProviderHelpers.switchWorkspaceSectionKeys(
-                  'fv-word:categories',
-                  this.props.routeParams.area
-                )}
-                handleDialectFilterClick={this.handleCategoryClick}
-                handleDialectFilterList={this.handleDialectFilterList} // NOTE: Comes from PageDialectLearnBase
-                facets={selectn('response.entries', computeCategories) || []}
-                clearDialectFilter={this.clearDialectFilter}
+              <FormControl>
+                <h2>Translation</h2>
+                <RadioGroup
+                  name="translated"
+                  value={translateFilter}
+                  onChange={(ev) => {
+                    this.changeFilter(ev.target.value)
+                  }}
+                >
+                  <FormControlLabel
+                    value="either"
+                    control={<Radio color="primary" />}
+                    label="All Labels"
+                    classes={{ label: classes.label, root: classes.labelRoot }}
+                  />
+                  <FormControlLabel
+                    value="translated"
+                    control={<Radio color="primary" />}
+                    label="Translated Labels"
+                    classes={{ label: classes.label, root: classes.labelRoot }}
+                  />
+                  <FormControlLabel
+                    value="untranslated"
+                    control={<Radio color="primary" />}
+                    label="Untranslated Labels"
+                    classes={{ label: classes.label, root: classes.labelRoot }}
+                  />
+                </RadioGroup>
+              </FormControl>
+            </div>
+            <div>
+              <ImmersionFilterList
+                title={'Browse Categories'}
+                categories={mappedCategories}
                 routeParams={this.props.routeParams}
+                selectedCategory={selectedCategory}
+                changeCategory={this.changeCategory}
               />
             </div>
           </div>
-          <div className={classNames('col-xs-12', computeCategoriesSize === 0 ? 'col-md-12' : 'col-md-9')}>
+          <div className={classNames('col-xs-12', categoriesSize === 0 ? 'col-md-12' : 'col-md-9')}>
             <h1 className="DialectPageTitle">{pageTitle}</h1>
             <div className={dialectClassName}>{wordListView}</div>
           </div>
@@ -370,20 +276,18 @@ class PageDialectImmersionList extends PageDialectLearnBase {
 
 // REDUX: reducers/state
 const mapStateToProps = (state /*, ownProps*/) => {
-  const { document, navigation, fvPortal, fvCategory, searchDialect, windowPath } = state
+  const { document, navigation, fvPortal, windowPath, directory } = state
 
   const { properties } = navigation
-  const { computeCategories } = fvCategory
   const { computeDocument } = document
   const { computePortal } = fvPortal
-  const { computeSearchDialect } = searchDialect
+  const { computeDirectory } = directory
   const { splitWindowPath, _windowPath } = windowPath
   return {
     properties,
     computePortal,
-    computeCategories,
     computeDocument,
-    computeSearchDialect,
+    computeDirectory,
     splitWindowPath,
     windowPath: _windowPath,
   }
@@ -391,11 +295,12 @@ const mapStateToProps = (state /*, ownProps*/) => {
 
 // REDUX: actions/dispatch/func
 const mapDispatchToProps = {
-  fetchCategories,
   fetchDocument,
   fetchPortal,
+  fetchDirectory,
+  fetchDirectoryEntries,
   pushWindowPath,
   searchDialectUpdate,
 }
 
-export default withTheme()(connect(mapStateToProps, mapDispatchToProps)(PageDialectImmersionList))
+export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(PageDialectImmersionList))

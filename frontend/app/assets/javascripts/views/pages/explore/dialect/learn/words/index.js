@@ -212,11 +212,11 @@ class PageDialectLearnWords extends PageDialectLearnBase {
     if (isKidsTheme) {
       const cloneWordListView = wordListView
         ? React.cloneElement(wordListView, {
-          DEFAULT_PAGE_SIZE: 8,
-          disablePageSize: true,
-          filter: filterInfo.setIn(['currentAppliedFilter', 'kids'], ' AND fv:available_in_childrens_archive=1'),
-          gridListView: true,
-        })
+            DEFAULT_PAGE_SIZE: 8,
+            disablePageSize: true,
+            filter: filterInfo.setIn(['currentAppliedFilter', 'kids'], ' AND fv:available_in_childrens_archive=1'),
+            gridListView: true,
+          })
         : null
       return (
         <PromiseWrapper renderOnError computeEntities={computeEntities}>
@@ -383,7 +383,7 @@ class PageDialectLearnWords extends PageDialectLearnBase {
     return `${this.props.routeParams.area}_${this.props.routeParams.dialect_name}_learn_words`
   }
 
-  handleAlphabetClick = async(letter, href, updateHistory = true) => {
+  handleAlphabetClick = async (letter, href, updateHistory = true) => {
     await this.props.searchDialectUpdate({
       searchByAlphabet: letter,
       searchByMode: SEARCH_BY_ALPHABET,
@@ -399,7 +399,7 @@ class PageDialectLearnWords extends PageDialectLearnBase {
     this.changeFilter({ href, updateHistory })
   }
 
-  handleCategoryClick = async({ facetField, selected, unselected, href }, updateHistory = true) => {
+  handleCategoryClick = async ({ facetField, selected, unselected, href }, updateHistory = true) => {
     await this.props.searchDialectUpdate({
       searchByAlphabet: '',
       searchByMode: SEARCH_BY_CATEGORY,

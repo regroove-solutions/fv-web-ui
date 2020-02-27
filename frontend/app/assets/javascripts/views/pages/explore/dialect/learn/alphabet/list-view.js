@@ -251,7 +251,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
     routeParams: route.routeParams,
     splitWindowPath,
     windowPath: _windowPath,
-    intl: intlService
+    intl: intlService,
   }
 }
 

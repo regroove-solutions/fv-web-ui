@@ -8,7 +8,19 @@ import DocumentOperations from 'operations/DocumentOperations'
 import Preview from 'views/components/Editor/Preview'
 import '!style-loader!css-loader!./FVLabel.css'
 
-function FVLabel({ transKey, defaultStr, transform, params, prepend, append, forceLocale, intl, locale, isInHelpMode, labelIds }) {
+function FVLabel({
+  transKey,
+  defaultStr,
+  transform,
+  params,
+  prepend,
+  append,
+  forceLocale,
+  intl,
+  locale,
+  isInHelpMode,
+  labelIds,
+}) {
   const [anchorElement, setAnchorElement] = useState()
   const [audioId, setAudioId] = useState('')
   const [isFetchingAudio, setIsFetchingAudio] = useState('')
@@ -33,7 +45,7 @@ function FVLabel({ transKey, defaultStr, transform, params, prepend, append, for
         setAnchorElement(event.currentTarget)
         if (translationId) {
           setIsFetchingAudio(true)
-          DocumentOperations.getDocument(translationId, 'FVLabel').then(data => {
+          DocumentOperations.getDocument(translationId, 'FVLabel').then((data) => {
             if (isMounted) {
               setAudioId(selectn('properties.fv:related_audio[0]', data))
               setIsFetchingAudio(false)
@@ -53,30 +65,47 @@ function FVLabel({ transKey, defaultStr, transform, params, prepend, append, for
     event.stopPropagation()
   }
 
-  const audioContainerStyles = { minWidth: '200px', minHeight: '79px', display: 'flex', alignItems: 'center', justifyContent: 'space-around' }
+  const audioContainerStyles = {
+    minWidth: '200px',
+    minHeight: '79px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  }
 
   return (
     <span className="fv-label">
       {intl.trans(transKey, defaultStr, transform, params, prepend, append, forceLocale)}
       {isInHelpMode && (
         <span onClick={handleClick} className="fv-label-click-cover">
-          <Menu id="simple-menu" anchorEl={anchorElement} open={!!anchorElement} onClose={handleClose} getContentAnchorEl={null} anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}>
-            <ListItem>Translation: {intl.trans(transKey, defaultStr, transform, params, prepend, append, locale)}</ListItem>
-            {!isFetchingAudio && !audioId && <ListItem disabled>
-              No Audio
-            </ListItem>}
-            {!isFetchingAudio && audioId && <ListItem>
-              <div style={audioContainerStyles}>
-                <Preview id={audioId} type="FVAudio" minimal styles={{ flex: 1 }} />
-              </div>
-            </ListItem>}
-            {
-              isFetchingAudio && <ListItem disabled>
+          <Menu
+            id="simple-menu"
+            anchorEl={anchorElement}
+            open={!!anchorElement}
+            onClose={handleClose}
+            getContentAnchorEl={null}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+          >
+            <ListItem>
+              Translation: {intl.trans(transKey, defaultStr, transform, params, prepend, append, locale)}
+            </ListItem>
+            {!isFetchingAudio && !audioId && <ListItem disabled>No Audio</ListItem>}
+            {!isFetchingAudio && audioId && (
+              <ListItem>
+                <div style={audioContainerStyles}>
+                  <Preview id={audioId} type="FVAudio" minimal styles={{ flex: 1 }} />
+                </div>
+              </ListItem>
+            )}
+            {isFetchingAudio && (
+              <ListItem disabled>
                 <div style={audioContainerStyles} />
               </ListItem>
-            }
+            )}
 
-            <ListItem button onClick={openEdit}>Edit</ListItem>
+            <ListItem button onClick={openEdit}>
+              Edit
+            </ListItem>
           </Menu>
         </span>
       )}

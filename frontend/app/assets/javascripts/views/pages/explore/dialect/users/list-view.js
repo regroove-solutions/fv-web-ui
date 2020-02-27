@@ -126,7 +126,7 @@ export class UsersListView extends DataListView {
     }
 
     // Bind methods to 'this'
-    [
+    ;[
       '_onNavigateRequest',
       '_onUserSelected',
       '_handleRefetch',
@@ -178,7 +178,11 @@ export class UsersListView extends DataListView {
         },
       },
       null,
-      this.props.intl.trans('views.pages.explore.dialect.users.user_updated_successfully', 'User updated successfully.', 'first')
+      this.props.intl.trans(
+        'views.pages.explore.dialect.users.user_updated_successfully',
+        'User updated successfully.',
+        'first'
+      )
     )
 
     this.setState({

@@ -33,7 +33,7 @@ export default function withForm(ComposedFilter /*, publishWarningEnabled = fals
     }
 
     static defaultProps = {
-      cancelMethod: () => { },
+      cancelMethod: () => {},
     }
 
     constructor(props, context) {
@@ -210,11 +210,7 @@ export default function withForm(ComposedFilter /*, publishWarningEnabled = fals
                             this._onRequestCancelForm(e, true)
                           }}
                         >
-                          <FVLabel
-                            transKey="yes"
-                            defaultStr="Yes"
-                            transform="first"
-                          />!
+                          <FVLabel transKey="yes" defaultStr="Yes" transform="first" />!
                         </FVButton>
                         <FVButton
                           variant="flat"
@@ -222,11 +218,7 @@ export default function withForm(ComposedFilter /*, publishWarningEnabled = fals
                           style={confirmationButtonsStyle}
                           onClick={() => this.setState({ showCancelWarning: false })}
                         >
-                          <FVLabel
-                            transKey="no"
-                            defaultStr="No"
-                            transform="first"
-                          />!
+                          <FVLabel transKey="no" defaultStr="No" transform="first" />!
                         </FVButton>
                       </div>
                     </Popover>

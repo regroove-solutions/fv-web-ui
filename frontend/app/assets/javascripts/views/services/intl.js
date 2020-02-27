@@ -7,13 +7,13 @@ import sp from 'views/../locale/locale.sp.json'
 import { sprintf, vsprintf } from 'sprintf-js'
 import DirectoryOperations from 'operations/DirectoryOperations'
 
-String.prototype.toUpperCaseWords = function () {
-  return this.replace(/\w+/g, function (a) {
+String.prototype.toUpperCaseWords = function() {
+  return this.replace(/\w+/g, function(a) {
     return a.charAt(0).toUpperCase() + a.slice(1).toLowerCase()
   })
 }
 
-String.prototype.toUpperCaseFirst = function () {
+String.prototype.toUpperCaseFirst = function() {
   return this.charAt(0).toUpperCase() + this.slice(1).toLowerCase()
 }
 export default class IntlService {
@@ -35,21 +35,21 @@ export default class IntlService {
   notFoundPrefix = ''
   notFoundSuffix = ''
   tagsRegex = /(<[^>]+>)(.*)(<\/[^>]+>)/i
-  _localeLists = {};
-  _fallbackLocale = ""
+  _localeLists = {}
+  _fallbackLocale = ''
 
   constructor(startingLocales, locale, fallbackLocale) {
-    this.localeString = locale;
-    this._fallbackLocale = fallbackLocale;
-    Object.assign(this._localeLists, startingLocales);
+    this.localeString = locale
+    this._fallbackLocale = fallbackLocale
+    Object.assign(this._localeLists, startingLocales)
 
     // Fallback for code that can't access the redux store
     if (IntlService.$instance) {
-      IntlService.$instance.localeString = locale;
-      IntlService.$instance._fallbackLocale = fallbackLocale;
-      Object.assign(this._localeLists, IntlService.$instance.startingLocales);
+      IntlService.$instance.localeString = locale
+      IntlService.$instance._fallbackLocale = fallbackLocale
+      Object.assign(this._localeLists, IntlService.$instance.startingLocales)
     } else {
-      IntlService.$instance = this;
+      IntlService.$instance = this
     }
   }
 
@@ -125,7 +125,7 @@ export default class IntlService {
       key = key.join('.')
     }
     const self = this
-    const postProcessResult = function (result, translateData) {
+    const postProcessResult = function(result, translateData) {
       if (result !== null) {
         const charCase = translateData.case || null
         const params = translateData.params || []
@@ -151,7 +151,7 @@ export default class IntlService {
         result = (result + '').replace('&amp;', '&')
         result = (result + '').replace('&AMP;', '&')
 
-        const postProcessSwaps = function (result) {
+        const postProcessSwaps = function(result) {
           const swapMatches = (result + '').match(/\$\{([a-zA-Z0-9\.\_]+)\}/g)
           if (swapMatches !== null && swapMatches.length > 0) {
             for (const idx in swapMatches) {
@@ -199,7 +199,7 @@ export default class IntlService {
     }
 
     if (this._fallbackLocale && (translateData.locale || this.localeString) !== this._fallbackLocale) {
-      translateData.locale = this._fallbackLocale;
+      translateData.locale = this._fallbackLocale
       return this.fallbackPrefix + this.translate(translateData) + this.fallbackSuffix
     }
 
@@ -428,7 +428,7 @@ export default class IntlService {
   }
 
   addLocaleDictionary(path, list) {
-    this._localeLists[path] = list;
+    this._localeLists[path] = list
   }
 }
 // TODO: remove eslint-disable

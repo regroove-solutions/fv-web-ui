@@ -221,10 +221,7 @@ export class Navigation extends Component {
               <FVLabel transKey="general.explore" defaultStr="Explore Languages" transform="upper" />
             </a>
 
-            <Login
-              routeParams={this.props.routeParams}
-              className={appBar}
-            />
+            <Login routeParams={this.props.routeParams} className={appBar} />
 
             <div className="Navigation__separator" />
 
@@ -323,7 +320,7 @@ export class Navigation extends Component {
                       {
                         searchPopoverOpen: true,
                       },
-                      () => { }
+                      () => {}
                     )
                   }}
                   onBlur={() => {
@@ -550,7 +547,11 @@ export class Navigation extends Component {
     return (
       <div className="Navigation__popoverInner">
         <Typography variant="title">
-          <FVLabel transKey="views.components.navigation.search_all" defaultStr="Search all languages & words at FirstVoices.com" transform="first" />
+          <FVLabel
+            transKey="views.components.navigation.search_all"
+            defaultStr="Search all languages & words at FirstVoices.com"
+            transform="first"
+          />
         </Typography>
       </div>
     )
@@ -599,17 +600,23 @@ export class Navigation extends Component {
             label={
               <div>
                 <Typography variant="body1" gutterBottom>
-                  {selectn('routeParams.dialect_name', this.props) ||
+                  {selectn('routeParams.dialect_name', this.props) || (
                     <FVLabel
                       transKey="views.components.navigation.this_dialect"
                       defaultStr="This Dialect"
                       transform="words"
-                    />}
+                    />
+                  )}
                 </Typography>
                 <Typography variant="caption" gutterBottom>
                   <FVLabel transKey="general.words" defaultStr="'Words" case="first" />,
                   <FVLabel transKey="general.phrases" defaultStr="'Phrases" case="first" />,
-                  <FVLabel transKey="general.songs_and_stories" defaultStr="'Songs &amp; Stories" case="words" append="." />
+                  <FVLabel
+                    transKey="general.songs_and_stories"
+                    defaultStr="'Songs &amp; Stories"
+                    case="words"
+                    append="."
+                  />
                 </Typography>
               </div>
             }

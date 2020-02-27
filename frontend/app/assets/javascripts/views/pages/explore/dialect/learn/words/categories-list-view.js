@@ -91,7 +91,11 @@ class WordsCategoriesListView extends DataListView {
         },
         {
           name: 'parent',
-          title: props.intl.trans('views.pages.explore.dialect.learn.words.parent_category', 'Parent Category', 'words'),
+          title: props.intl.trans(
+            'views.pages.explore.dialect.learn.words.parent_category',
+            'Parent Category',
+            'words'
+          ),
           render: (v, data /*, cellProps*/) => {
             const parentCategory = selectn('contextParameters.parentDoc.title', data)
             return parentCategory === 'Shared Categories' ? '' : parentCategory
@@ -203,7 +207,7 @@ class WordsCategoriesListView extends DataListView {
 
 // REDUX: reducers/state
 const mapStateToProps = (state /*, ownProps*/) => {
-  const { fvCategory, fvDialect, navigation, nuxeo, windowPath, locale} = state
+  const { fvCategory, fvDialect, navigation, nuxeo, windowPath, locale } = state
 
   const { properties } = navigation
   const { computeLogin } = nuxeo

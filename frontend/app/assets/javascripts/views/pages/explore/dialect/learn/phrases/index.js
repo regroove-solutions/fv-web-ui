@@ -156,7 +156,12 @@ export class PageDialectLearnPhrases extends PageDialectLearnBase {
 
     const computePhraseBooksSize = selectn('response.entries.length', computePhraseBooks) || 0
     const dialect = selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) || ''
-    const pageTitle = this.props.intl.trans('views.pages.explore.dialect.phrases.x_phrases', `${dialect} Phrases`, null, [dialect])
+    const pageTitle = this.props.intl.trans(
+      'views.pages.explore.dialect.phrases.x_phrases',
+      `${dialect} Phrases`,
+      null,
+      [dialect]
+    )
     const { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } = this._getURLPageProps()
     const phraseListView = selectn('response.uid', computeDocument) ? (
       <PhraseListView
@@ -363,7 +368,7 @@ export class PageDialectLearnPhrases extends PageDialectLearnBase {
     )
   }
 
-  handleAlphabetClick = async(letter, href, updateHistory = true) => {
+  handleAlphabetClick = async (letter, href, updateHistory = true) => {
     await this.props.searchDialectUpdate({
       searchByAlphabet: letter,
       searchByMode: SEARCH_BY_ALPHABET,
@@ -379,7 +384,7 @@ export class PageDialectLearnPhrases extends PageDialectLearnBase {
     this.changeFilter(href, updateHistory)
   }
 
-  handlePhraseBookClick = async({ facetField, selected, unselected, href } = {}, updateHistory = true) => {
+  handlePhraseBookClick = async ({ facetField, selected, unselected, href } = {}, updateHistory = true) => {
     await this.props.searchDialectUpdate({
       searchByAlphabet: '',
       searchByMode: SEARCH_BY_PHRASE_BOOK,

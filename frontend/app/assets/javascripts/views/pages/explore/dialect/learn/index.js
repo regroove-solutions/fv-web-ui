@@ -380,7 +380,11 @@ export class DialectLearn extends Component {
             if (selectn('response', computeDialect2))
               return (
                 <PageToolbar
-                  label={this.props.intl.trans('views.pages.explore.dialect.learn.language_portal', 'Language Portal', 'words')}
+                  label={this.props.intl.trans(
+                    'views.pages.explore.dialect.learn.language_portal',
+                    'Language Portal',
+                    'words'
+                  )}
                   computeEntity={computeDialect2}
                   actions={['publish']}
                   publishChangesAction={this._publishChangesAction}
@@ -435,7 +439,11 @@ export class DialectLearn extends Component {
             <div className="row PrintHide" style={{ marginTop: '15px' }}>
               <div className={classNames('col-xs-12')}>
                 <TextHeader
-                  title={this.props.intl.trans('views.pages.explore.dialect.learn.recent_activity', 'Recent Activity', 'upper')}
+                  title={this.props.intl.trans(
+                    'views.pages.explore.dialect.learn.recent_activity',
+                    'Recent Activity',
+                    'upper'
+                  )}
                   tag="h2"
                   properties={this.props.properties}
                 />
@@ -453,11 +461,7 @@ export class DialectLearn extends Component {
                           color: themePalette.secondary.contrastText,
                         }}
                       >
-                        <FVLabel
-                          transKey="words"
-                          defaultStr="WORDS"
-                          transform="upper"
-                        />
+                        <FVLabel transKey="words" defaultStr="WORDS" transform="upper" />
                       </Typography>
                     }
                     style={{ backgroundColor: themePalette.primary2Color, height: 'initial' }}
@@ -547,11 +551,7 @@ export class DialectLearn extends Component {
                           color: themePalette.secondary.contrastText,
                         }}
                       >
-                        <FVLabel
-                          transKey="phrases"
-                          defaultStr="PHRASES"
-                          transform="upper"
-                        />
+                        <FVLabel transKey="phrases" defaultStr="PHRASES" transform="upper" />
                       </Typography>
                     }
                     style={{ backgroundColor: themePalette.primary2Color, height: 'initial' }}
@@ -639,11 +639,7 @@ export class DialectLearn extends Component {
                           color: themePalette.secondary.contrastText,
                         }}
                       >
-                        <FVLabel
-                          transKey="songs"
-                          defaultStr="SONGS"
-                          transform="upper"
-                        />
+                        <FVLabel transKey="songs" defaultStr="SONGS" transform="upper" />
                       </Typography>
                     }
                     style={{ backgroundColor: themePalette.primary2Color, height: 'initial' }}
@@ -731,11 +727,7 @@ export class DialectLearn extends Component {
                           color: themePalette.secondary.contrastText,
                         }}
                       >
-                        <FVLabel
-                          transKey="stories"
-                          defaultStr="STORIES"
-                          transform="upper"
-                        />
+                        <FVLabel transKey="stories" defaultStr="STORIES" transform="upper" />
                       </Typography>
                     }
                     style={{ backgroundColor: themePalette.primary2Color, height: 'initial' }}
@@ -851,7 +843,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
   } = fvBook
 
   const { computeCreatedWords, computeModifiedWords, computeUserCreatedWords, computeUserModifiedWords } = fvWord
-  const { intlService } = locale;
+  const { intlService } = locale
 
   const { computePortal } = fvPortal
   const { properties } = navigation
@@ -877,7 +869,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
     computeUserModifiedWords,
     properties,
     windowPath: _windowPath,
-    intl: intlService
+    intl: intlService,
   }
 }
 

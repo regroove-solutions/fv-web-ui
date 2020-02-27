@@ -29,6 +29,7 @@ import { fvCharacterReducer } from './fvCharacter'
 import { fvContributorReducer } from './fvContributor'
 import { fvDialectReducer } from './fvDialect'
 import { fvGalleryReducer } from './fvGallery'
+import { fvLabelReducer } from './fvLabel'
 import { fvLanguageReducer } from './fvLanguage'
 import { fvLanguageFamilyReducer } from './fvLanguageFamily'
 import { fvLinkReducer } from './fvLink'
@@ -63,6 +64,7 @@ export default combineReducers({
   fvContributor: fvContributorReducer,
   fvDialect: fvDialectReducer,
   fvGallery: fvGalleryReducer,
+  fvLabel: fvLabelReducer,
   fvLanguage: fvLanguageReducer,
   fvLanguageFamily: fvLanguageFamilyReducer,
   fvLink: fvLinkReducer,

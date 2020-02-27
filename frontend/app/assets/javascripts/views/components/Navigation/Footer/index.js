@@ -51,11 +51,7 @@ export default class Footer extends React.Component {
               <div className={classNames('col-xs-12', 'col-md-5', 'col-md-offset-1', 'Footer__group')}>
                 <p className="PrintHide">
                   <a href={NavigationHelpers.generateStaticURL('/content/disclaimer/')}>
-                    <FVLabel
-                      transKey="general.disclaimer"
-                      defaultStr="Disclaimer"
-                      transform="first"
-                    />
+                    <FVLabel transKey="general.disclaimer" defaultStr="Disclaimer" transform="first" />
                   </a>
                   {' | '}
                   <a href={NavigationHelpers.generateStaticURL('/content/conditions/')}>
@@ -67,26 +63,16 @@ export default class Footer extends React.Component {
                   </a>
                   {' | '}
                   <a href="https://firstvoices.atlassian.net/servicedesk/customer/portals">
-                    <FVLabel
-                      transKey="general.help"
-                      defaultStr="Help"
-                      transform="first"
-                    />
+                    <FVLabel transKey="general.help" defaultStr="Help" transform="first" />
                   </a>
                   {' | '}
                   <a href="http://fpcf.ca/donate-now/">
-                    <FVLabel
-                      transKey="general.donate"
-                      defaultStr="Donate"
-                      transform="first"
-                    />
+                    <FVLabel transKey="general.donate" defaultStr="Donate" transform="first" />
                   </a>
                 </p>
                 <p>
-                  <FVLabel transKey="general.phone" defaultStr="Phone" transform="first" />{' '}
-                  : +1-250-882-8919 ·{' '}
-                  <FVLabel transKey="general.email" defaultStr="Email" transform="first" />{' '}
-                  : support@fpcc.ca
+                  <FVLabel transKey="general.phone" defaultStr="Phone" transform="first" /> : +1-250-882-8919 ·{' '}
+                  <FVLabel transKey="general.email" defaultStr="Email" transform="first" /> : support@fpcc.ca
                 </p>
                 <p>
                   &copy; 2000-
@@ -101,13 +87,15 @@ export default class Footer extends React.Component {
           &copy;{' '}
           <FVLabel
             transKey="views.components.navigation.copyright_copy"
-            defaultStr={'This database is protected by copyright laws and is owned by the First Peoples’ ' +
+            defaultStr={
+              'This database is protected by copyright laws and is owned by the First Peoples’ ' +
               'Cultural Foundation. All materials on this site are protected by copyright laws and are ' +
               'owned by the individual Indigenous language communities who created the archival ' +
               'content. Language and multimedia data available on this site is intended for private, ' +
               'non-commercial use by individuals. Any commercial use of the language data or multimedia ' +
               'data in whole or in part, directly or indirectly, is specifically forbidden except with ' +
-              'the prior written authority of the owner of the copyright'}
+              'the prior written authority of the owner of the copyright'
+            }
           />
         </div>
       </>

@@ -31,7 +31,6 @@ import KidsNavigation from 'views/components/Kids/navigation'
 import Footer from 'views/components/Navigation/Footer'
 import Breadcrumb from 'views/components/Breadcrumb'
 
-
 import { PageError } from 'views/pages'
 
 import '!style-loader!css-loader!./AppFrontController.css'
@@ -39,7 +38,6 @@ import FVLabel from './components/FVLabel/index'
 import HelperModeToggle from 'views/components/HelperModeToggle/index'
 
 const { any, array, func, object, string } = PropTypes
-
 
 export class AppFrontController extends Component {
   static propTypes = {
@@ -147,9 +145,7 @@ export class AppFrontController extends Component {
     if (_routeHasChanged || loggedIn || sortOrderChanged || sortByChanged) {
       this._route({ props: this.props })
     }
-    if (
-      prevProps.routeParams.dialect_path !== this.props.routeParams.dialect_path
-    ) {
+    if (prevProps.routeParams.dialect_path !== this.props.routeParams.dialect_path) {
       this.props.setIntlWorkspace(this.props.routeParams.dialect_path)
     }
   }
@@ -237,11 +233,7 @@ export class AppFrontController extends Component {
               >
                 {selectn(warning, this.props.warnings)}
                 <FVButton onClick={() => this.setState({ warningsDismissed: true })}>
-                  <FVLabel
-                    transKey="dismiss"
-                    defaultStr="Dismiss"
-                    transform="words"
-                  />
+                  <FVLabel transKey="dismiss" defaultStr="Dismiss" transform="words" />
                 </FVButton>
               </div>
             )
@@ -258,7 +250,7 @@ export class AppFrontController extends Component {
             {footer}
           </div>
         </div>
-        <HelperModeToggle/>
+        <HelperModeToggle />
       </div>
     )
   }

@@ -324,12 +324,7 @@ const DictionaryList = (props) => {
   const noResults =
     selectn('length', items) === 0 ? (
       <div className={`DictionaryList DictionaryList--noData  ${props.cssModifier}`}>
-        <FVLabel
-          transKey="no_results_found"
-          defaultStr="No Results Found"
-          transform="first"
-          append="."
-        />
+        <FVLabel transKey="no_results_found" defaultStr="No Results Found" transform="first" append="." />
       </div>
     ) : null
 

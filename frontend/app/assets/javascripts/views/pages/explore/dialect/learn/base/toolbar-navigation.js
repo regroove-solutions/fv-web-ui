@@ -130,39 +130,19 @@ export class ToolbarNavigation extends Component {
           <div className="col-xs-12 col-md-10">
             <div float="left">
               <a href={this._getNavigationURL('words')} onClick={this._onNavigateRequest.bind(this, 'words')}>
-                <FVLabel
-                  transKey="words"
-                  defaultStr="Words"
-                  transform="first"
-                />
+                <FVLabel transKey="words" defaultStr="Words" transform="first" />
               </a>
               <a href={this._getNavigationURL('phrases')} onClick={this._onNavigateRequest.bind(this, 'phrases')}>
-                <FVLabel
-                  transKey="phrases"
-                  defaultStr="Phrases"
-                  transform="first"
-                />
+                <FVLabel transKey="phrases" defaultStr="Phrases" transform="first" />
               </a>
               <a href={this._getNavigationURL('songs')} onClick={this._onNavigateRequest.bind(this, 'songs')}>
-                <FVLabel
-                  transKey="songs"
-                  defaultStr="Songs"
-                  transform="first"
-                />
+                <FVLabel transKey="songs" defaultStr="Songs" transform="first" />
               </a>
               <a href={this._getNavigationURL('stories')} onClick={this._onNavigateRequest.bind(this, 'stories')}>
-                <FVLabel
-                  transKey="stories"
-                  defaultStr="Stories"
-                  transform="first"
-                />
+                <FVLabel transKey="stories" defaultStr="Stories" transform="first" />
               </a>
               <a href={this._getNavigationURL('alphabet')} onClick={this._onNavigateRequest.bind(this, 'alphabet')}>
-                <FVLabel
-                  transKey="alphabet"
-                  defaultStr="Alphabet"
-                  transform="first"
-                />
+                <FVLabel transKey="alphabet" defaultStr="Alphabet" transform="first" />
               </a>
             </div>
           </div>
@@ -172,10 +152,7 @@ export class ToolbarNavigation extends Component {
                 <div className={classNames('hidden-xs')} float="right">
                   <FVButton variant="flat" style={{ color: '#fff' }} onClick={this.props.handleShowStats}>
                     <EditorInsertChart />
-                    <FVLabel
-                      transKey="language_statistics"
-                      defaultStr="Language Statistics"
-                    />
+                    <FVLabel transKey="language_statistics" defaultStr="Language Statistics" />
                   </FVButton>
                 </div>
               </div>

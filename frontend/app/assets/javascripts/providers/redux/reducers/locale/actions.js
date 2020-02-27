@@ -1,5 +1,6 @@
 import {
-  SET_LOCALE, FV_LABELS_FETCH_START,
+  SET_LOCALE,
+  FV_LABELS_FETCH_START,
   FV_LABELS_FETCH_SUCCESS,
   FV_LABELS_FETCH_ERROR,
   SET_WORKSPACE,
@@ -35,40 +36,43 @@ export const setIntlWorkspace = (workspace = '') => {
 
 function getWorkspaceLabels(locale, workspace, immersionMode, dispatch) {
   function _getImmersiveWords() {
-    return DirectoryOperations
-      .getDocumentsViaResultSetQuery(workspace, 'FVLabel', 'dc:title, fvlabel:labelKey, ecm:uuid')
-      .then(result => {
-        const translations = {}
-        const ids = {}
-        result.entries.forEach(entry => {
-          const path = entry['fvlabel:labelKey'].split('.')
-          let translationTargetRef = translations
-          let idsTargetRef = ids
-          path.slice(0, -1).forEach(step => {
-            if (!translationTargetRef[step]) {
-              translationTargetRef[step] = {}
-              idsTargetRef[step] = {}
-            }
-            translationTargetRef = translationTargetRef[step]
-            idsTargetRef = idsTargetRef[step]
-          })
-          translationTargetRef[path[path.length - 1]] = entry['dc:title']
-          idsTargetRef[path[path.length - 1]] = entry['ecm:uuid']
+    return DirectoryOperations.getDocumentsViaResultSetQuery(
+      workspace,
+      'FVLabel',
+      'dc:title, fvlabel:labelKey, ecm:uuid'
+    ).then((result) => {
+      const translations = {}
+      const ids = {}
+      result.entries.forEach((entry) => {
+        const path = entry['fvlabel:labelKey'].split('.')
+        let translationTargetRef = translations
+        let idsTargetRef = ids
+        path.slice(0, -1).forEach((step) => {
+          if (!translationTargetRef[step]) {
+            translationTargetRef[step] = {}
+            idsTargetRef[step] = {}
+          }
+          translationTargetRef = translationTargetRef[step]
+          idsTargetRef = idsTargetRef[step]
         })
-
-        return {
-          translations,
-          ids,
-        }
+        translationTargetRef[path[path.length - 1]] = entry['dc:title']
+        idsTargetRef[path[path.length - 1]] = entry['ecm:uuid']
       })
+
+      return {
+        translations,
+        ids,
+      }
+    })
   }
 
   dispatch({ type: FV_LABELS_FETCH_START })
 
   return _getImmersiveWords()
-    .then(({translations, ids}) => {
+    .then(({ translations, ids }) => {
       dispatch({
-        type: FV_LABELS_FETCH_SUCCESS, payload: {
+        type: FV_LABELS_FETCH_SUCCESS,
+        payload: {
           labels: translations,
           labelIds: ids,
           workspace,
