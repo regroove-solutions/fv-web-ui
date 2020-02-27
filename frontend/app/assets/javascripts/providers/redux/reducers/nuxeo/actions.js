@@ -26,7 +26,7 @@ export const getCurrentUser = () => {
     return UserOperations.getCurrentUser()
       .then((response) => {
         dispatch({ type: GET_CURRENT_USER_SUCCESS, user: response, isAnonymous: response.isAnonymous })
-        setImmersionMode(parseInt(selectn('properties.languagePreference', response), 10) || 0)(dispatch, getState)
+        setImmersionMode(selectn('properties.languagePreference', response) === 'true')(dispatch, getState)
       })
       .catch((error) => {
         dispatch({ type: GET_CURRENT_USER_ERROR, error: error })
@@ -34,10 +34,10 @@ export const getCurrentUser = () => {
   }
 }
 
-export const updateCurrentUser = (languagePreference = 0) => {
+export const updateCurrentUser = (languagePreference = false) => {
   return (dispatch, getState) => {
     dispatch({ type: GET_CURRENT_USER_START })
-    setImmersionMode(languagePreference || 0)(dispatch, getState)
+    setImmersionMode(languagePreference)(dispatch, getState)
     return UserOperations.fvUpdateUser(selectn('nuxeo.computeLogin.response.id', getState()), languagePreference.toString()).then(() => {
       return UserOperations.getCurrentUser()
         .then((response) => {

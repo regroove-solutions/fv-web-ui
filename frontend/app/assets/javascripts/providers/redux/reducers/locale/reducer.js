@@ -22,7 +22,7 @@ const startingLocale = getLocaleFromStorage()
 const initialState = {
   localeLists: startingLocaleLists,
   locale: startingLocale, // en, fr, sp
-  immersionMode: 0, // 1: none, 2: solo, 3: duo
+  immersionMode: false,
   intlService: new IntlService(startingLocaleLists, startingLocale, startingLocale),
   workspace: '',
   isInHelpMode: false,

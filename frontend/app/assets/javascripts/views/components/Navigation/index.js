@@ -47,6 +47,7 @@ import TextField from '@material-ui/core/TextField'
 import Toolbar from '@material-ui/core/Toolbar'
 import Tooltip from '@material-ui/core/Tooltip'
 import Typography from '@material-ui/core/Typography'
+import Switch from '@material-ui/core/Switch'
 
 // MAT-UI: Icons
 import Clear from '@material-ui/icons/Clear'
@@ -85,7 +86,7 @@ export class Navigation extends Component {
     splitWindowPath: array.isRequired,
     windowPath: string.isRequired,
     currentLocale: string.isRequired,
-    currentImmersionMode: number.isRequired,
+    currentImmersionMode: bool.isRequired,
     intl: object.isRequired,
     // computeToggleMenuAction: object.isRequired,
     // computeCountTotalTasks: object.isRequired,
@@ -184,7 +185,7 @@ export class Navigation extends Component {
     const hrefPath = NavigationHelpers.generateDynamicURL('page_explore_dialects', this.props.routeParams)
 
     const { classes } = this.props
-    const { appBarIcon = {}, appBar = {}, dialectContainer = {}, localePicker = {} } = classes
+    const { appBarIcon = {}, appBar = {}, dialectContainer = {}, localePicker = {}, immersionSwitch = {} } = classes
 
     return (
       <AppBar position="static" color="primary" className="Navigation" classes={{ colorPrimary: appBar }}>
@@ -369,11 +370,29 @@ export class Navigation extends Component {
         >
           <Toolbar>
             <div className="Navigation__localeInner">
-              <FormControl>
+              <div className="Navigation__immersionSwitch">
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={this.props.currentImmersionMode}
+                      onChange={() => this._handleChangeImmersion()}
+                      classes={{
+                        switchBase: immersionSwitch,
+                      }}
+                    />
+                  }
+                  classes={{
+                    label: immersionSwitch,
+                  }}
+                  label="Immersion Mode"
+                />
+              </div>
+              {/* <FormControl>
                 <InputLabel>
                   Immersion Mode
                 </InputLabel>
-                <Select
+                <Switch checked={this.props.currentImmersionMode === 1} onChange={() => this._handleChangeImmersion()} /> */}
+              {/* <Select
                   value={this.props.currentImmersionMode}
                   onChange={(event) => {
                     this._handleChangeImmersion(event.target.value)
@@ -387,8 +406,8 @@ export class Navigation extends Component {
                   <MenuItem value={0}>None</MenuItem>
                   <MenuItem value={1}>Immersive</MenuItem>
                   <MenuItem value={2}>Both Languages</MenuItem>
-                </Select>
-              </FormControl>
+                </Select> */}
+              {/* </FormControl> */}
               <Typography variant="body1" className={`${localePicker} Navigation__localeTitle`}>
                 <FVLabel transKey="choose_lang" defaultStr="Choose a language" transform="first" />
               </Typography>
@@ -502,8 +521,8 @@ export class Navigation extends Component {
     this.props.setLocale(value)
   }
 
-  _handleChangeImmersion = (value) => {
-    this.props.updateCurrentUser(value)
+  _handleChangeImmersion = () => {
+    this.props.updateCurrentUser(!this.props.currentImmersionMode)
   }
 
   _handleOpenMenuRequest = () => {
@@ -637,12 +656,13 @@ const mapDispatchToProps = {
 }
 
 const styles = (theme) => {
-  const { appBar, appBarIcon, dialectContainer, localePicker } = theme
+  const { appBar, appBarIcon, dialectContainer, localePicker, immersionSwitch } = theme
   return {
     appBar,
     appBarIcon,
     dialectContainer,
     localePicker,
+    immersionSwitch,
   }
 }
 export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(Navigation))

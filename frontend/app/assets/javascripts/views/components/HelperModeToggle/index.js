@@ -22,7 +22,7 @@ const mapStateToProps = (state) => {
 
   return {
     isInHelpMode,
-    isImmersionModeOn: locale.immersionMode && locale.workspace,
+    isImmersionModeOn: !!locale.immersionMode && !!locale.workspace,
   }
 }
 

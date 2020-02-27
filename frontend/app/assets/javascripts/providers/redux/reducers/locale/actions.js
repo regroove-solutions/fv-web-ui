@@ -14,7 +14,7 @@ export const setLocale = (locale = '') => {
   }
 }
 
-export const setImmersionMode = (immersionMode = 0) => {
+export const setImmersionMode = (immersionMode = false) => {
   return (dispatch, getState) => {
     if (immersionMode && getState().locale.workspace) {
       getWorkspaceLabels(getState().locale.locale, getState().locale.workspace, immersionMode, dispatch)
