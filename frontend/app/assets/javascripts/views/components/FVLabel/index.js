@@ -17,7 +17,6 @@ function FVLabel({
   append,
   forceLocale,
   intl,
-  locale,
   isInHelpMode,
   labelIds,
 }) {
@@ -73,10 +72,12 @@ function FVLabel({
     justifyContent: 'space-around',
   }
 
+  const [translation, usedFallback] = intl.fvLabelTrans(transKey, defaultStr, transform, params, prepend, append, forceLocale)
+
   return (
     <span className="fv-label">
-      {intl.trans(transKey, defaultStr, transform, params, prepend, append, forceLocale)}
-      {isInHelpMode && (
+      {translation}
+      {isInHelpMode && !usedFallback && (
         <span onClick={handleClick} className="fv-label-click-cover">
           <Menu
             id="simple-menu"
@@ -87,7 +88,7 @@ function FVLabel({
             anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
           >
             <ListItem>
-              Translation: {intl.trans(transKey, defaultStr, transform, params, prepend, append, locale)}
+              Translation: {translation}
             </ListItem>
             {!isFetchingAudio && !audioId && <ListItem disabled>No Audio</ListItem>}
             {!isFetchingAudio && audioId && (

@@ -7,13 +7,13 @@ import sp from 'views/../locale/locale.sp.json'
 import { sprintf, vsprintf } from 'sprintf-js'
 import DirectoryOperations from 'operations/DirectoryOperations'
 
-String.prototype.toUpperCaseWords = function() {
-  return this.replace(/\w+/g, function(a) {
+String.prototype.toUpperCaseWords = function () {
+  return this.replace(/\w+/g, function (a) {
     return a.charAt(0).toUpperCase() + a.slice(1).toLowerCase()
   })
 }
 
-String.prototype.toUpperCaseFirst = function() {
+String.prototype.toUpperCaseFirst = function () {
   return this.charAt(0).toUpperCase() + this.slice(1).toLowerCase()
 }
 export default class IntlService {
@@ -85,6 +85,18 @@ export default class IntlService {
     return this
   }
 
+  fvLabelTrans(key, defaultStr, strCase, params, prepend, append, locale) {
+    return this.translate({
+      key: key,
+      default: defaultStr || '',
+      params: params || [],
+      case: strCase || null,
+      locale: locale || this.localeString,
+      prepend: prepend || '',
+      append: append || ''
+    }, true)
+  }
+
   trans(key, defaultStr, strCase, params, prepend, append, locale) {
     return this.translate({
       key: key,
@@ -115,17 +127,18 @@ export default class IntlService {
     return translatedObj
   }
 
-  translate(translateData) {
+  translate(translateData, returnUsedFallback) {
     if (typeof translateData === 'string') {
       translateData = { key: translateData, default: translateData }
     }
 
     let key = translateData.key || null
+    let usedFallback = false;
     if (Array.isArray(key)) {
       key = key.join('.')
     }
     const self = this
-    const postProcessResult = function(result, translateData) {
+    const postProcessResult = function (result, translateData) {
       if (result !== null) {
         const charCase = translateData.case || null
         const params = translateData.params || []
@@ -151,7 +164,7 @@ export default class IntlService {
         result = (result + '').replace('&amp;', '&')
         result = (result + '').replace('&AMP;', '&')
 
-        const postProcessSwaps = function(result) {
+        const postProcessSwaps = function (result) {
           const swapMatches = (result + '').match(/\$\{([a-zA-Z0-9\.\_]+)\}/g)
           if (swapMatches !== null && swapMatches.length > 0) {
             for (const idx in swapMatches) {
@@ -181,6 +194,17 @@ export default class IntlService {
       return result
     }
 
+    const processReturn = (result) => {
+      if (returnUsedFallback) {
+        return [
+          result,
+          usedFallback
+        ]
+      } else {
+        return result;
+      }
+    }
+
     if (key !== null) {
       let res = null
       // if it's a simple string, lets first check general
@@ -194,17 +218,18 @@ export default class IntlService {
       }
 
       if (res !== undefined) {
-        return postProcessResult(res, translateData)
+        return processReturn(postProcessResult(res, translateData))
       }
     }
 
     if (this._fallbackLocale && (translateData.locale || this.localeString) !== this._fallbackLocale) {
       translateData.locale = this._fallbackLocale
-      return this.fallbackPrefix + this.translate(translateData) + this.fallbackSuffix
+      usedFallback = true;
+      return processReturn(this.fallbackPrefix + this.translate(translateData) + this.fallbackSuffix)
     }
 
     //console.warn('INTL>>Translation not found', translateData);
-    return postProcessResult(translateData.default || null, translateData)
+    return processReturn(postProcessResult(translateData.default || null, translateData));
   }
 
   getLocale(locale) {
