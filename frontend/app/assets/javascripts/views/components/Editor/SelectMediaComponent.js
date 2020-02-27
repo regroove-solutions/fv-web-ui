@@ -48,7 +48,7 @@ import ActionInfoOutline from '@material-ui/icons/InfoOutlined'
 import MediaList from 'views/components/Browsing/media-list'
 import withPagination from 'views/hoc/grid-list/with-pagination'
 import withFilter from 'views/hoc/grid-list/with-filter'
-import IntlService from 'views/services/intl'
+import FVLabel from '../FVLabel/index'
 
 // const gridListStyle = { width: '100%', height: '100vh', overflowY: 'auto', marginBottom: 10 }
 
@@ -58,7 +58,6 @@ const DefaultFetcherParams = {
   filters: { 'properties.dc:title': { appliedFilter: '' }, dialect: { appliedFilter: '' } },
 }
 
-const intl = IntlService.instance
 
 const { any, func, object, string } = PropTypes
 
@@ -90,10 +89,10 @@ class SharedResourceGridTile extends Component {
     // If resource is from different dialect, show notification so user is aware
     if (isDialectShared || isFVShared) {
       const tooltip = isDialectShared
-        ? intl.trans('shared_from_x', 'Shared from ' + selectn('dc:title', resourceParentDialect), null, [
-            selectn('dc:title', resourceParentDialect),
-          ])
-        : intl.trans('shared_from_x_collection', 'Shared from FirstVoices Collection', null, ['FirstVoices'])
+        ? this.props.intl.trans('shared_from_x', 'Shared from ' + selectn('dc:title', resourceParentDialect), null, [
+          selectn('dc:title', resourceParentDialect),
+        ])
+        : this.props.intl.trans('shared_from_x_collection', 'Shared from FirstVoices Collection', null, ['FirstVoices'])
       actionIcon = (
         <Tooltip title={tooltip}>
           <IconButton>{isDialectShared ? <ActionInfoOutline /> : <ActionInfo />}</IconButton>
@@ -150,8 +149,8 @@ class SelectMediaComponent extends Component {
     const providedTitleFilter = selectn('otherContext.providedFilter', this.props.dialect)
     const appliedParams = providedTitleFilter
       ? Object.assign({}, DefaultFetcherParams, {
-          filters: { 'properties.dc:title': { appliedFilter: providedTitleFilter } },
-        })
+        filters: { 'properties.dc:title': { appliedFilter: providedTitleFilter } },
+      })
       : DefaultFetcherParams
 
     this.state = {
@@ -171,23 +170,23 @@ class SelectMediaComponent extends Component {
   }
 
   render() {
-    let fileTypeLabel = intl.trans('file', 'file', 'lower')
+    let fileTypeLabel = this.props.intl.trans('file', 'file', 'lower')
     // let fileTypeCellHeight = 210
     // let fileTypeTilePosition = 'bottom'
 
     switch (this.props.type) {
       case 'FVAudio':
-        fileTypeLabel = intl.trans('audio_file', 'audio file', 'lower')
+        fileTypeLabel = this.props.intl.trans('audio_file', 'audio file', 'lower')
         // fileTypeCellHeight = 100
         // fileTypeTilePosition = 'top'
         break
 
       case 'FVPicture':
-        fileTypeLabel = intl.trans('pictures', 'pictures', 'lower')
+        fileTypeLabel = this.props.intl.trans('pictures', 'pictures', 'lower')
         break
 
       case 'FVVideo':
-        fileTypeLabel = intl.trans('videos', 'videos', 'lower')
+        fileTypeLabel = this.props.intl.trans('videos', 'videos', 'lower')
         // fileTypeTilePosition = 'top'
         break
       default: // Note: do nothing
@@ -221,7 +220,7 @@ class SelectMediaComponent extends Component {
         </FVButton>
         <Dialog open={this.state.open} fullWidth maxWidth={false}>
           <DialogTitle>
-            {`${intl.searchAndReplace(
+            {`${this.props.intl.searchAndReplace(
               `Select existing ${fileTypeLabel} from ${selectn(
                 'properties.dc:title',
                 dialect
@@ -230,7 +229,11 @@ class SelectMediaComponent extends Component {
           </DialogTitle>
           <DialogContent>
             <div className={classNames('alert', 'alert-info', { hidden: !selectn('isFetching', computeResources) })}>
-              {intl.trans('loading_results_please_wait', 'Loading results, please wait.', 'first')}
+              <FVLabel
+                transKey="loading_results_please_wait"
+                defaultStr="Loading results, please wait."
+                transform="first"
+              />
               {/* <br /> */}
               {/* <LinearProgress variant="indeterminate" /> */}
             </div>
@@ -253,7 +256,11 @@ class SelectMediaComponent extends Component {
           </DialogContent>
           <DialogActions>
             <FVButton variant="contained" color="secondary" onClick={this._handleClose}>
-              {intl.trans('cancel', 'Cancel', 'first')}
+              <FVLabel
+                transKey="cancel"
+                defaultStr="Cancel"
+                transform="first"
+              />
             </FVButton>
           </DialogActions>
         </Dialog>
@@ -262,7 +269,7 @@ class SelectMediaComponent extends Component {
   }
 
   getDefaultValues() {
-    intl.trans('views.components.editor.upload_media', 'Upload Media', 'words')
+    this.props.intl.trans('views.components.editor.upload_media', 'Upload Media', 'words')
   }
 
   fetchData(fetcherParams, initialFormValue) {
@@ -278,19 +285,19 @@ class SelectMediaComponent extends Component {
       this.props.fetchResources(
         '/FV/Workspaces/',
         " AND ecm:primaryType LIKE '" +
-          this.props.type +
-          "'" +
-          " AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0 AND ecm:currentLifeCycleState != 'Disabled'" +
-          " AND (ecm:path STARTSWITH '" +
-          StringHelpers.clean(selectn('path', this.props.dialect)) +
-          "/Resources/'" +
-          ProviderHelpers.filtersToNXQL(group1) +
-          ')' +
-          ProviderHelpers.filtersToNXQL(group2) +
-          '&currentPageIndex=' +
-          (fetcherParams.currentPageIndex - 1) +
-          '&pageSize=' +
-          fetcherParams.pageSize
+        this.props.type +
+        "'" +
+        " AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0 AND ecm:currentLifeCycleState != 'Disabled'" +
+        " AND (ecm:path STARTSWITH '" +
+        StringHelpers.clean(selectn('path', this.props.dialect)) +
+        "/Resources/'" +
+        ProviderHelpers.filtersToNXQL(group1) +
+        ')' +
+        ProviderHelpers.filtersToNXQL(group2) +
+        '&currentPageIndex=' +
+        (fetcherParams.currentPageIndex - 1) +
+        '&pageSize=' +
+        fetcherParams.pageSize
       )
 
       this.setState({
@@ -315,13 +322,14 @@ class SelectMediaComponent extends Component {
 
 // REDUX: reducers/state
 const mapStateToProps = (state /*, ownProps*/) => {
-  const { nuxeo, fvResources, fvAudio, fvPicture, fvVideo } = state
+  const { nuxeo, fvResources, fvAudio, fvPicture, fvVideo, locale } = state
 
   const { computeLogin } = nuxeo
   const { computeResources } = fvResources
   const { computeSharedAudios } = fvAudio
   const { computeSharedPictures } = fvPicture
   const { computeSharedVideos } = fvVideo
+  const { intlService } = locale
 
   return {
     computeLogin,
@@ -329,6 +337,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
     computeSharedAudios,
     computeSharedPictures,
     computeSharedVideos,
+    intl: intlService,
   }
 }
 

@@ -39,14 +39,13 @@ import {
 } from 'views/components/SearchDialect/constants'
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
 import DialectFilterList from 'views/components/DialectFilterList'
-import IntlService from 'views/services/intl'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base'
 import WordListView from 'views/pages/explore/dialect/learn/words/list-view'
 import NavigationHelpers, { appendPathArrayAfterLandmark } from 'common/NavigationHelpers'
 import AlphabetListView from 'views/components/AlphabetListView'
-const intl = IntlService.instance
+import FVLabel from 'views/components/FVLabel/index'
 
 const { array, bool, func, object, string } = PropTypes
 class PageDialectLearnWords extends PageDialectLearnBase {
@@ -155,7 +154,7 @@ class PageDialectLearnWords extends PageDialectLearnBase {
     const computeCategoriesSize = selectn('response.entries.length', computeCategories) || 0
 
     const pageTitle = `${selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) ||
-      ''} ${intl.trans('words', 'Words', 'first')}`
+      ''} ${this.props.intl.trans('words', 'Words', 'first')}`
 
     const { searchNxqlSort = {} } = this.props.computeSearchDialect
     const { DEFAULT_SORT_COL, DEFAULT_SORT_TYPE } = searchNxqlSort
@@ -213,11 +212,11 @@ class PageDialectLearnWords extends PageDialectLearnBase {
     if (isKidsTheme) {
       const cloneWordListView = wordListView
         ? React.cloneElement(wordListView, {
-            DEFAULT_PAGE_SIZE: 8,
-            disablePageSize: true,
-            filter: filterInfo.setIn(['currentAppliedFilter', 'kids'], ' AND fv:available_in_childrens_archive=1'),
-            gridListView: true,
-          })
+          DEFAULT_PAGE_SIZE: 8,
+          disablePageSize: true,
+          filter: filterInfo.setIn(['currentAppliedFilter', 'kids'], ' AND fv:available_in_childrens_archive=1'),
+          gridListView: true,
+        })
         : null
       return (
         <PromiseWrapper renderOnError computeEntities={computeEntities}>
@@ -258,7 +257,11 @@ class PageDialectLearnWords extends PageDialectLearnBase {
                 }}
                 className="PrintHide buttonRaised"
               >
-                {intl.trans('views.pages.explore.dialect.learn.words.create_new_word', 'Create New Word', 'words')}
+                <FVLabel
+                  transKey="views.pages.explore.dialect.learn.words.create_new_word"
+                  defaultStr="Create New Word"
+                  transform="words"
+                />
               </button>
             </AuthorizationFilter>
           </div>
@@ -276,7 +279,7 @@ class PageDialectLearnWords extends PageDialectLearnBase {
 
               <DialectFilterList
                 type={this.DIALECT_FILTER_TYPE}
-                title={intl.trans(
+                title={this.props.intl.trans(
                   'views.pages.explore.dialect.learn.words.browse_by_category',
                   'Browse Categories',
                   'words'
@@ -380,7 +383,7 @@ class PageDialectLearnWords extends PageDialectLearnBase {
     return `${this.props.routeParams.area}_${this.props.routeParams.dialect_name}_learn_words`
   }
 
-  handleAlphabetClick = async (letter, href, updateHistory = true) => {
+  handleAlphabetClick = async(letter, href, updateHistory = true) => {
     await this.props.searchDialectUpdate({
       searchByAlphabet: letter,
       searchByMode: SEARCH_BY_ALPHABET,
@@ -396,7 +399,7 @@ class PageDialectLearnWords extends PageDialectLearnBase {
     this.changeFilter({ href, updateHistory })
   }
 
-  handleCategoryClick = async ({ facetField, selected, unselected, href }, updateHistory = true) => {
+  handleCategoryClick = async({ facetField, selected, unselected, href }, updateHistory = true) => {
     await this.props.searchDialectUpdate({
       searchByAlphabet: '',
       searchByMode: SEARCH_BY_CATEGORY,
@@ -481,7 +484,7 @@ class PageDialectLearnWords extends PageDialectLearnBase {
 
 // REDUX: reducers/state
 const mapStateToProps = (state /*, ownProps*/) => {
-  const { document, fvCategory, fvPortal, listView, navigation, nuxeo, searchDialect, windowPath } = state
+  const { document, fvCategory, fvPortal, listView, navigation, nuxeo, searchDialect, windowPath, locale } = state
 
   const { computeCategories } = fvCategory
   const { computeDocument } = document
@@ -490,6 +493,8 @@ const mapStateToProps = (state /*, ownProps*/) => {
   const { computeSearchDialect } = searchDialect
   const { properties } = navigation
   const { splitWindowPath, _windowPath } = windowPath
+  const { intlService } = locale
+
   return {
     computeCategories,
     computeDocument,
@@ -500,6 +505,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
     properties,
     splitWindowPath,
     windowPath: _windowPath,
+    intl: intlService,
   }
 }
 

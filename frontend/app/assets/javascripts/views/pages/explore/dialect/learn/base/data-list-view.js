@@ -14,17 +14,15 @@ import React, { Component } from 'react' // eslint-disable-line
 import PropTypes from 'prop-types'
 import selectn from 'selectn'
 import NavigationHelpers, { hasPagination, routeHasChanged } from 'common/NavigationHelpers'
-import IntlService from 'views/services/intl'
 import { WORKSPACES, SECTIONS } from 'common/Constants'
-
-const intl = IntlService.instance
+import { connect } from 'react-redux'
 
 /**
  * Data List View
  * NOTE: The `class` that `extends` `DataListView` must define `fetchData`, `_fetchListViewData` functions
  * TODO: Convert to composition vs. inheritance https://facebook.github.io/react/docs/composition-vs-inheritance.html
  */
-export default class DataListView extends Component {
+class DataListView extends Component {
   constructor(props, context) {
     super(props, context)
 
@@ -319,7 +317,7 @@ export default class DataListView extends Component {
       } else {
         this.state.columns.push({
           name: 'state',
-          title: intl.trans('state', 'State', 'first'),
+          title: props.intl.trans('state', 'State', 'first'),
         })
       }
     }
@@ -334,3 +332,14 @@ export default class DataListView extends Component {
     })
   }
 }
+
+const mapStateToProps = (state) => {
+  const { locale } = state
+  const {intlService} = locale
+
+  return {
+    intl: intlService,
+  }
+}
+
+export default connect(mapStateToProps)(DataListView)

@@ -5,19 +5,19 @@ import en from 'views/../locale/locale.en.json'
 import fr from 'views/../locale/locale.fr.json'
 import sp from 'views/../locale/locale.sp.json'
 import { sprintf, vsprintf } from 'sprintf-js'
+import DirectoryOperations from 'operations/DirectoryOperations'
 
-String.prototype.toUpperCaseWords = function() {
-  return this.replace(/\w+/g, function(a) {
+String.prototype.toUpperCaseWords = function () {
+  return this.replace(/\w+/g, function (a) {
     return a.charAt(0).toUpperCase() + a.slice(1).toLowerCase()
   })
 }
 
-String.prototype.toUpperCaseFirst = function() {
+String.prototype.toUpperCaseFirst = function () {
   return this.charAt(0).toUpperCase() + this.slice(1).toLowerCase()
 }
 export default class IntlService {
   static $instance
-  static locales = {}
 
   static get instance() {
     if (IntlService.$instance === null || IntlService.$instance === undefined) {
@@ -35,18 +35,22 @@ export default class IntlService {
   notFoundPrefix = ''
   notFoundSuffix = ''
   tagsRegex = /(<[^>]+>)(.*)(<\/[^>]+>)/i
+  _localeLists = {};
+  _fallbackLocale = ""
 
-  constructor() {
-    const localStorageLocale = this.getLocaleFromSessionStorage()
-    if (localStorageLocale === null) {
-      const navigatorLocale = this.getLocaleFromNavigator()
-      if (navigatorLocale !== null) {
-        this.localeString = navigatorLocale || 'en'
-      }
+  constructor(startingLocales, locale, fallbackLocale) {
+    this.localeString = locale;
+    this._fallbackLocale = fallbackLocale;
+    Object.assign(this._localeLists, startingLocales);
+
+    // Fallback for code that can't access the redux store
+    if (IntlService.$instance) {
+      IntlService.$instance.localeString = locale;
+      IntlService.$instance._fallbackLocale = fallbackLocale;
+      Object.assign(this._localeLists, IntlService.$instance.startingLocales);
     } else {
-      this.localeString = localStorageLocale || 'en'
+      IntlService.$instance = this;
     }
-    this.loadLocales()
   }
 
   getLocaleFromNavigator() {
@@ -121,7 +125,7 @@ export default class IntlService {
       key = key.join('.')
     }
     const self = this
-    const postProcessResult = function(result, translateData) {
+    const postProcessResult = function (result, translateData) {
       if (result !== null) {
         const charCase = translateData.case || null
         const params = translateData.params || []
@@ -147,7 +151,7 @@ export default class IntlService {
         result = (result + '').replace('&amp;', '&')
         result = (result + '').replace('&AMP;', '&')
 
-        const postProcessSwaps = function(result) {
+        const postProcessSwaps = function (result) {
           const swapMatches = (result + '').match(/\$\{([a-zA-Z0-9\.\_]+)\}/g)
           if (swapMatches !== null && swapMatches.length > 0) {
             for (const idx in swapMatches) {
@@ -182,11 +186,11 @@ export default class IntlService {
       // if it's a simple string, lets first check general
       if (((key + '').match(/\./g) || []).length === 0) {
         // single entry, let's check general first
-        res = selectn((translateData.locale || this.localeString) + '.general.' + key, IntlService.locales)
+        res = selectn((translateData.locale || this.localeString) + '.general.' + key, this._localeLists)
       }
 
       if (res === null || res === undefined) {
-        res = selectn((translateData.locale || this.localeString) + '.' + key, IntlService.locales)
+        res = selectn((translateData.locale || this.localeString) + '.' + key, this._localeLists)
       }
 
       if (res !== undefined) {
@@ -194,8 +198,8 @@ export default class IntlService {
       }
     }
 
-    if (this.useEnglishAsFallback && (translateData.locale || this.localeString) !== 'en') {
-      translateData.locale = 'en'
+    if (this._fallbackLocale && (translateData.locale || this.localeString) !== this._fallbackLocale) {
+      translateData.locale = this._fallbackLocale;
       return this.fallbackPrefix + this.translate(translateData) + this.fallbackSuffix
     }
 
@@ -204,8 +208,8 @@ export default class IntlService {
   }
 
   getLocale(locale) {
-    if (IntlService.locales[locale] !== undefined) {
-      return IntlService.locales[locale]
+    if (this._localeLists[locale] !== undefined) {
+      return this._localeLists[locale]
     }
 
     return null
@@ -323,7 +327,7 @@ export default class IntlService {
     baseKey = baseKey || 'en'
     regex = regex === true
     // regex = false;
-    const searchData = selectn(baseKey, IntlService.locales)
+    const searchData = selectn(baseKey, this._localeLists)
     if (searchData !== null && typeof searchData === 'object') {
       for (const key in searchData) {
         const res = this.locateEnglishKey(string, baseKey + '.' + key, regex)
@@ -371,7 +375,7 @@ export default class IntlService {
 
   locateEnglishKey2(string, baseKey) {
     baseKey = baseKey || 'en'
-    const searchData = selectn(baseKey, IntlService.locales)
+    const searchData = selectn(baseKey, this._localeLists)
     if (searchData !== null && typeof searchData === 'object') {
       if (searchData.general !== null && typeof searchData.general === 'object') {
         // lets loop through general first
@@ -423,16 +427,8 @@ export default class IntlService {
     return (string + '').replace(/[^a-zA-Z0-9 ]/g, '').toLowerCase()
   }
 
-  loadLocales(force) {
-    if (typeof IntlService.locales.en !== 'object') {
-      IntlService.locales.en = en
-    }
-    if (typeof IntlService.locales.fr !== 'object') {
-      IntlService.locales.fr = fr
-    }
-    if (typeof IntlService.locales.sp !== 'object') {
-      IntlService.locales.sp = sp
-    }
+  addLocaleDictionary(path, list) {
+    this._localeLists[path] = list;
   }
 }
 // TODO: remove eslint-disable

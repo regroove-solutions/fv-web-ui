@@ -400,4 +400,63 @@ export default class DirectoryOperations {
       }
     )
   }
+
+  static getDocumentsViaResultSetQuery(path = '', type = 'Document', select = "*", queryAppend = ' ORDER BY dc:title', headers = null, params = null) {
+    const defaultHeaders = {}
+    const defaultParams = {}
+
+    const _headers = Object.assign(defaultHeaders, headers)
+
+    const properties = BaseOperations.getProperties()
+
+    let endPointToUse = 'Repository.ResultSetQuery'
+    const _params = Object.assign(defaultParams, params)
+
+    const where = StringHelpers.isUUID(path)
+      ? `ecm:parentId = '${path}'`
+      : `ecm:path STARTSWITH '${StringHelpers.clean(path)}'`;
+
+    const _queryAppend = queryAppend
+    
+    const nxqlQueryParams = Object.assign(
+      _params,
+      {
+        language: 'NXQL',
+      },
+      StringHelpers.queryStringToObject(
+        `?query=SELECT ${select} FROM ${type} WHERE ${where} AND ecm:isVersion = 0 AND ecm:isTrashed = 0 ${_queryAppend}`,
+        true
+      )
+    )
+
+    return new Promise((resolve, reject) => {
+      properties.client
+        .operation(endPointToUse)
+        .params(nxqlQueryParams)
+        .execute(_headers)
+        .then((docs) => {
+          resolve(docs)
+        })
+        .catch((error) => {
+          if (error.hasOwnProperty('response')) {
+            error.response.json().then((jsonError) => {
+              reject(StringHelpers.extractErrorMessage(jsonError))
+            })
+          } else {
+            return reject(
+              error ||
+                IntlService.instance.translate({
+                  key: 'operations.could_not_access_server',
+                  default: 'Could not access server',
+                  case: 'first',
+                })
+            )
+          }
+        })
+
+      setTimeout(() => {
+        reject('Server timeout while attempting to get documents.')
+      }, TIMEOUT)
+    })
+  }
 }
