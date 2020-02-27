@@ -76,11 +76,13 @@ export const localeReducer =
         return Object.assign({}, state, {
           intlService: new IntlService(state.localeLists, state.locale, state.locale),
           immersionMode: action.payload,
+          isInHelpMode: false,
         })
       case SET_WORKSPACE:
         return Object.assign({}, state, {
           intlService: new IntlService(state.localeLists, state.locale, state.locale),
           workspace: action.payload,
+          isInHelpMode: action.payload ? state.isInHelpMode : false,
         })
       case FV_LABELS_FETCH_START:
         return { ...state, fvlabelsFetch: { isFetching: true } }
@@ -100,6 +102,7 @@ export const localeReducer =
           fvlabelsFetch: { isFetching: false, success: true },
           intlService: new IntlService(newLocales, action.payload.immersionMode ? action.payload.workspace : action.payload.locale, action.payload.locale),
           labelIds: action.payload.labelIds,
+          isInHelpMode: false,
         }
       case FV_LABELS_FETCH_ERROR:
         return {
@@ -110,6 +113,7 @@ export const localeReducer =
             error: action.error,
             errorDismissed: false,
           },
+          isInHelpMode: false,
         }
       case SET_HELP_MODE:
         return {
