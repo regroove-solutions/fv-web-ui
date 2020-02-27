@@ -16,7 +16,6 @@ limitations under the License.
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import { InputLabel, Chip } from '@material-ui/core'
 import '!style-loader!css-loader!./modalStyles.css'
 
 /**
@@ -48,20 +47,28 @@ class TranslationInput extends Component {
   handleChange = (name) => (event) => {}
 
   renderTranslation = () => {
-    const { translation, templateStrings, onChange } = this.props
+    const { translation, templateStrings } = this.props
     var count = 0
     const words = translation.map((word, i) => {
       const output = []
       if (word === '%s') {
-        output.push(<Chip key={i.toString()} label={templateStrings[count]} />)
+        output.push(
+          <span className="template-span small" key={i}>
+            {templateStrings[count]}
+          </span>
+        )
         count++
       } else {
         output.push(
-          <div key={i.toString()} className="editable-span">
-            <span contentEditable="true" id={i.toString() + ' editable'} suppressContentEditableWarning={true}>
-              {word.toString()}
-            </span>
-          </div>
+          <span
+            key={i.toString()}
+            className="translation-input"
+            contentEditable="true"
+            id={i.toString() + ' editable'}
+            suppressContentEditableWarning={true}
+          >
+            {word.toString()}
+          </span>
         )
       }
       return output
@@ -91,12 +98,7 @@ class TranslationInput extends Component {
   }
 
   render() {
-    return (
-      <div>
-        <InputLabel>Enter the translation</InputLabel>
-        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>{this.translations}</div>
-      </div>
-    )
+    return <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>{this.translations}</div>
   }
 }
 

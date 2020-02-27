@@ -213,7 +213,7 @@ const SingleRelatedMediaLayout = (locals) => {
         </legend>
         {item && (
           <div style={{ display: 'flex' }}>
-            <div style={{ flexGrow: 1 }}>{item.input}</div>
+            <div style={{ flexGrow: 1, maxWidth: 'calc(100% - 50px)' }}>{item.input}</div>
             <div
               style={{
                 textAlign: 'center',

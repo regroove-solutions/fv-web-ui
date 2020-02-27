@@ -24,15 +24,8 @@ import selectn from 'selectn'
 import options from 'models/schemas/options'
 import fields from 'models/schemas/fields'
 
-import {
-  Button,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  TextField,
-  Chip,
-} from '@material-ui/core'
+import { Button, DialogActions, DialogContent, DialogTitle, TextField } from '@material-ui/core'
+import { withStyles } from '@material-ui/core/styles'
 
 import TranslationInput from './translationInput'
 import '!style-loader!css-loader!./modalStyles.css'
@@ -40,7 +33,42 @@ import '!style-loader!css-loader!./modalStyles.css'
 /**
  * List view for words in immersion
  */
-const { bool, func, object, string } = PropTypes
+const { func, object, string } = PropTypes
+
+const styles = (theme) => ({
+  inputRoot: {
+    padding: '0',
+    marginBottom: '16px',
+  },
+  translationInput: {
+    display: 'block',
+    padding: '6px 12px',
+    width: 'calc(100% - 24px)',
+    fontSize: '14px',
+    minHeight: '22px',
+    lineHeight: '1.42857143',
+    color: '#555555',
+    backgroundColor: '#fff',
+    backgroundImage: 'none',
+    border: '1px solid #ccc',
+    borderRadius: '4px',
+    boxShadow: 'inset 0 1px 1px rgba(0, 0, 0, 0.075)',
+    transition: 'border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s',
+    '&:focus': {
+      borderColor: '#66afe9',
+      outline: '0',
+      boxShadow: 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6)',
+    },
+  },
+  translationError: {
+    borderColor: '#a94442',
+    boxShadow: 'inset 0 1px 1px rgba(0, 0, 0, 0.075)',
+    '&:focus': {
+      borderColor: '#843534',
+      boxShadow: 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ce8483',
+    },
+  },
+})
 
 class ModalContent extends Component {
   static propTypes = {
@@ -50,6 +78,7 @@ class ModalContent extends Component {
     type: string.isRequired,
     dialectPath: string.isRequired,
     audioRef: object.isRequired,
+    classes: object.isRequired,
     // redux
     computeDialect2: object.isRequired,
   }
@@ -69,6 +98,8 @@ class ModalContent extends Component {
     this.state = {
       translation: label ? this.mapTranslation(label[type]) : [],
       formValue: null,
+      error: false,
+      hadError: false,
     }
   }
 
@@ -78,13 +109,13 @@ class ModalContent extends Component {
     const { type, label } = this.props
     if (prevProps.label && label && prevProps.label[type] !== label[type]) {
       //   change label
-      this.setState({ translation: this.mapTranslation(label[type]) })
+      this.setState({ translation: this.mapTranslation(label[type]), error: false, hadError: false })
     } else if (prevProps.label && !label) {
       // empty label
-      this.setState({ translation: [] })
+      this.setState({ translation: [], error: false, hadError: false })
     } else if (!prevProps.label && label) {
       // new label
-      this.setState({ translation: this.mapTranslation(label[type]) })
+      this.setState({ translation: this.mapTranslation(label[type]), error: false, hadError: false })
     }
   }
 
@@ -104,23 +135,39 @@ class ModalContent extends Component {
     newState[index] = event.target.value
     this.setState({
       translation: newState,
+      error: false,
     })
   }
 
   handleSave = () => {
     const { handleSave } = this.props
     const { translation } = this.state
-    handleSave(translation)
+    if (
+      translation
+        .filter((s) => s !== '%s')
+        .join('')
+        .trim() === ''
+    ) {
+      this.setState({
+        error: true,
+        hadError: true,
+      })
+    } else {
+      handleSave(translation)
+    }
   }
 
   renderTranslation = (label) => {
-    const { type } = this.props
-    if (label.type === 'phrase') return label[type]
-    var translation = label[type]
+    if (label.type === 'phrase') return label.base
+    var translation = label.base
     var count = 0
     const words = translation.split(/(%s)/g).map((word, i) => {
       if (word === '%s') {
-        const chip = <Chip key={i} label={label.templateStrings[count]} />
+        const chip = (
+          <span className="template-span" key={i}>
+            {label.templateStrings[count]}
+          </span>
+        )
         count++
         return chip
       } else {
@@ -140,86 +187,71 @@ class ModalContent extends Component {
   }
 
   render() {
-    const { handleClose, label, audioRef, dialectPath, computeDialect2 } = this.props
-    const { translation, formValue } = this.state
+    const { handleClose, label, audioRef, dialectPath, computeDialect2, classes } = this.props
+    const { translation, formValue, error, hadError } = this.state
 
     const _computeDialect2 = ProviderHelpers.getEntry(computeDialect2, dialectPath)
-    const context = selectn('response', _computeDialect2)
     return (
       <>
         <DialogTitle id="responsive-dialog-title">Edit Label</DialogTitle>
         <DialogContent>
-          <h3>Label Information</h3>
-          <TextField
-            id="base-phrase"
-            label="Base Phrase"
-            multiline
-            fullWidth
-            InputLabelProps={{
-              shrink: true,
-            }}
-            rowsMax="4"
-            defaultValue={label.base}
-            margin="normal"
-            InputProps={{
-              readOnly: true,
-            }}
-          />
-          <span>{this.renderTranslation(label)}</span>
-          <TextField
-            id="category"
-            label="Category"
-            fullWidth
-            InputLabelProps={{
-              shrink: true,
-            }}
-            defaultValue={label.category}
-            margin="normal"
-            InputProps={{
-              readOnly: true,
-            }}
-          />
-          <h3>Enter the translation and related audio files below.</h3>
-          <DialogContentText>
-            These will show if vistors to the site select 'Immersive Bilingual' or 'Immersive Indigenous Monolingual'
-            for their site experience.
-          </DialogContentText>
-          {/* PHRASE VS TEMPLATE ENTRY */}
-          {label.type === 'phrase' ? (
-            <TextField
-              id="translation"
-              label="Translation"
-              fullWidth
-              multiline
-              required
-              InputLabelProps={{
-                shrink: true,
-              }}
-              rowsMax="4"
-              value={translation[0]}
-              onChange={(ev) => this.handleChange(ev, 0)}
-              margin="normal"
-            />
-          ) : (
-            <div>
-              <TranslationInput
-                templateStrings={label.templateStrings}
-                translation={translation}
-                onChange={this.handleChange}
-              />
-              <div>preview</div>
-              <span>{this.scriptTranslation(label)}</span>
+          <fieldset>
+            <legend>Label Information</legend>
+            <label className="control-label">Base Phrase</label>
+            <div style={{ padding: '15px' }}>{this.renderTranslation(label)}</div>
+            <label className="control-label">Category</label>
+            <div style={{ padding: '15px' }}>{label.category}</div>
+          </fieldset>
+          <fieldset>
+            <legend>Immersive Information</legend>
+            <div className="alert alert-info">
+              <i>This will show for the site's 'Immersive' experience.</i>
             </div>
-          )}
-          <div className="related-audio">
-            <t.form.Form
-              ref={audioRef}
-              type={t.struct(this.fields)}
-              context={selectn('response', _computeDialect2)}
-              value={label.relatedAudio ? { 'fv:related_audio': [label.relatedAudio] } : formValue}
-              options={this.options}
-            />
-          </div>
+            <div className={error || hadError ? 'has-error' : ''}>
+              <label className="control-label">Translation *</label>
+              {label.type === 'phrase' ? (
+                <TextField
+                  id="translation"
+                  fullWidth
+                  multiline
+                  required
+                  rowsMax="4"
+                  value={translation[0]}
+                  onChange={(ev) => this.handleChange(ev, 0)}
+                  margin="normal"
+                  className=""
+                  InputProps={{
+                    disableUnderline: true,
+                    classes: {
+                      root: classes.inputRoot,
+                      input: classes.translationInput,
+                      error: classes.translationError,
+                    },
+                  }}
+                  error={error || hadError}
+                />
+              ) : (
+                <div>
+                  <TranslationInput
+                    templateStrings={label.templateStrings}
+                    translation={translation}
+                    onChange={this.handleChange}
+                  />
+                </div>
+              )}
+              {error && <span className="help-block error-block">Value in field "translation" cannot be empty.</span>}
+            </div>
+
+            <div className="related-audio">
+              <t.form.Form
+                ref={audioRef}
+                type={t.struct(this.fields)}
+                context={selectn('response', _computeDialect2)}
+                value={label.relatedAudio ? { 'fv:related_audio': [label.relatedAudio] } : formValue}
+                options={this.options}
+              />
+            </div>
+          </fieldset>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => handleClose()} color="primary">
@@ -247,4 +279,4 @@ const mapStateToProps = (state /*, ownProps*/) => {
 // REDUX: actions/dispatch/func
 const mapDispatchToProps = {}
 
-export default connect(mapStateToProps, mapDispatchToProps)(ModalContent)
+export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(ModalContent))

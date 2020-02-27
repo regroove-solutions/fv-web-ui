@@ -162,7 +162,7 @@ class LabelModal extends Component {
           open={open}
           onClose={() => handleClose()}
           aria-labelledby="responsive-dialog-title"
-          scroll="paper"
+          scroll="body"
         >
           {label ? (
             <>

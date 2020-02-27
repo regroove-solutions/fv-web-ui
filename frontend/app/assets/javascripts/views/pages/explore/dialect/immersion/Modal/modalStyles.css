@@ -1,64 +1,54 @@
-.editable-span {
-  color: rgba(0, 0, 0, 0.87);
-  display: inline-flex;
-  position: relative;
-  font-size: 1.2857142857142858rem;
-  font-family: Arial, sans-serif;
-  line-height: 1.1875em;
-  padding: 0 2px;
-  min-width: 15px;
-  height: 28px;
-}
-.editable-span ::before {
-  left: 0;
-  right: 0;
-  bottom: 0;
-  content: '\00a0';
-  position: absolute;
-  transition: border-bottom-color 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.42);
-  pointer-events: none;
-}
-
-.editable-span:hover:not(:focus-within) ::before {
-  border-bottom: 2px solid rgba(0, 0, 0, 0.87);
-}
-
-.editable-span:focus-within ::after {
-  transform: scaleX(1);
-}
-
-.editable-span ::after {
-  left: 0;
-  right: 0;
-  bottom: 0;
-  content: '';
-  position: absolute;
-  transform: scaleX(0);
-  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1) 0ms;
-  border-bottom: 2px solid #00766c;
-  pointer-events: none;
-}
-
-.editable-span span {
-  font: inherit;
-  color: currentColor;
-  border: 0;
-  margin: 0;
-  padding: 6px 0 7px;
-  display: block;
-  min-width: 0;
-  flex-grow: 1;
-  box-sizing: content-box;
-  background: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.editable-span span:focus {
-  outline: none;
+.small {
+  font-size: 16px;
+  padding: 7px 2px;
 }
 
 .related-audio > fieldset {
   border: none;
   padding: 0;
+}
+
+.translation-input {
+  display: block;
+  height: 34px;
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #555555;
+  background-color: #fff;
+  background-image: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+  -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+}
+
+.translation-input:first-child {
+  padding-right: 0;
+}
+
+.translation-input:last-child {
+  padding-left: 0;
+}
+
+.translation-input:focus {
+  border-color: #66afe9;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+}
+
+.has-error .translation-input {
+  border-color: #a94442;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+
+.has-error .translation-input:focus {
+  border-color: #843534;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ce8483;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ce8483;
 }
