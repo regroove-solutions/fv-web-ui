@@ -156,6 +156,7 @@ const fields = {
     'fvuserinfo:ageGroup': t.maybe(AgeRanges),
     'fvuserinfo:phone': t.maybe(t.String),
     'fvuserinfo:comment': t.maybe(t.String),
+    'fvuserinfo:community_member': t.maybe(t.Boolean),
     'fvuserinfo:language_team_member': t.maybe(t.Boolean),
   },
   FVUserProfile: {
@@ -169,6 +170,12 @@ const fields = {
     'fvlink:url': t.maybe(t.String) /*,
     'file:content': t.maybe(t.form.File)*/,
   }),
+  FVLabel: Object.assign(
+    {},
+    {
+      'fv:related_audio': t.list(t.maybe(t.String)),
+    }
+  ),
 }
 
 export default fields

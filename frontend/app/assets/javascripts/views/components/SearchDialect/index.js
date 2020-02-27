@@ -21,10 +21,7 @@ import { searchDialectUpdate } from 'providers/redux/reducers/searchDialect'
 import selectn from 'selectn'
 import classNames from 'classnames'
 import FVButton from 'views/components/FVButton'
-import IntlService from 'views/services/intl'
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
-
-const intl = IntlService.instance
 
 /*
 SearchDialect
@@ -201,7 +198,7 @@ export const SearchDialect = (props) => {
     let searchButtonText = ''
     switch (props.searchDialectDataType) {
       case SEARCH_DATA_TYPE_WORD:
-        searchButtonText = intl.trans('views.pages.explore.dialect.learn.words.search_words', 'Search Words', 'words')
+        searchButtonText = props.intl.trans('views.pages.explore.dialect.learn.words.search_words', 'Search Words', 'words')
         break
       case SEARCH_DATA_TYPE_PHRASE:
         searchButtonText = 'Search Phrases'
@@ -420,12 +417,12 @@ export const SearchDialect = (props) => {
           const optionItems =
             options.length > 0
               ? options.map((option, key2) => {
-                  return (
-                    <option key={key2} value={option.value}>
-                      {option.text}
-                    </option>
-                  )
-                })
+                return (
+                  <option key={key2} value={option.value}>
+                    {option.text}
+                  </option>
+                )
+              })
               : partsOfSpeechOptions
           element = (
             <span key={key1} className={_classes.SearchDialectFormSecondaryGroup}>
@@ -472,7 +469,7 @@ export const SearchDialect = (props) => {
 
   // Search handler
   // ------------------------------------------------------------
-  const handleSearch = async () => {
+  const handleSearch = async() => {
     const searchData1 = {
       searchByAlphabet: '',
       searchByMode: SEARCH_BY_CUSTOM,
@@ -524,7 +521,7 @@ export const SearchDialect = (props) => {
 
   // Resets search
   // ------------------------------------------------------------
-  const resetSearch = async () => {
+  const resetSearch = async() => {
     const searchData1 = {
       searchByAlphabet: '',
       searchByMode: SEARCH_BY_DEFAULT,
@@ -586,10 +583,10 @@ SearchDialect.propTypes = {
   fetchDirectory: func.isRequired,
 }
 SearchDialect.defaultProps = {
-  handleSearch: () => {},
+  handleSearch: () => { },
   searchDialectDataType: SEARCH_DATA_TYPE_WORD,
-  resetSearch: () => {},
-  searchDialectUpdate: () => {},
+  resetSearch: () => { },
+  searchDialectUpdate: () => { },
   searchPartOfSpeech: SEARCH_PART_OF_SPEECH_ANY,
   searchUi: [
     // {
@@ -628,14 +625,16 @@ SearchDialect.defaultProps = {
 // ------------------------------------------------------------
 // REDUX: reducers/state
 const mapStateToProps = (state /*, ownProps*/) => {
-  const { directory, searchDialect } = state
+  const { directory, searchDialect, locale } = state
 
   const { computeDirectory } = directory
   const { computeSearchDialect } = searchDialect
+  const { intlService } = locale
 
   return {
     computeDirectory,
     computeSearchDialect,
+    intl: intlService,
   }
 }
 

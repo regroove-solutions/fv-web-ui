@@ -74,6 +74,7 @@ public class FVDocumentListener implements EventListener {
         "FVResources",
         "FVVideo",
         "FVWord",
+        "FVLabelDictionary"
     };
   
     return Arrays.stream(types).parallel().anyMatch(currentType.toString()::contains);
