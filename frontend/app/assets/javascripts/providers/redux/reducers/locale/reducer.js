@@ -54,7 +54,7 @@ function getLocaleFromStorage() {
       }
     }
   }
-  if (locale === null) {
+  if (!locale) {
     locale = 'en'
   }
 
@@ -62,7 +62,9 @@ function getLocaleFromStorage() {
 }
 
 function setLocaleToStorage(locale = '') {
-  localStorage.setItem('intl-service-locale', locale)
+  if (locale) {
+    localStorage.setItem('intl-service-locale', locale)
+  }
   return
 }
 

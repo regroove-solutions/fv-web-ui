@@ -24,12 +24,9 @@ function FVLabel({
   intl,
   isInHelpMode,
   labelIds,
-  setEditingLabel,
+  startEditingLabel,
   computeLogin,
 }) {
-  if (transKey.indexOf('.') === -1) {
-    transKey = 'general.' + transKey
-  }
   const [anchorElement, setAnchorElement] = useState()
   const [audioId, setAudioId] = useState('')
   const [isFetching, setisFetching] = useState('')
@@ -87,7 +84,7 @@ function FVLabel({
   const openEdit = (event) => {
     event.preventDefault()
     event.stopPropagation()
-    setEditingLabel(actualTransKey)
+    startEditingLabel(actualTransKey)
   }
 
   const audioContainerStyles = {
@@ -145,7 +142,7 @@ function FVLabel({
   )
 }
 
-const { string, array, object, bool } = proptypes
+const { string, array, object, bool, func } = proptypes
 
 FVLabel.propTypes = {
   transKey: string.isRequired,
@@ -160,6 +157,7 @@ FVLabel.propTypes = {
   isInHelpMode: bool.isRequired,
   labelIds: object.isRequired,
   computeLogin: object.isRequired,
+  startEditingLabel: func.isRequired,
 }
 
 const mapStateToProps = (state /*, ownProps*/) => {
@@ -176,7 +174,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
 }
 
 const mapDispatchToProps = {
-  setEditingLabel,
+  startEditingLabel: setEditingLabel,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(FVLabel)

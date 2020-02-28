@@ -44,7 +44,7 @@ export const setIntlWorkspace = (workspace = '') => {
 export const refetchLabels = () => {
   return (dispatch, getState) => {
     if (getState().locale.immersionMode && getState().locale.workspace) {
-      getWorkspaceLabels(getState().locale.intlService.locale, getState().locale.workspace, getState().locale.immersionMode, dispatch)
+      getWorkspaceLabels(getState().locale.locale, getState().locale.workspace, getState().locale.immersionMode, dispatch)
     }
   }
 }

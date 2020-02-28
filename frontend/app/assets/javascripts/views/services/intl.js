@@ -133,12 +133,16 @@ export default class IntlService {
     }
 
     let key = translateData.key || null
-    let usedFallback = false;
-    let actualUsedKey = key;
+
     if (Array.isArray(key)) {
       key = key.join('.')
     }
+
+    let usedFallback = false;
+    let actualUsedKey = key;
+
     const self = this
+
     const postProcessResult = function (result, translateData) {
       if (result !== null) {
         const charCase = translateData.case || null
@@ -213,9 +217,7 @@ export default class IntlService {
       if (((key + '').match(/\./g) || []).length === 0) {
         // single entry, let's check general first
         res = selectn((translateData.locale || this.localeString) + '.general.' + key, this._localeLists)
-        if (res) {
-          actualUsedKey = '.general.' + key;
-        }
+        actualUsedKey = 'general.' + key;
       }
 
       if (res === null || res === undefined) {
