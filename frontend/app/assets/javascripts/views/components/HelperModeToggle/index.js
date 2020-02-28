@@ -47,15 +47,17 @@ const HelperModeToggle = ({
       const mappedLabel = allLabels.find((l) => {
         return l.id === editingLabel
       })
-      const category = allCategories.find((c) => {
-        return c.id === mappedLabel.category
-      })
-      const templateStrings = mappedLabel.template_strings.split(',')
+      const category = mappedLabel
+        ? allCategories.find((c) => {
+            return c.id === mappedLabel.category
+          })
+        : null
+      const templateStrings = mappedLabel ? mappedLabel.template_strings.split(',') : []
       const label = {
         labelKey: editingLabel,
-        type: mappedLabel.type,
+        type: mappedLabel ? mappedLabel.type : 'phrase',
         templateStrings,
-        category: category.label,
+        category: category ? category.label : 'Unknown',
         base: intl.trans(editingLabel, 'Translated Label', null, templateStrings, null, null, locale),
         translation: undefined,
         uid,
