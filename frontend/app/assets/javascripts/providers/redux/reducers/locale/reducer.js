@@ -6,6 +6,7 @@ import {
   SET_WORKSPACE,
   SET_IMMERSION_MODE,
   SET_HELP_MODE,
+  SET_EDITING_LABEL,
 } from './actionTypes'
 import IntlService from '../../../../views/services/intl'
 import en from 'views/../locale/locale.en.json'
@@ -28,6 +29,7 @@ const initialState = {
   workspace: '',
   isInHelpMode: false,
   labelIds: {},
+  editingLabel: null,
 }
 
 function getLocaleFromStorage() {
@@ -127,6 +129,11 @@ export const localeReducer = (state = initialState, action) => {
       return {
         ...state,
         isInHelpMode: action.payload,
+      }
+    case SET_EDITING_LABEL:
+      return {
+        ...state,
+        editingLabel: action.payload,
       }
     default:
       return state

@@ -4,6 +4,8 @@ import proptypes from 'prop-types'
 import { connect } from 'react-redux'
 import Menu from '@material-ui/core/Menu'
 import ListItem from '@material-ui/core/ListItem'
+import { setEditingLabel } from 'providers/redux/reducers/locale'
+
 import DocumentOperations from 'operations/DocumentOperations'
 import Preview from 'views/components/Editor/Preview'
 import '!style-loader!css-loader!./FVLabel.css'
@@ -20,11 +22,16 @@ function FVLabel({
   locale,
   isInHelpMode,
   labelIds,
+  setEditingLabel,
 }) {
+  if (transKey.indexOf('.') === -1) {
+    transKey = 'general.' + transKey
+  }
   const [anchorElement, setAnchorElement] = useState()
   const [audioId, setAudioId] = useState('')
-  const [isFetchingAudio, setIsFetchingAudio] = useState('')
+  const [isFetching, setisFetching] = useState('')
   const [isMounted, setIsMounted] = useState(false)
+  const [translationId, setTranslationId] = useState()
 
   useEffect(() => {
     setIsMounted(true)
@@ -41,14 +48,14 @@ function FVLabel({
       if (anchorElement) {
         setAnchorElement(undefined)
       } else {
-        const translationId = selectn(transKey, labelIds)
+        setTranslationId(selectn(transKey, labelIds))
         setAnchorElement(event.currentTarget)
         if (translationId) {
-          setIsFetchingAudio(true)
+          setisFetching(true)
           DocumentOperations.getDocument(translationId, 'FVLabel').then((data) => {
             if (isMounted) {
               setAudioId(selectn('properties.fv:related_audio[0]', data))
-              setIsFetchingAudio(false)
+              setisFetching(false)
             }
           })
         }
@@ -63,6 +70,7 @@ function FVLabel({
   const openEdit = (event) => {
     event.preventDefault()
     event.stopPropagation()
+    setEditingLabel(transKey)
   }
 
   const audioContainerStyles = {
@@ -89,20 +97,19 @@ function FVLabel({
             <ListItem>
               Translation: {intl.trans(transKey, defaultStr, transform, params, prepend, append, locale)}
             </ListItem>
-            {!isFetchingAudio && !audioId && <ListItem disabled>No Audio</ListItem>}
-            {!isFetchingAudio && audioId && (
+            {!isFetching && !audioId && <ListItem disabled>No Audio</ListItem>}
+            {!isFetching && audioId && (
               <ListItem>
                 <div style={audioContainerStyles}>
                   <Preview id={audioId} type="FVAudio" minimal styles={{ flex: 1 }} />
                 </div>
               </ListItem>
             )}
-            {isFetchingAudio && (
+            {isFetching && (
               <ListItem disabled>
                 <div style={audioContainerStyles} />
               </ListItem>
             )}
-
             <ListItem button onClick={openEdit}>
               Edit
             </ListItem>
@@ -140,4 +147,8 @@ const mapStateToProps = (state /*, ownProps*/) => {
   }
 }
 
-export default connect(mapStateToProps)(FVLabel)
+const mapDispatchToProps = {
+  setEditingLabel,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(FVLabel)

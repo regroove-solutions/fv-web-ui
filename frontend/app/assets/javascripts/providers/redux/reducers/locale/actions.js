@@ -6,6 +6,7 @@ import {
   SET_WORKSPACE,
   SET_IMMERSION_MODE,
   SET_HELP_MODE,
+  SET_EDITING_LABEL,
 } from './actionTypes'
 import DirectoryOperations from 'operations/DirectoryOperations'
 
@@ -22,6 +23,12 @@ export const setImmersionMode = (immersionMode = false) => {
     } else {
       dispatch({ type: SET_IMMERSION_MODE, payload: immersionMode })
     }
+  }
+}
+
+export const setEditingLabel = (editingLabel = null) => {
+  return (dispatch) => {
+    dispatch({ type: SET_EDITING_LABEL, payload: editingLabel })
   }
 }
 
