@@ -3,6 +3,7 @@ import propTypes from 'prop-types'
 import { connect } from 'react-redux'
 import selectn from 'selectn'
 
+import { Tooltip, Snackbar, IconButton } from '@material-ui/core'
 import LiveHelpIcon from '@material-ui/icons/LiveHelp'
 import CloseIcon from '@material-ui/icons/Close'
 
@@ -31,6 +32,7 @@ const HelperModeToggle = ({
   const [isOpen, setIsOpen] = useState(false)
   const [label, setLabel] = useState()
   const [fetched, setFetched] = useState(false)
+  const [snackbarOpen, setSnackbarOpen] = useState(false)
 
   useEffect(() => {
     if (!fetched) {
@@ -82,36 +84,71 @@ const HelperModeToggle = ({
     }
   }, [editingLabel])
 
+  useEffect(() => {
+    if (isInHelpMode) {
+      setSnackbarOpen(true)
+    } else {
+      setSnackbarOpen(false)
+    }
+  }, [isInHelpMode])
+
   const closeModal = () => {
     setLabel(null)
     setIsOpen(false)
     setEditingLabel()
   }
 
+  const closeSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return
+    }
+    setSnackbarOpen(false)
+  }
+
   return (
     <div className="helper-mode-toggle">
       {isImmersionModeOn && (
         <>
-          <FVButton variant="extendedFab" color="primary" onClick={handleToggleHelpMode}>
-            {!isInHelpMode && (
-              <>
-                <LiveHelpIcon />
-                Enable Helper Mode
-              </>
-            )}
-            {isInHelpMode && (
-              <>
-                Close Helper Mode
-                <CloseIcon />
-              </>
-            )}
-          </FVButton>
+          <Tooltip title={isInHelpMode ? 'Close Helper' : 'Turn on Helper then click labels to translate'}>
+            <FVButton variant="extendedFab" color="primary" onClick={handleToggleHelpMode}>
+              {!isInHelpMode && (
+                <>
+                  <LiveHelpIcon />
+                  Enable Helper Mode
+                </>
+              )}
+              {isInHelpMode && (
+                <>
+                  Close Helper Mode
+                  <CloseIcon />
+                </>
+              )}
+            </FVButton>
+          </Tooltip>
           <LabelModal
             isNew={isNew}
             dialectPath={routeParams.dialect_path}
             open={isOpen}
             handleClose={(save) => closeModal(save)}
             label={label}
+          />
+          <Snackbar
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'center',
+            }}
+            open={snackbarOpen}
+            autoHideDuration={6000}
+            onClose={closeSnackbar}
+            ContentProps={{
+              'aria-describedby': 'message-id',
+            }}
+            message={<span id="message-id">Click on labels to see their translation and audio.</span>}
+            action={[
+              <IconButton key="close" aria-label="Close" color="inherit" onClick={closeSnackbar}>
+                <CloseIcon />
+              </IconButton>,
+            ]}
           />
         </>
       )}
