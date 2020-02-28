@@ -41,6 +41,14 @@ export const setIntlWorkspace = (workspace = '') => {
   }
 }
 
+export const refetchLabels = () => {
+  return (dispatch, getState) => {
+    if (getState().locale.immersionMode && getState().locale.workspace) {
+      getWorkspaceLabels(getState().locale.intlService.locale, getState().locale.workspace, getState().locale.immersionMode, dispatch)
+    }
+  }
+}
+
 function getWorkspaceLabels(locale, workspace, immersionMode, dispatch) {
   function _getImmersiveWords() {
     return DirectoryOperations.getDocumentsViaResultSetQuery(
