@@ -5,11 +5,13 @@ import { connect } from 'react-redux'
 import Menu from '@material-ui/core/Menu'
 import ListItem from '@material-ui/core/ListItem'
 import DocumentOperations from 'operations/DocumentOperations'
+import Typography from '@material-ui/core/Typography'
 import Preview from 'views/components/Editor/Preview'
 import '!style-loader!css-loader!./FVLabel.css'
 
 function FVLabel({
   transKey,
+  locale,
   defaultStr,
   transform,
   params,
@@ -24,6 +26,13 @@ function FVLabel({
   const [audioId, setAudioId] = useState('')
   const [isFetchingAudio, setIsFetchingAudio] = useState('')
   const [isMounted, setIsMounted] = useState(false)
+  const readableLocale = {
+    'en': 'English',
+    'fr': 'Français',
+  }
+
+  const [translation, usedFallback, actualTransKey] = intl.fvLabelTrans(transKey, defaultStr, transform, params, prepend, append, forceLocale)
+  const isAdmin = true
 
   useEffect(() => {
     setIsMounted(true)
@@ -40,7 +49,7 @@ function FVLabel({
       if (anchorElement) {
         setAnchorElement(undefined)
       } else {
-        const translationId = selectn(transKey, labelIds)
+        const translationId = selectn(actualTransKey, labelIds)
         setAnchorElement(event.currentTarget)
         if (translationId) {
           setIsFetchingAudio(true)
@@ -72,12 +81,11 @@ function FVLabel({
     justifyContent: 'space-around',
   }
 
-  const [translation, usedFallback] = intl.fvLabelTrans(transKey, defaultStr, transform, params, prepend, append, forceLocale)
 
   return (
     <span className="fv-label">
       {translation}
-      {isInHelpMode && !usedFallback && (
+      {isInHelpMode && (!usedFallback || isAdmin) && (
         <span onClick={handleClick} className="fv-label-click-cover">
           <Menu
             id="simple-menu"
@@ -88,7 +96,10 @@ function FVLabel({
             anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
           >
             <ListItem>
-              Translation: {translation}
+              <div>
+                <Typography variant="caption" >{readableLocale[locale]}:</Typography>
+                <Typography variant="body1">{intl.trans(transKey, defaultStr, transform, params, prepend, append, locale)}</Typography>
+              </div>
             </ListItem>
             {!isFetchingAudio && !audioId && <ListItem disabled>No Audio</ListItem>}
             {!isFetchingAudio && audioId && (
@@ -105,7 +116,7 @@ function FVLabel({
             )}
 
             <ListItem button onClick={openEdit}>
-              Edit
+              Edit Translation
             </ListItem>
           </Menu>
         </span>

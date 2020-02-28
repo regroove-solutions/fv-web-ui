@@ -127,13 +127,14 @@ export default class IntlService {
     return translatedObj
   }
 
-  translate(translateData, returnUsedFallback) {
+  translate(translateData, returnTranslationInfo) {
     if (typeof translateData === 'string') {
       translateData = { key: translateData, default: translateData }
     }
 
     let key = translateData.key || null
     let usedFallback = false;
+    let actualUsedKey = key;
     if (Array.isArray(key)) {
       key = key.join('.')
     }
@@ -195,10 +196,11 @@ export default class IntlService {
     }
 
     const processReturn = (result) => {
-      if (returnUsedFallback) {
+      if (returnTranslationInfo) {
         return [
           result,
-          usedFallback
+          usedFallback,
+          actualUsedKey
         ]
       } else {
         return result;
@@ -211,6 +213,9 @@ export default class IntlService {
       if (((key + '').match(/\./g) || []).length === 0) {
         // single entry, let's check general first
         res = selectn((translateData.locale || this.localeString) + '.general.' + key, this._localeLists)
+        if (res) {
+          actualUsedKey = '.general.' + key;
+        }
       }
 
       if (res === null || res === undefined) {
