@@ -33,13 +33,21 @@ import '!style-loader!css-loader!./immersionTable.css'
 const { array, object, string } = PropTypes
 
 function desc(a, b, orderBy) {
-  if (!a[orderBy] && !b[orderBy]) {
+  const aObj = a[orderBy]
+  const bObj = b[orderBy]
+  if (!aObj && !bObj) {
     return 0
   }
-  if (b[orderBy] > a[orderBy] || !b[orderBy]) {
+  if (!bObj) {
     return -1
   }
-  if (b[orderBy] < a[orderBy] || !a[orderBy]) {
+  if (!aObj) {
+    return 1
+  }
+  if (bObj.toUpperCase() > aObj.toUpperCase()) {
+    return -1
+  }
+  if (bObj.toUpperCase() < aObj.toUpperCase()) {
     return 1
   }
   return 0
@@ -176,7 +184,7 @@ class ImmersionTable extends Component {
     const emptyRows = pageSize - Math.min(pageSize, (filteredTranslations.length || 1) - pageNumber * pageSize)
 
     return (
-      <div style={{ flexShrink: 0 }}>
+      <div style={{ flexShrink: 0, overflowX: 'scroll' }}>
         <Table className="DictionaryList data-table fontAboriginalSans">
           <SortingHeader
             order={order}

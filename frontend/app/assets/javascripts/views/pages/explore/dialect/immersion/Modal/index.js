@@ -93,7 +93,7 @@ class LabelModal extends Component {
       null,
       now
     ).then(() => {
-      handleClose(true)
+      setTimeout(handleClose(true), 500)
     })
   }
 
@@ -121,7 +121,7 @@ class LabelModal extends Component {
     newDocument.set({ 'dc:title': translation.join(''), 'fv:related_audio': relatedAudio })
 
     updateLabel(newDocument, null, null).then(() => {
-      handleClose(true)
+      setTimeout(handleClose(true), 500)
     })
   }
 

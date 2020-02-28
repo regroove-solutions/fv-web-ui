@@ -55,6 +55,7 @@ class ImmersionListView extends Component {
     computeLabels: object.isRequired,
     fetchDialect2: func.isRequired,
     fetchLabels: func.isRequired,
+    locale: string.isRequired,
   }
   static defaultProps = {}
 
@@ -132,7 +133,7 @@ class ImmersionListView extends Component {
   }
 
   mapTranslatedLabels() {
-    const { allLabels, allCategories, computeLabels, intl } = this.props
+    const { allLabels, allCategories, computeLabels, intl, locale } = this.props
     const computedLabels = ProviderHelpers.getEntry(computeLabels, this._getPathOrParentID(this.props))
     const translatedLabels = selectn('response.entries', computedLabels)
 
@@ -148,7 +149,7 @@ class ImmersionListView extends Component {
         type: v.type,
         templateStrings,
         categoryId: v.category,
-        base: intl.trans(v.id, 'Translated Label', null, strings),
+        base: intl.trans(v.id, 'Translated Label', null, strings, null, null, locale),
         translation: undefined,
         category: undefined,
         editButton: undefined,
@@ -240,6 +241,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
     computeDialect2,
     computeLabels,
     intl: intlService,
+    locale: locale.locale,
   }
 }
 
