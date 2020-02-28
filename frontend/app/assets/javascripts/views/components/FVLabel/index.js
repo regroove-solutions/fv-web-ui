@@ -7,6 +7,7 @@ import ListItem from '@material-ui/core/ListItem'
 import DocumentOperations from 'operations/DocumentOperations'
 import Typography from '@material-ui/core/Typography'
 import Preview from 'views/components/Editor/Preview'
+import ProviderHelpers from 'common/ProviderHelpers'
 import '!style-loader!css-loader!./FVLabel.css'
 
 function FVLabel({
@@ -21,6 +22,7 @@ function FVLabel({
   intl,
   isInHelpMode,
   labelIds,
+  computeLogin,
 }) {
   const [anchorElement, setAnchorElement] = useState()
   const [audioId, setAudioId] = useState('')
@@ -32,7 +34,7 @@ function FVLabel({
   }
 
   const [translation, usedFallback, actualTransKey] = intl.fvLabelTrans(transKey, defaultStr, transform, params, prepend, append, forceLocale)
-  const isAdmin = true
+  const isAdmin = ProviderHelpers.isRecorderWithApproval(computeLogin) || ProviderHelpers.isAdmin(computeLogin)
 
   useEffect(() => {
     setIsMounted(true)
@@ -115,9 +117,9 @@ function FVLabel({
               </ListItem>
             )}
 
-            <ListItem button onClick={openEdit}>
+            {isAdmin && <ListItem button onClick={openEdit}>
               Edit Translation
-            </ListItem>
+            </ListItem>}
           </Menu>
         </span>
       )}
@@ -139,16 +141,19 @@ FVLabel.propTypes = {
   intl: object.isRequired,
   isInHelpMode: bool.isRequired,
   labelIds: object.isRequired,
+  computeLogin: object.isRequired,
 }
 
 const mapStateToProps = (state /*, ownProps*/) => {
-  const { locale } = state
+  const { locale, nuxeo } = state
+  const { computeLogin } = nuxeo
 
   return {
     intl: locale.intlService,
     locale: locale.locale,
     isInHelpMode: locale.isInHelpMode,
     labelIds: locale.labelIds,
+    computeLogin,
   }
 }
 
