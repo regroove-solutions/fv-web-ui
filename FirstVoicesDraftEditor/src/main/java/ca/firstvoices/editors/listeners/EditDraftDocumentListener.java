@@ -37,7 +37,7 @@ public class EditDraftDocumentListener implements EventListener {
             case "FVLinks":
             case "FVBooks":
             case "FVDictionary":
-            case "FVLaelDictionary":
+            case "FVLabelDictionary":
             case "FVPortal":
             case "FVResources":
             case "FVCategories":
