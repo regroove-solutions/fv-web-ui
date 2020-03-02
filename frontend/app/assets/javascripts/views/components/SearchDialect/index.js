@@ -4,12 +4,19 @@ import PropTypes from 'prop-types'
 import {
   SEARCH_PART_OF_SPEECH_ANY,
   SEARCH_BY_DEFAULT,
+  SEARCH_TYPE_DEFAULT,
   SEARCH_BY_ALPHABET,
   SEARCH_BY_CATEGORY,
   SEARCH_BY_CUSTOM,
   SEARCH_BY_PHRASE_BOOK,
   SEARCH_DATA_TYPE_PHRASE,
   SEARCH_DATA_TYPE_WORD,
+  SEARCH_TYPE_APPROXIMATE_SEARCH,
+  SEARCH_TYPE_EXACT_SEARCH,
+  SEARCH_TYPE_CONTAINS_SEARCH,
+  SEARCH_TYPE_STARTS_WITH_SEARCH,
+  SEARCH_TYPE_ENDS_WITH_SEARCH,
+  SEARCH_TYPE_WILDCARD_SEARCH,
 } from './constants'
 
 // REDUX
@@ -38,6 +45,7 @@ export const SearchDialect = (props) => {
   const [partsOfSpeechOptions, setPartsOfSpeechOptions] = useState(null)
   const [searchBySettings, setSearchBySettings] = useState({})
   const [searchTerm, setSearchTerm] = useState(csd.searchTerm || undefined)
+  const [searchType, setSearchType] = useState(csd.searchType || SEARCH_TYPE_DEFAULT)
 
   // Sets `searchMessage` when updates are made to:
   // `csd.searchByAlphabet`, `csd.searchByMode`, or `csd.searchingDialectFilter`
@@ -48,6 +56,7 @@ export const SearchDialect = (props) => {
       searchByMode: csd.searchByMode || SEARCH_BY_DEFAULT,
       searchBySettings: csd.searchBySettings || searchBySettings,
       searchTerm: csd.searchTerm || searchTerm,
+      searchType: csd.searchType || searchType,
     })
 
     // Save to redux
@@ -84,75 +93,43 @@ export const SearchDialect = (props) => {
     }
   }, [csd.searchBySettings])
 
-  // Sets `partsOfSpeechOptions`
+  // Sets `partsOfSpeechOptions` when on a Word page
   // ------------------------------------------------------------
   useEffect(() => {
-    // initiate
-    if (props.computeDirectory.isFetching !== true && props.computeDirectory.success !== true) {
-      props.fetchDirectory('parts_of_speech')
-    }
-    // wait
-    if (props.computeDirectory.success && props.computeDirectory.success) {
-      const partsOfSpeechUnsorted = selectn('computeDirectory.directories.parts_of_speech', props) || []
-      const partsOfSpeechSorted = partsOfSpeechUnsorted.sort((a, b) => {
-        if (a.text < b.text) return -1
-        if (a.text > b.text) return 1
-        return 0
-      })
+    if (props.searchDialectDataType === SEARCH_DATA_TYPE_WORD) {
+      // initiate
+      if (props.computeDirectory.isFetching !== true && props.computeDirectory.success !== true) {
+        props.fetchDirectory('parts_of_speech')
+      }
+      // wait
+      if (props.computeDirectory.success && props.computeDirectory.success) {
+        const partsOfSpeechUnsorted = selectn('computeDirectory.directories.parts_of_speech', props) || []
+        const partsOfSpeechSorted = partsOfSpeechUnsorted.sort((a, b) => {
+          if (a.text < b.text) return -1
+          if (a.text > b.text) return 1
+          return 0
+        })
 
-      const partsOfSpeechSortedOptionTags = partsOfSpeechSorted.map((part, index) => {
-        return (
-          <option key={index} value={part.value}>
-            {part.text}
-          </option>
-        )
-      })
+        const partsOfSpeechSortedOptionTags = partsOfSpeechSorted.map((part, index) => {
+          return (
+            <option key={index} value={part.value}>
+              {part.text}
+            </option>
+          )
+        })
 
-      // set
-      if (partsOfSpeechSortedOptionTags.length > 0 && partsOfSpeechOptions === null) {
-        setPartsOfSpeechOptions([
-          <option key="SEARCH_SORT_DIVIDER" disabled>
-            ─────────────
-          </option>,
-          ...partsOfSpeechSortedOptionTags,
-        ])
+        // set
+        if (partsOfSpeechSortedOptionTags.length > 0 && partsOfSpeechOptions === null) {
+          setPartsOfSpeechOptions([
+            <option key="SEARCH_SORT_DIVIDER" disabled>
+              ─────────────
+            </option>,
+            ...partsOfSpeechSortedOptionTags,
+          ])
+        }
       }
     }
-  })
-
-  // const _componentDidUpdate = (prevProps) => {
-  //   const searchNxqlQuery = generateNxql()
-  //   const searchNxqlSort = generateNxqlSearchSort()
-
-  //   const prevSearchNxqlQuery = prevProps.computeSearchDialect.searchNxqlQuery
-  //   const prevSearchNxqlSort = prevProps.computeSearchDialect.searchNxqlSort
-
-  //   if (
-  //     searchNxqlQuery !== prevSearchNxqlQuery ||
-  //     searchNxqlSort.DEFAULT_SORT_COL !== prevSearchNxqlSort.DEFAULT_SORT_COL ||
-  //     searchNxqlSort.DEFAULT_SORT_TYPE !== prevSearchNxqlSort.DEFAULT_SORT_TYPE
-  //   ) {
-  //     props.searchDialectUpdate({ searchNxqlQuery, searchNxqlSort })
-  //   }
-
-  //   const updatedAlphabet =
-  //     props.computeSearchDialect.searchByMode === SEARCH_BY_ALPHABET &&
-  //     prevProps.computeSearchDialect.searchByAlphabet !== props.computeSearchDialect.searchByAlphabet
-
-  //   const updatedDialectFilter =
-  //     (props.computeSearchDialect.searchByMode === SEARCH_BY_CATEGORY ||
-  //       props.computeSearchDialect.searchByMode === SEARCH_BY_PHRASE_BOOK) &&
-  //     prevProps.searchingDialectFilter !== props.searchingDialectFilter
-
-  //   const updatedMode = prevProps.computeSearchDialect.searchByMode !== props.computeSearchDialect.searchByMode
-
-  //   if (updatedAlphabet || updatedDialectFilter || updatedMode) {
-  //     const forSearchDialectUpdate = Object.assign({}, props.computeSearchDialect, {
-  //       searchMessage: getSearchMessage(props.computeSearchDialect),
-  //     })
-  //     props.searchDialectUpdate(forSearchDialectUpdate)
-  //   }
-  // }
+  }, [])
 
   // Generates 'Stop browsing ...' button
   // TODO: props.searchDialectResetButtonText
@@ -198,7 +175,11 @@ export const SearchDialect = (props) => {
     let searchButtonText = ''
     switch (props.searchDialectDataType) {
       case SEARCH_DATA_TYPE_WORD:
-        searchButtonText = props.intl.trans('views.pages.explore.dialect.learn.words.search_words', 'Search Words', 'words')
+        searchButtonText = props.intl.trans(
+          'views.pages.explore.dialect.learn.words.search_words',
+          'Search Words',
+          'words'
+        )
         break
       case SEARCH_DATA_TYPE_PHRASE:
         searchButtonText = 'Search Phrases'
@@ -221,6 +202,21 @@ export const SearchDialect = (props) => {
             value={searchTerm || ''}
           />
 
+          <select
+            defaultValue={searchType}
+            onChange={(evt) => {
+              setSearchType(evt.target.value)
+            }}
+            className={`SearchDialectFormSelectSearchType ${getDialectClassname()}`}
+          >
+            <option value={SEARCH_TYPE_APPROXIMATE_SEARCH}>Approximate</option>
+            <option value={SEARCH_TYPE_EXACT_SEARCH}>Exact</option>
+            <option value={SEARCH_TYPE_CONTAINS_SEARCH}>Contains</option>
+            <option value={SEARCH_TYPE_STARTS_WITH_SEARCH}>Starts with</option>
+            <option value={SEARCH_TYPE_ENDS_WITH_SEARCH}>Ends with</option>
+            <option value={SEARCH_TYPE_WILDCARD_SEARCH}>Wildcard</option>
+          </select>
+
           <FVButton variant="contained" onClick={handleSearch} color="primary">
             {searchButtonText}
           </FVButton>
@@ -242,6 +238,7 @@ export const SearchDialect = (props) => {
     searchByMode,
     searchBySettings: _searchBySettings = {},
     searchTerm: _searchTerm,
+    searchType: _searchType,
   }) => {
     const {
       searchPartOfSpeech,
@@ -286,7 +283,33 @@ export const SearchDialect = (props) => {
         dataType = 'items'
     }
 
+    let searchTypeLabel
+
+    switch (_searchType) {
+      case SEARCH_TYPE_APPROXIMATE_SEARCH:
+        searchTypeLabel = ' approximately match '
+        break
+      case SEARCH_TYPE_EXACT_SEARCH:
+        searchTypeLabel = ' exactly match '
+        break
+      case SEARCH_TYPE_CONTAINS_SEARCH:
+        searchTypeLabel = ' contain '
+        break
+      case SEARCH_TYPE_STARTS_WITH_SEARCH:
+        searchTypeLabel = ' start with '
+        break
+      case SEARCH_TYPE_ENDS_WITH_SEARCH:
+        searchTypeLabel = ' end with '
+        break
+      case SEARCH_TYPE_WILDCARD_SEARCH:
+        searchTypeLabel = ' pattern match '
+        break
+      default:
+        searchTypeLabel = ' contain '
+    }
+
     const searchTermTag = <strong className={getDialectClassname()}>{_searchTerm}</strong>
+    const searchTypeTag = <strong>{searchTypeLabel}</strong>
     const messagePartsOfSpeech =
       searchPartOfSpeech && searchPartOfSpeech !== SEARCH_PART_OF_SPEECH_ANY
         ? ", filtered by the selected 'Parts of speech'"
@@ -312,21 +335,27 @@ export const SearchDialect = (props) => {
       ),
       containColOne: (
         <span>
-          {`Showing ${dataType} that contain the search term '`}
+          {`Showing ${dataType} that `}
+          {searchTypeTag}
+          {" the search term '"}
           {searchTermTag}
           {`' in the '${cols[0]}' column${messagePartsOfSpeech}`}
         </span>
       ),
       containColsTwo: (
         <span>
-          {`Showing ${dataType} that contain the search term '`}
+          {`Showing ${dataType} that `}
+          {searchTypeTag}
+          {" the search term '"}
           {searchTermTag}
           {`' in the '${cols[0]}' and '${cols[1]}' columns${messagePartsOfSpeech}`}
         </span>
       ),
       containColsThree: (
         <span>
-          {`Showing ${dataType} that contain the search term '`}
+          {`Showing ${dataType} that `}
+          {searchTypeTag}
+          {" the search term '"}
           {searchTermTag}
           {`' in the '${cols[0]}', '${cols[1]}', and '${cols[2]}' columns${messagePartsOfSpeech}`}
         </span>
@@ -417,12 +446,12 @@ export const SearchDialect = (props) => {
           const optionItems =
             options.length > 0
               ? options.map((option, key2) => {
-                return (
-                  <option key={key2} value={option.value}>
-                    {option.text}
-                  </option>
-                )
-              })
+                  return (
+                    <option key={key2} value={option.value}>
+                      {option.text}
+                    </option>
+                  )
+                })
               : partsOfSpeechOptions
           element = (
             <span key={key1} className={_classes.SearchDialectFormSecondaryGroup}>
@@ -469,12 +498,13 @@ export const SearchDialect = (props) => {
 
   // Search handler
   // ------------------------------------------------------------
-  const handleSearch = async() => {
+  const handleSearch = async () => {
     const searchData1 = {
       searchByAlphabet: '',
       searchByMode: SEARCH_BY_CUSTOM,
       searchBySettings,
       searchTerm,
+      searchType,
     }
 
     const searchData2 = {
@@ -521,23 +551,28 @@ export const SearchDialect = (props) => {
 
   // Resets search
   // ------------------------------------------------------------
-  const resetSearch = async() => {
-    const searchData1 = {
-      searchByAlphabet: '',
-      searchByMode: SEARCH_BY_DEFAULT,
-      searchBySettings: {},
-      searchTerm: undefined,
-    }
-
-    const searchData2 = {
-      searchingDialectFilter: '',
-      searchMessage: null,
-    }
-
-    const searchData = Object.assign({}, searchData1, searchData2)
+  const resetSearch = async () => {
+    // Generate default UI settings from props.searchUi
+    const resetSearchBySettings = {}
+    props.searchUi.forEach((element) => {
+      if (element.idName === 'searchPartOfSpeech') {
+        resetSearchBySettings[element.idName] = SEARCH_PART_OF_SPEECH_ANY
+      } else {
+        if (element.defaultChecked) {
+          resetSearchBySettings[element.idName] = element.defaultChecked
+        }
+      }
+    })
 
     // Save to redux
-    await props.searchDialectUpdate(searchData)
+    await props.searchDialectUpdate({
+      searchByAlphabet: '',
+      searchByMode: SEARCH_BY_DEFAULT,
+      searchBySettings: resetSearchBySettings,
+      searchingDialectFilter: '',
+      searchMessage: null,
+      searchTerm: undefined,
+    })
 
     // Notify ancestors
     props.resetSearch()
@@ -574,6 +609,11 @@ SearchDialect.propTypes = {
   resetSearch: func,
   searchingDialectFilter: string, // Search by Categories
   searchUi: array.isRequired,
+  searchByAlphabet: string,
+  searchByMode: string,
+  searchBySettings: string,
+  searchTerm: string,
+  searchType: string,
 
   // REDUX: reducers/state
   computeDirectory: object.isRequired,
@@ -583,10 +623,10 @@ SearchDialect.propTypes = {
   fetchDirectory: func.isRequired,
 }
 SearchDialect.defaultProps = {
-  handleSearch: () => { },
+  handleSearch: () => {},
   searchDialectDataType: SEARCH_DATA_TYPE_WORD,
-  resetSearch: () => { },
-  searchDialectUpdate: () => { },
+  resetSearch: () => {},
+  searchDialectUpdate: () => {},
   searchPartOfSpeech: SEARCH_PART_OF_SPEECH_ANY,
   searchUi: [
     // {

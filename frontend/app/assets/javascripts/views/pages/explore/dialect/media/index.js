@@ -131,6 +131,7 @@ export class DialectMedia extends Component {
           <div className="col-xs-12">
             <FilteredPaginatedMediaList
               // media-list
+              isFetching={selectn('isFetching', computeResources)}
               action={this._onNavigateRequest}
               cellHeight={150}
               cols={5}
@@ -219,7 +220,4 @@ const mapDispatchToProps = {
   fetchPortal,
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(DialectMedia)
+export default connect(mapStateToProps, mapDispatchToProps)(DialectMedia)

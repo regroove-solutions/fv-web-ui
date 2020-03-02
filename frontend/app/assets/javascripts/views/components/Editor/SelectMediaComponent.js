@@ -58,7 +58,6 @@ const DefaultFetcherParams = {
   filters: { 'properties.dc:title': { appliedFilter: '' }, dialect: { appliedFilter: '' } },
 }
 
-
 const { any, func, object, string } = PropTypes
 
 class SharedResourceGridTile extends Component {
@@ -90,8 +89,8 @@ class SharedResourceGridTile extends Component {
     if (isDialectShared || isFVShared) {
       const tooltip = isDialectShared
         ? this.props.intl.trans('shared_from_x', 'Shared from ' + selectn('dc:title', resourceParentDialect), null, [
-          selectn('dc:title', resourceParentDialect),
-        ])
+            selectn('dc:title', resourceParentDialect),
+          ])
         : this.props.intl.trans('shared_from_x_collection', 'Shared from FirstVoices Collection', null, ['FirstVoices'])
       actionIcon = (
         <Tooltip title={tooltip}>
@@ -105,6 +104,7 @@ class SharedResourceGridTile extends Component {
         onClick={this.props.action ? this.props.action.bind(this, this.props.tile) : null}
         key={selectn('uid', tile)}
         style={{ height: '154px', width: '20%', padding: '2px' }}
+        aria-label={tile.title}
       >
         {this.props.preview}
         <GridListTileBar
@@ -149,8 +149,8 @@ class SelectMediaComponent extends Component {
     const providedTitleFilter = selectn('otherContext.providedFilter', this.props.dialect)
     const appliedParams = providedTitleFilter
       ? Object.assign({}, DefaultFetcherParams, {
-        filters: { 'properties.dc:title': { appliedFilter: providedTitleFilter } },
-      })
+          filters: { 'properties.dc:title': { appliedFilter: providedTitleFilter } },
+        })
       : DefaultFetcherParams
 
     this.state = {
@@ -163,10 +163,6 @@ class SelectMediaComponent extends Component {
     ;['_handleOpen', '_handleClose', '_handleSelectElement', 'fetchData'].forEach(
       (method) => (this[method] = this[method].bind(this))
     )
-  }
-
-  componentDidMount() {
-    this.fetchData(this.state.fetcherParams)
   }
 
   render() {
@@ -238,6 +234,7 @@ class SelectMediaComponent extends Component {
               {/* <LinearProgress variant="indeterminate" /> */}
             </div>
             <FilteredPaginatedMediaList
+              isFetching={selectn('isFetching', computeResources)}
               action={this._handleSelectElement}
               cols={5}
               cellHeight={150}
@@ -255,12 +252,13 @@ class SelectMediaComponent extends Component {
             />
           </DialogContent>
           <DialogActions>
-            <FVButton variant="contained" color="secondary" onClick={this._handleClose}>
-              <FVLabel
-                transKey="cancel"
-                defaultStr="Cancel"
-                transform="first"
-              />
+            <FVButton
+              data-testid="Dialog__SelectMediaComponentCancel"
+              variant="contained"
+              color="secondary"
+              onClick={this._handleClose}
+            >
+              <FVLabel transKey="cancel" defaultStr="Cancel" transform="first" />
             </FVButton>
           </DialogActions>
         </Dialog>
@@ -285,19 +283,19 @@ class SelectMediaComponent extends Component {
       this.props.fetchResources(
         '/FV/Workspaces/',
         " AND ecm:primaryType LIKE '" +
-        this.props.type +
-        "'" +
-        " AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0 AND ecm:currentLifeCycleState != 'Disabled'" +
-        " AND (ecm:path STARTSWITH '" +
-        StringHelpers.clean(selectn('path', this.props.dialect)) +
-        "/Resources/'" +
-        ProviderHelpers.filtersToNXQL(group1) +
-        ')' +
-        ProviderHelpers.filtersToNXQL(group2) +
-        '&currentPageIndex=' +
-        (fetcherParams.currentPageIndex - 1) +
-        '&pageSize=' +
-        fetcherParams.pageSize
+          this.props.type +
+          "'" +
+          " AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0 AND ecm:currentLifeCycleState != 'Disabled'" +
+          " AND (ecm:path STARTSWITH '" +
+          StringHelpers.clean(selectn('path', this.props.dialect)) +
+          "/Resources/'" +
+          ProviderHelpers.filtersToNXQL(group1) +
+          ')' +
+          ProviderHelpers.filtersToNXQL(group2) +
+          '&currentPageIndex=' +
+          (fetcherParams.currentPageIndex - 1) +
+          '&pageSize=' +
+          fetcherParams.pageSize
       )
 
       this.setState({
@@ -311,7 +309,8 @@ class SelectMediaComponent extends Component {
     this.setState({ open: false })
   }
 
-  _handleOpen() {
+  async _handleOpen() {
+    await this.fetchData(this.state.fetcherParams)
     this.setState({ open: true })
   }
 
@@ -349,7 +348,4 @@ const mapDispatchToProps = {
   fetchSharedVideos,
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(SelectMediaComponent)
+export default connect(mapStateToProps, mapDispatchToProps)(SelectMediaComponent)

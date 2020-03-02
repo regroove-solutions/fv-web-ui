@@ -25,7 +25,7 @@ import { fetchDocument } from 'providers/redux/reducers/document'
 import Typography from '@material-ui/core/Typography'
 
 import selectn from 'selectn'
-
+import Link from 'views/components/Link'
 import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
 
@@ -33,7 +33,6 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
 import '!style-loader!css-loader!./DocumentView.css'
 import FVLabel from '../FVLabel/index'
-
 
 const { array, func, object, string } = PropTypes
 
@@ -105,25 +104,17 @@ export class DocumentView extends Component {
       switch (selectn('response.type', computeDocument)) {
         case 'FVWord':
           actionButton = (
-            <a href={NavigationHelpers.generateUIDPath('explore', selectn('response', computeDocument), 'words')}>
-              <FVLabel
-                transKey="view_word"
-                defaultStr="View Word"
-                transform="words"
-              />
-            </a>
+            <Link href={NavigationHelpers.generateUIDPath('explore', selectn('response', computeDocument), 'words')}>
+              <FVLabel transKey="view_word" defaultStr="View Word" transform="words" />
+            </Link>
           )
           break
 
         case 'FVPhrase':
           actionButton = (
-            <a href={NavigationHelpers.generateUIDPath('explore', selectn('response', computeDocument), 'phrases')}>
-              <FVLabel
-                transKey="view_phrase"
-                defaultStr="View Phrase"
-                transform="phrases"
-              />
-            </a>
+            <Link href={NavigationHelpers.generateUIDPath('explore', selectn('response', computeDocument), 'phrases')}>
+              <FVLabel transKey="view_phrase" defaultStr="View Phrase" transform="phrases" />
+            </Link>
           )
           break
         default: // NOTE: do nothing
@@ -134,11 +125,8 @@ export class DocumentView extends Component {
           <Typography variant="display1">{selectn('response.title', computeDocument)}</Typography>
 
           <Typography variant="headline">
-            <FVLabel
-              transKey="type"
-              defaultStr="Type"
-              transform="first"
-            />: {selectn('response.type', computeDocument).replace('FV', '')}
+            <FVLabel transKey="type" defaultStr="Type" transform="first" />:{' '}
+            {selectn('response.type', computeDocument).replace('FV', '')}
           </Typography>
 
           {actionButton && (
@@ -180,7 +168,4 @@ const mapDispatchToProps = {
   pushWindowPath,
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(DocumentView)
+export default connect(mapStateToProps, mapDispatchToProps)(DocumentView)

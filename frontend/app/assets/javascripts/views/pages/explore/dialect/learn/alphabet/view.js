@@ -236,6 +236,7 @@ export class AlphabetView extends Component {
                           [selectn('response.title', computeCharacter)]
                         ),
                       id: 'find_words',
+                      className: 'fontAboriginalSans',
                     },
                     {
                       label: UIHelpers.isViewSize('xs')
@@ -247,6 +248,7 @@ export class AlphabetView extends Component {
                           [selectn('response.title', computeCharacter)]
                         ),
                       id: 'find_phrases',
+                      className: 'fontAboriginalSans',
                     },
                   ]}
                   tabsValue={this.state.tabValue}
@@ -258,7 +260,7 @@ export class AlphabetView extends Component {
                   <Typography component="div" style={{ padding: 8 * 3 }}>
                     <div>
                       <CardContent>
-                        <div className="col-xs-8">
+                        <div className="col-xs-8 fontAboriginalSans">
                           <h2>{selectn('response.title', computeCharacter)}</h2>
 
                           <div className="row">
@@ -288,7 +290,7 @@ export class AlphabetView extends Component {
                 {/* TAB: WORDS */}
                 {this.state.tabValue === 1 && (
                   <Typography component="div" style={{ padding: 8 * 3 }}>
-                    <div>
+                    <div className="fontAboriginalSans">
                       <CardContent>
                         <h2>
                           <FVLabel
@@ -312,7 +314,7 @@ export class AlphabetView extends Component {
 
                 {this.state.tabValue === 2 && (
                   <Typography component="div" style={{ padding: 8 * 3 }}>
-                    <div>
+                    <div className="fontAboriginalSans">
                       <CardContent>
                         <h2>
                           <FVLabel

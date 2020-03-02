@@ -19,8 +19,8 @@ import classNames from 'classnames'
 
 import NavigationHelpers from 'common/NavigationHelpers'
 import '!style-loader!css-loader!./Footer.css'
+import Link from 'views/components/Link'
 import FVLabel from '../../FVLabel/index'
-
 export default class Footer extends React.Component {
   static propTypes = {
     className: PropTypes.string,
@@ -50,17 +50,17 @@ export default class Footer extends React.Component {
 
               <div className={classNames('col-xs-12', 'col-md-5', 'col-md-offset-1', 'Footer__group')}>
                 <p className="PrintHide">
-                  <a href={NavigationHelpers.generateStaticURL('/content/disclaimer/')}>
+                  <Link href={NavigationHelpers.generateStaticURL('/content/disclaimer/')}>
                     <FVLabel transKey="general.disclaimer" defaultStr="Disclaimer" transform="first" />
-                  </a>
+                  </Link>
                   {' | '}
-                  <a href={NavigationHelpers.generateStaticURL('/content/conditions/')}>
+                  <Link href={NavigationHelpers.generateStaticURL('/content/conditions/')}>
                     <FVLabel
                       transKey="views.components.navigation.conditions_of_use"
                       defaultStr="Conditions of Use"
                       transform="first"
                     />
-                  </a>
+                  </Link>
                   {' | '}
                   <a href="https://firstvoices.atlassian.net/servicedesk/customer/portals">
                     <FVLabel transKey="general.help" defaultStr="Help" transform="first" />

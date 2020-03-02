@@ -37,7 +37,10 @@ const CopyPlugin = require('copy-webpack-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const GitRevisionPlugin = require('git-revision-webpack-plugin')
 
-const gitRevisionPlugin = new GitRevisionPlugin()
+const gitRevisionPlugin = new GitRevisionPlugin({
+  lightweightTags: true,
+  branch: true,
+})
 
 // Phaser webpack config , requried by fv-games
 // TODO : Move this as a peer dependency of games and have games to import them
@@ -49,7 +52,7 @@ const p2 = path.join(phaserModule, 'build/custom/p2.js')
 /**
  * Common Webpack Configuration
  */
-module.exports = env => ({
+module.exports = (env) => ({
   /**
    * The context is an absolute string to the directory that contains the entry files.
    **/
@@ -94,10 +97,12 @@ module.exports = env => ({
       // verbose: true
     },
     // Ensure locally /nuxeo requests are rewritten to localhost:8080, unless rendering app
-    proxy: [{
-      context: ['/nuxeo/**', '!/nuxeo/app/**'],
-      target: 'http://127.0.0.1:8080',
-    }],
+    proxy: [
+      {
+        context: ['/nuxeo/**', '!/nuxeo/app/**'],
+        target: 'http://127.0.0.1:8080',
+      },
+    ],
   },
 
   /**
@@ -157,13 +162,16 @@ module.exports = env => ({
    * Plugins
    */
   plugins: [
-    new CaseSensitivePathsPlugin({debug: true}),
+    new CaseSensitivePathsPlugin({ debug: true }),
     new WarningsToErrorsPlugin(),
     new CleanWebpackPlugin([env && env.legacy ? outputDirectoryLegacy : outputDirectory], { root: rootDirectory }),
     new HtmlWebpackPlugin({
       template: path.resolve(frontEndRootDirectory, 'index.html'),
       templateParameters: {
         VERSION: gitRevisionPlugin.version(),
+        COMMIT: gitRevisionPlugin.commithash(),
+        BRANCH: gitRevisionPlugin.branch(),
+        DATE: new Date().toLocaleString('en-CA', { timeZone: 'America/Vancouver' }),
         IS_LEGACY: env && env.legacy ? true : false,
       },
     }),
@@ -178,9 +186,9 @@ module.exports = env => ({
       { from: sourceGamesDirectory, to: outputGamesDirectory },
     ]),
     new webpack.DefinePlugin({
-      ENV_NUXEO_URL: (env && env.NUXEO_URL) ? JSON.stringify(env.NUXEO_URL) : null,
-      ENV_WEB_URL: (env && env.WEB_URL) ? JSON.stringify(env.WEB_URL) : null,
-      ENV_CONTEXT_PATH: (env && env.CONTEXT_PATH) ? JSON.stringify(env.CONTEXT_PATH) : null,
+      ENV_NUXEO_URL: env && env.NUXEO_URL ? JSON.stringify(env.NUXEO_URL) : null,
+      ENV_WEB_URL: env && env.WEB_URL ? JSON.stringify(env.WEB_URL) : null,
+      ENV_CONTEXT_PATH: env && env.CONTEXT_PATH ? JSON.stringify(env.CONTEXT_PATH) : null,
     }),
   ],
 
@@ -239,18 +247,23 @@ module.exports = env => ({
        */
       {
         test: /\.less$/,
-        use: [{
-          loader: MiniCssExtractPlugin.loader,
-        }, {
-          loader: 'css-loader', options: {
-            // #context-path-issue
-            // Disable resolving URLs because of context path - /nuxeo/app/
-            // Absolute path /assets/image.jpg won't work on dev/uat, relative paths will throw compilation error otherwise.
-            url: false,
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
           },
-        }, {
-          loader: 'less-loader',
-        }],
+          {
+            loader: 'css-loader',
+            options: {
+              // #context-path-issue
+              // Disable resolving URLs because of context path - /nuxeo/app/
+              // Absolute path /assets/image.jpg won't work on dev/uat, relative paths will throw compilation error otherwise.
+              url: false,
+            },
+          },
+          {
+            loader: 'less-loader',
+          },
+        ],
       },
       /**
        * Font loaders

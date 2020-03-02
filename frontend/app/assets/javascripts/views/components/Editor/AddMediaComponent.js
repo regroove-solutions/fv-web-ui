@@ -220,11 +220,7 @@ export class AddMediaComponent extends Component {
 
     const actions = [
       <FVButton key="fb0" color="secondary" onClick={this.handleClose}>
-        <FVLabel
-          transKey="cancel"
-          defaultStr="Cancel"
-          transform="first"
-        />
+        <FVLabel transKey="cancel" defaultStr="Cancel" transform="first" />
       </FVButton>,
     ]
 
@@ -272,11 +268,7 @@ export class AddMediaComponent extends Component {
         />
         {uploadText}
         <button type="button" onClick={this._save} className={classNames('btn', 'btn-primary')}>
-          <FVLabel
-            transKey="views.components.editor.upload_media"
-            defaultStr="Upload Media"
-            transform="words"
-          />
+          <FVLabel transKey="views.components.editor.upload_media" defaultStr="Upload Media" transform="words" />
         </button>
       </form>
     )
@@ -297,11 +289,7 @@ export class AddMediaComponent extends Component {
               this._handleSelectElement(computeCreate.response)
             }}
           >
-            <FVLabel
-              transKey="insert_into_entry"
-              defaultStr="Insert into Entry"
-              transform="first"
-            />
+            <FVLabel transKey="insert_into_entry" defaultStr="Insert into Entry" transform="first" />
           </button>
         </div>
       )
@@ -324,11 +312,13 @@ export class AddMediaComponent extends Component {
           <DialogTitle>
             <FVLabel
               transKey="views.components.editor.create_new_x_in_the_x_dialect"
-              defaultStr={'Create New ' +
+              defaultStr={
+                'Create New ' +
                 fileTypeLabel +
                 ' in the ' +
                 selectn('properties.dc:title', this.props.dialect) +
-                ' dialect.'}
+                ' dialect.'
+              }
               transform="first"
               params={[fileTypeLabel, selectn('properties.dc:title', this.props.dialect)]}
             />
@@ -340,12 +330,13 @@ export class AddMediaComponent extends Component {
             </div>
           </DialogContent>
           <DialogActions>
-            <FVButton variant="contained" color="secondary" onClick={this.handleClose}>
-              <FVLabel
-                transKey="cancel"
-                defaultStr="Cancel"
-                transform="first"
-              />
+            <FVButton
+              data-testid="Dialog__AddMediaComponentCancel"
+              variant="contained"
+              color="secondary"
+              onClick={this.handleClose}
+            >
+              <FVLabel transKey="cancel" defaultStr="Cancel" transform="first" />
             </FVButton>
           </DialogActions>
         </Dialog>
@@ -367,7 +358,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
     computeAudio,
     computePicture,
     computeVideo,
-    intl: intlService
+    intl: intlService,
   }
 }
 

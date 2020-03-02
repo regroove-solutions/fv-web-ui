@@ -86,31 +86,31 @@ export class ExploreDialect extends Component {
 
   constructor(props, context) {
     super(props, context)
-
-    // Bind methods to 'this'
-    ;[
-      '_onNavigateRequest',
-      '_onSwitchAreaRequest',
-      '_enableToggleAction',
-      '_publishToggleAction',
-      '_publishChangesAction',
-      '_handleGalleryDropDownChange',
-      '_handleSelectionChange',
-    ].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   fetchData(newProps) {
     newProps.fetchDialect2(newProps.routeParams.dialect_path)
-    newProps.fetchPortal(
-      newProps.routeParams.dialect_path + '/Portal',
-      this.props.intl.trans('views.pages.explore.dialect.fetching_community_portal', 'Fetching community portal.', 'first'),
-      null,
-      this.props.intl.trans(
-        'views.pages.explore.dialect.problem_fetching_portal',
-        'Problem fetching community portal it may be unpublished or offline.',
-        'first'
+
+    // NOTE: this is functionally similar to `ProviderHelpers.fetchIfMissing`
+    // fetchIfMissing` doesn't support passing in other params
+    // to be used with the `action` function
+    const path = newProps.routeParams.dialect_path + '/Portal'
+    if (!selectn('success', ProviderHelpers.getEntry(this.props.computePortal, path))) {
+      newProps.fetchPortal(
+        path,
+        this.props.intl.trans(
+          'views.pages.explore.dialect.fetching_community_portal',
+          'Fetching community portal.',
+          'first'
+        ),
+        null,
+        this.props.intl.trans(
+          'views.pages.explore.dialect.problem_fetching_portal',
+          'Problem fetching community portal it may be unpublished or offline.',
+          'first'
+        )
       )
-    )
+    }
   }
 
   // Fetch data on initial render
@@ -132,19 +132,19 @@ export class ExploreDialect extends Component {
     }
   }
 
-  _onNavigateRequest(path, e) {
+  _onNavigateRequest = (path, e) => {
     this.props.pushWindowPath(path)
     e.preventDefault()
   }
 
-  _onSwitchAreaRequest(e, index, value) {
+  _onSwitchAreaRequest = (e, index, value) => {
     this._onNavigateRequest(this.props.windowPath.replace(value === SECTIONS ? WORKSPACES : SECTIONS, value))
   }
 
   /**
    * Toggle dialect (enabled/disabled)
    */
-  _enableToggleAction(toggled) {
+  _enableToggleAction = (toggled) => {
     if (toggled) {
       this.props.enableDialect(
         this.props.routeParams.dialect_path,
@@ -157,7 +157,14 @@ export class ExploreDialect extends Component {
         this.props.routeParams.dialect_path,
         null,
         null,
-        this.props.intl.trans('views.pages.explore.dialect.dialect_disabled', 'Dialect disabled!', 'first', [], null, '!')
+        this.props.intl.trans(
+          'views.pages.explore.dialect.dialect_disabled',
+          'Dialect disabled!',
+          'first',
+          [],
+          null,
+          '!'
+        )
       )
     }
   }
@@ -165,7 +172,7 @@ export class ExploreDialect extends Component {
   /**
    * Toggle published dialect
    */
-  _publishChangesAction() {
+  _publishChangesAction = () => {
     this.props.publishPortal(
       this.props.routeParams.dialect_path + '/Portal',
       null,
@@ -190,7 +197,7 @@ export class ExploreDialect extends Component {
   /**
    * Toggle published dialect
    */
-  _publishToggleAction(toggled) {
+  _publishToggleAction = (toggled) => {
     if (toggled) {
       this.props.publishDialect(
         this.props.routeParams.dialect_path,
@@ -222,14 +229,14 @@ export class ExploreDialect extends Component {
     }
   }
 
-  _handleGalleryDropDownChange(event, key, payload) {
+  _handleGalleryDropDownChange = (event, key, payload) => {
     //console.log(payload);
     if (payload !== 'dropDownLabel') {
       this.props.pushWindowPath(payload)
     }
   }
 
-  _handleSelectionChange(itemId, item) {
+  _handleSelectionChange = (itemId, item) => {
     NavigationHelpers.navigate(
       NavigationHelpers.generateUIDPath(this.props.routeParams.siteTheme, selectn('properties', item), 'words'),
       this.props.pushWindowPath,
@@ -367,11 +374,7 @@ export class ExploreDialect extends Component {
         >
           <div>
             <h3>
-              <FVLabel
-                transKey="news"
-                defaultStr="News"
-                transform="first"
-              />
+              <FVLabel transKey="news" defaultStr="News" transform="first" />
             </h3>
             <EditableComponentHelper
               dataTestid="EditableComponent__fv-portal-news"
@@ -403,37 +406,25 @@ export class ExploreDialect extends Component {
                     href={this.props.windowPath + '/learn'}
                     onClick={this._onNavigateRequest.bind(this, this.props.windowPath + '/learn')}
                   >
-                    <FVLabel
-                      transKey="learn_our_lang"
-                      defaultStr="Learn our Language"
-                    />
+                    <FVLabel transKey="learn_our_lang" defaultStr="Learn our Language" />
                   </a>
                   <a
                     href={this.props.windowPath + '/play'}
                     onClick={this._onNavigateRequest.bind(this, this.props.windowPath + '/play')}
                   >
-                    <FVLabel
-                      transKey="views.pages.explore.dialect.play_game"
-                      defaultStr="Play a Game"
-                    />
+                    <FVLabel transKey="views.pages.explore.dialect.play_game" defaultStr="Play a Game" />
                   </a>
                   <a
                     href={this.props.windowPath + '/gallery'}
                     onClick={this._onNavigateRequest.bind(this, this.props.windowPath + '/gallery')}
                   >
-                    <FVLabel
-                      transKey="views.pages.explore.dialect.photo_gallery"
-                      defaultStr="Photo Gallery"
-                    />
+                    <FVLabel transKey="views.pages.explore.dialect.photo_gallery" defaultStr="Photo Gallery" />
                   </a>
                   <a
                     href={this.props.windowPath + '/kids'}
                     onClick={this._onNavigateRequest.bind(this, this.props.windowPath.replace('explore', 'kids'))}
                   >
-                    <FVLabel
-                      transKey="views.pages.explore.dialect.kids_portal"
-                      defaultStr="Kids Portal"
-                    />
+                    <FVLabel transKey="views.pages.explore.dialect.kids_portal" defaultStr="Kids Portal" />
                   </a>
                   <AuthorizationFilter
                     hideFromSections
@@ -573,10 +564,8 @@ export class ExploreDialect extends Component {
                 </div> */}
                     <div className="dib-body-row">
                       <strong>
-                        <FVLabel
-                          transKey="country"
-                          defaultStr="Country"
-                        />: </strong>
+                        <FVLabel transKey="country" defaultStr="Country" />:{' '}
+                      </strong>
                       <AuthorizationFilter
                         filter={{ permission: 'Write', entity: selectn('response', computeDialect2) }}
                         renderPartial
@@ -594,12 +583,8 @@ export class ExploreDialect extends Component {
                     </div>
                     <div className="dib-body-row">
                       <strong>
-                        <FVLabel
-                          transKey="region"
-                          defaultStr="Region"
-                          transform="first"
-                        />
-                        : </strong>
+                        <FVLabel transKey="region" defaultStr="Region" transform="first" />:{' '}
+                      </strong>
                       <AuthorizationFilter
                         filter={{ permission: 'Write', entity: selectn('response', computeDialect2) }}
                         renderPartial

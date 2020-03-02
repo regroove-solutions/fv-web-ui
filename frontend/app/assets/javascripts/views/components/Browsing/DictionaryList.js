@@ -193,8 +193,7 @@ Miscellaneous
 
 Pass through props
 ------------------------------------
-The following props are passed out to other components but not exclusively,
-the props may be referenced in this file as well.
+The following props are typically passed out to other descendant components
 
 List views: DictionaryListSmallScreen, DictionaryListLargeScreen
 --------------------
@@ -245,7 +244,6 @@ const DictionaryListSmallScreen = React.lazy(() => import('views/components/Brow
 const DictionaryListLargeScreen = React.lazy(() => import('views/components/Browsing/DictionaryListLargeScreen'))
 const ExportDialect = React.lazy(() => import('views/components/ExportDialect'))
 import '!style-loader!css-loader!./DictionaryList.css'
-import FVLabel from '../FVLabel/index'
 
 // ===============================================================
 // DictionaryList
@@ -323,9 +321,12 @@ const DictionaryList = (props) => {
 
   const noResults =
     selectn('length', items) === 0 ? (
-      <div className={`DictionaryList DictionaryList--noData  ${props.cssModifier}`}>
-        <FVLabel transKey="no_results_found" defaultStr="No Results Found" transform="first" append="." />
-      </div>
+      <div
+        className={`DictionaryList DictionaryList--noData  ${props.cssModifier}`}
+        dangerouslySetInnerHTML={{
+          __html: this.props.intl.translate('no_results_found_dictionary', 'No Results Found', 'title'),
+        }}
+      />
     ) : null
 
   const getListSmallScreenArg = {
@@ -391,7 +392,10 @@ const DictionaryList = (props) => {
         exportDialectExportElement: props.exportDialectExportElement,
         exportDialectLabel: props.exportDialectLabel,
         exportDialectQuery: props.exportDialectQuery,
+        /*
+        // Commented out until export is fixed
         hasExportDialect: props.hasExportDialect,
+         */
         // View mode
         clickHandlerViewMode: props.dictionaryListClickHandlerViewMode,
         dictionaryListViewMode: props.dictionaryListViewMode,
@@ -809,11 +813,12 @@ DictionaryList.defaultProps = {
 
 // REDUX: reducers/state
 const mapStateToProps = (state /*, ownProps*/) => {
-  const { navigation, listView } = state
+  const { navigation, listView, locale } = state
   return {
     navigationRouteRouteParams: navigation.route.routeParams,
     navigationRouteSearch: navigation.route.search,
     listView,
+    intl: locale.intlService,
   }
 }
 
