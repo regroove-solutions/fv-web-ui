@@ -53,7 +53,7 @@ import Switch from '@material-ui/core/Switch'
 import Clear from '@material-ui/icons/Clear'
 import Reorder from '@material-ui/icons/Reorder'
 import Search from '@material-ui/icons/Search'
-import Settings from '@material-ui/icons/Settings'
+import TranslateIcon from '@material-ui/icons/Translate'
 
 import AuthenticationFilter from 'views/components/Document/AuthenticationFilter'
 import Login from 'views/components/Navigation/Login'
@@ -345,9 +345,9 @@ export class Navigation extends Component {
             <div className="Navigation__separator" />
 
             {/* Locale Button */}
-            <Tooltip title="Settings">
+            <Tooltip title="Language Settings">
               <IconButton type="button" onClick={this._toggleDisplayLocaleOptions}>
-                <Settings className={appBarIcon} aria-label="Settings" />
+                <TranslateIcon className={appBarIcon} aria-label="Language Settings" />
               </IconButton>
             </Tooltip>
           </div>

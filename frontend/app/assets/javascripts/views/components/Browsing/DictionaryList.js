@@ -400,7 +400,7 @@ const DictionaryList = (props) => {
         clickHandlerViewMode: props.dictionaryListClickHandlerViewMode,
         dictionaryListViewMode: props.dictionaryListViewMode,
         hasViewModeButtons: props.hasViewModeButtons,
-        viewMode,
+        // viewMode,
         hasFlashcard: props.hasFlashcard,
       })}
 

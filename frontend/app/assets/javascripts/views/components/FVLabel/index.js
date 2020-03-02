@@ -4,12 +4,17 @@ import proptypes from 'prop-types'
 import { connect } from 'react-redux'
 import Menu from '@material-ui/core/Menu'
 import ListItem from '@material-ui/core/ListItem'
+import { setEditingLabel } from 'providers/redux/reducers/locale'
+
 import DocumentOperations from 'operations/DocumentOperations'
+import Typography from '@material-ui/core/Typography'
 import Preview from 'views/components/Editor/Preview'
+import ProviderHelpers from 'common/ProviderHelpers'
 import '!style-loader!css-loader!./FVLabel.css'
 
 function FVLabel({
   transKey,
+  locale,
   defaultStr,
   transform,
   params,
@@ -17,14 +22,30 @@ function FVLabel({
   append,
   forceLocale,
   intl,
-  locale,
   isInHelpMode,
   labelIds,
+  startEditingLabel,
+  computeLogin,
 }) {
   const [anchorElement, setAnchorElement] = useState()
   const [audioId, setAudioId] = useState('')
-  const [isFetchingAudio, setIsFetchingAudio] = useState('')
+  const [isFetching, setisFetching] = useState('')
   const [isMounted, setIsMounted] = useState(false)
+  const readableLocale = {
+    en: 'English',
+    fr: 'Français',
+  }
+
+  const [translation, usedFallback, actualTransKey] = intl.fvLabelTrans(
+    transKey,
+    defaultStr,
+    transform,
+    params,
+    prepend,
+    append,
+    forceLocale
+  )
+  const isAdmin = ProviderHelpers.isRecorderWithApproval(computeLogin) || ProviderHelpers.isAdmin(computeLogin)
 
   useEffect(() => {
     setIsMounted(true)
@@ -41,14 +62,14 @@ function FVLabel({
       if (anchorElement) {
         setAnchorElement(undefined)
       } else {
-        const translationId = selectn(transKey, labelIds)
+        const translationId = selectn(actualTransKey, labelIds)
         setAnchorElement(event.currentTarget)
         if (translationId) {
-          setIsFetchingAudio(true)
+          setisFetching(true)
           DocumentOperations.getDocument(translationId, 'FVLabel').then((data) => {
             if (isMounted) {
               setAudioId(selectn('properties.fv:related_audio[0]', data))
-              setIsFetchingAudio(false)
+              setisFetching(false)
             }
           })
         }
@@ -63,6 +84,7 @@ function FVLabel({
   const openEdit = (event) => {
     event.preventDefault()
     event.stopPropagation()
+    startEditingLabel(actualTransKey)
   }
 
   const audioContainerStyles = {
@@ -75,8 +97,8 @@ function FVLabel({
 
   return (
     <span className="fv-label">
-      {intl.trans(transKey, defaultStr, transform, params, prepend, append, forceLocale)}
-      {isInHelpMode && (
+      {translation}
+      {isInHelpMode && (!usedFallback || isAdmin) && (
         <span onClick={handleClick} className="fv-label-click-cover">
           <Menu
             id="simple-menu"
@@ -87,25 +109,32 @@ function FVLabel({
             anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
           >
             <ListItem>
-              Translation: {intl.trans(transKey, defaultStr, transform, params, prepend, append, locale)}
+              <div>
+                <Typography variant="caption">{readableLocale[locale]}:</Typography>
+                <Typography variant="body1">
+                  {intl.trans(transKey, defaultStr, transform, params, prepend, append, locale)}
+                </Typography>
+              </div>
             </ListItem>
-            {!isFetchingAudio && !audioId && <ListItem disabled>No Audio</ListItem>}
-            {!isFetchingAudio && audioId && (
+            {!isFetching && !audioId && <ListItem disabled>No Audio</ListItem>}
+            {!isFetching && audioId && (
               <ListItem>
                 <div style={audioContainerStyles}>
                   <Preview id={audioId} type="FVAudio" minimal styles={{ flex: 1 }} />
                 </div>
               </ListItem>
             )}
-            {isFetchingAudio && (
+            {isFetching && (
               <ListItem disabled>
                 <div style={audioContainerStyles} />
               </ListItem>
             )}
 
-            <ListItem button onClick={openEdit}>
-              Edit
-            </ListItem>
+            {isAdmin && (
+              <ListItem button onClick={openEdit}>
+                Edit Translation
+              </ListItem>
+            )}
           </Menu>
         </span>
       )}
@@ -113,7 +142,7 @@ function FVLabel({
   )
 }
 
-const { string, array, object, bool } = proptypes
+const { string, array, object, bool, func } = proptypes
 
 FVLabel.propTypes = {
   transKey: string.isRequired,
@@ -127,17 +156,25 @@ FVLabel.propTypes = {
   intl: object.isRequired,
   isInHelpMode: bool.isRequired,
   labelIds: object.isRequired,
+  computeLogin: object.isRequired,
+  startEditingLabel: func.isRequired,
 }
 
 const mapStateToProps = (state /*, ownProps*/) => {
-  const { locale } = state
+  const { locale, nuxeo } = state
+  const { computeLogin } = nuxeo
 
   return {
     intl: locale.intlService,
     locale: locale.locale,
     isInHelpMode: locale.isInHelpMode,
     labelIds: locale.labelIds,
+    computeLogin,
   }
 }
 
-export default connect(mapStateToProps)(FVLabel)
+const mapDispatchToProps = {
+  startEditingLabel: setEditingLabel,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(FVLabel)

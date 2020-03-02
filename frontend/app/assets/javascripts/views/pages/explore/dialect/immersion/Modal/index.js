@@ -21,6 +21,7 @@ import { connect } from 'react-redux'
 import Immutable from 'immutable'
 import { createLabel, fetchLabel, updateLabel } from 'providers/redux/reducers/fvLabel'
 import { fetchDialect, fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { refetchLabels } from 'providers/redux/reducers/locale'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import { Document } from 'nuxeo'
 import ProviderHelpers from 'common/ProviderHelpers'
@@ -72,7 +73,7 @@ class LabelModal extends Component {
   }
 
   handleCreateSave = (translation) => {
-    const { label, createLabel, handleClose } = this.props
+    const { label, createLabel, handleClose, refetchLabels } = this.props
 
     const now = Date.now()
 
@@ -93,12 +94,13 @@ class LabelModal extends Component {
       null,
       now
     ).then(() => {
-      handleClose(true)
+      refetchLabels()
+      setTimeout(handleClose(true), 500)
     })
   }
 
   handleEditSave = (translation) => {
-    const { label, updateLabel, computeLabel, handleClose } = this.props
+    const { label, updateLabel, computeLabel, handleClose, refetchLabels } = this.props
     const computeEntities = Immutable.fromJS([
       {
         id: label.uid,
@@ -121,7 +123,8 @@ class LabelModal extends Component {
     newDocument.set({ 'dc:title': translation.join(''), 'fv:related_audio': relatedAudio })
 
     updateLabel(newDocument, null, null).then(() => {
-      handleClose(true)
+      refetchLabels()
+      setTimeout(handleClose(true), 500)
     })
   }
 
@@ -162,7 +165,7 @@ class LabelModal extends Component {
           open={open}
           onClose={() => handleClose()}
           aria-labelledby="responsive-dialog-title"
-          scroll="body"
+          scroll="paper"
         >
           {label ? (
             <>
@@ -200,6 +203,7 @@ const mapDispatchToProps = {
   updateLabel,
   fetchDialect,
   fetchDialect2,
+  refetchLabels,
 }
 
 export default withMobileDialog()(connect(mapStateToProps, mapDispatchToProps)(LabelModal))

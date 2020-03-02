@@ -328,8 +328,11 @@
                 <type>FVWord</type>
             </subtypes>
         </doctype>
-        <doctype name="FVLabelDictionary" extends="FVDictionary">
+        <doctype name="FVLabelDictionary" extends="Folder">
             <schema name="fvlabeldictionary"/>
+            <schema name="fvancestry"/>
+            <facet name="Publishable"/>
+            <facet name="PublishSpace"/>
             <subtypes>
                 <type>FVLabel</type>
             </subtypes>
@@ -913,6 +916,12 @@
         </types>
         <types>
             <type name="FVDictionary">fv-lifecycle</type>
+        </types>
+        <types>
+            <type name="FVLabel">fv-lifecycle</type>
+        </types>
+        <types>
+            <type name="FVLabelDictionary">fv-lifecycle</type>
         </types>
         <types>
             <type name="FVDraftFolder">default</type>
@@ -2135,6 +2144,7 @@
                 <type>FVPicture</type>
                 <type>FVVideo</type>
                 <type>FVWord</type>
+                <type>FVLabel</type>
                 <condition>#{(currentDocument.currentLifeCycleState == 'New' || currentDocument.currentLifeCycleState == 'Disabled') &amp;&amp; (documentManager.hasPermission(currentDocument.ref, 'Everything') || documentManager.hasPermission(currentDocument.ref, 'Approve') ) }</condition>
             </rule>
             <rule grant="false">
@@ -24406,6 +24416,7 @@ function run(input, params) {
                 <type>FVPicture</type>
                 <type>FVVideo</type>
                 <type>FVWord</type>
+                <type>FVLabel</type>
                 <condition>#{ (currentDocument.currentLifeCycleState == 'New' || currentDocument.currentLifeCycleState == 'Disabled') &amp;&amp; ( documentManager.hasPermission(currentDocument.ref, 'Record') || documentManager.hasPermission(currentDocument.ref, 'Approve') || documentManager.hasPermission(currentDocument.ref, 'Everything')) }</condition>
             </rule>
             <rule grant="false">
@@ -24490,6 +24501,7 @@ function run(input, params) {
             <type>FVContributors</type>
             <type>FVDialect</type>
             <type>FVDictionary</type> 
+            <type>FVLabel</type> 
             <type>FVLabelDictionary</type> 
             <type>FVGallery</type>
             <type>FVLanguage</type>

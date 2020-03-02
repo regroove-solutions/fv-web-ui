@@ -6,6 +6,7 @@ import {
   SET_WORKSPACE,
   SET_IMMERSION_MODE,
   SET_HELP_MODE,
+  SET_EDITING_LABEL,
 } from './actionTypes'
 import DirectoryOperations from 'operations/DirectoryOperations'
 
@@ -25,12 +26,26 @@ export const setImmersionMode = (immersionMode = false) => {
   }
 }
 
+export const setEditingLabel = (editingLabel = null) => {
+  return (dispatch) => {
+    dispatch({ type: SET_EDITING_LABEL, payload: editingLabel })
+  }
+}
+
 export const setIntlWorkspace = (workspace = '') => {
   return (dispatch, getState) => {
     if (getState().locale.immersionMode && workspace) {
       getWorkspaceLabels(getState().locale.intlService.locale, workspace, getState().locale.immersionMode, dispatch)
     }
     dispatch({ type: SET_WORKSPACE, payload: workspace })
+  }
+}
+
+export const refetchLabels = () => {
+  return (dispatch, getState) => {
+    if (getState().locale.immersionMode && getState().locale.workspace) {
+      getWorkspaceLabels(getState().locale.locale, getState().locale.workspace, getState().locale.immersionMode, dispatch)
+    }
   }
 }
 

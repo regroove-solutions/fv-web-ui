@@ -108,7 +108,7 @@ export class ImmersionFilterList extends Component {
       <div className="DialectFilterList" data-testid="DialectFilterList">
         <FormControl style={{ width: '100%' }}>
           <h2>{this.title}</h2>
-          <FormGroup>{this._generateListItems(this.filtersSorted)}</FormGroup>
+          <FormGroup className="categories">{this._generateListItems(this.filtersSorted)}</FormGroup>
         </FormControl>
       </div>
     )
