@@ -17,9 +17,7 @@ import React, { Component } from 'react'
 import selectn from 'selectn'
 
 import NavigationHelpers from 'common/NavigationHelpers'
-import IntlService from 'views/services/intl'
-
-const intl = IntlService.instance
+import FVLabel from '../../FVLabel/index'
 
 export default class RecentActivityList extends Component {
   constructor(props, context) {
@@ -81,7 +79,11 @@ export default class RecentActivityList extends Component {
                   ''
                 ) : (
                   <span>
-                    {intl.trans('by', 'by', 'lower')} <strong>{document.properties['dc:lastContributor']}</strong>
+                    <FVLabel
+                      transKey="by"
+                      defaultStr="by"
+                      transform="lower"
+                    />
                   </span>
                 )}
             </li>

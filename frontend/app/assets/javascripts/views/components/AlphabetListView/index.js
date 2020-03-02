@@ -11,11 +11,10 @@ import Typography from '@material-ui/core/Typography'
 import CircularProgress from '@material-ui/core/CircularProgress'
 
 import selectn from 'selectn'
-import IntlService from 'views/services/intl'
 import ProviderHelpers from 'common/ProviderHelpers'
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 const { any, func, object } = PropTypes
-const intl = IntlService.instance
+import FVLabel from '../FVLabel/index'
 
 // TODO: REFACTOR
 // - drop the renderCycle system
@@ -135,7 +134,11 @@ export class AlphabetListView extends Component {
     return (
       <div className="AlphabetListView" data-testid="AlphabetListView">
         <h2>
-          {intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Browse Alphabetically', 'words')}
+          <FVLabel
+            transKey="views.pages.explore.dialect.learn.words.find_by_alphabet"
+            defaultStr="Browse Alphabetically"
+            transform="words"
+          />
         </h2>
         {content}
       </div>
