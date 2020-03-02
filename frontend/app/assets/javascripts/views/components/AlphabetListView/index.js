@@ -8,7 +8,6 @@ import Typography from '@material-ui/core/Typography'
 import CircularProgress from '@material-ui/core/CircularProgress'
 
 import selectn from 'selectn'
-const { func, object } = PropTypes
 import FVLabel from '../FVLabel/index'
 
 const { array, func, object, string } = PropTypes
