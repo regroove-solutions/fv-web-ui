@@ -4,4 +4,5 @@
   right: 10px;
   color: white !important;
   transition: all 0.3s cubic-bezier();
+  z-index: 99000;
 }
