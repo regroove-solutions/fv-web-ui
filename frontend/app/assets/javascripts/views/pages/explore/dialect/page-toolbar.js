@@ -49,7 +49,6 @@ import { WORKSPACES, SECTIONS } from 'common/Constants'
 import '!style-loader!css-loader!./PageToolbar.css'
 import FVLabel from '../../../components/FVLabel/index'
 
-
 const { array, bool, func, node, object, string } = PropTypes
 
 export class PageToolbar extends Component {
@@ -207,9 +206,11 @@ export class PageToolbar extends Component {
 
     const isRecorderWithApproval = ProviderHelpers.isRecorderWithApproval(computeLogin)
 
-    const requestButtonGroupText = isRecorderWithApproval
-      ? 'Request approval from the Language Admin to'
-      : <FVLabel transKey="request" defaultStr="Request" transform="first" />
+    const requestButtonGroupText = isRecorderWithApproval ? (
+      'Request approval from the Language Admin to'
+    ) : (
+      <FVLabel transKey="request" defaultStr="Request" transform="first" />
+    )
 
     return (
       <AppBar color="primary" position="static" className="PageToolbar" classes={classes}>
@@ -236,9 +237,11 @@ export class PageToolbar extends Component {
                   }
                   label={
                     <Typography variant="body1">
-                      {documentEnabled || documentPublished
-                        ? <FVLabel transKey="enabled" defaultStr="Enabled" transform="first" />
-                        : <FVLabel transKey="enable" defaultStr="Enable" transform="first" /> }
+                      {documentEnabled || documentPublished ? (
+                        <FVLabel transKey="enabled" defaultStr="Enabled" transform="first" />
+                      ) : (
+                        <FVLabel transKey="enable" defaultStr="Enable" transform="first" />
+                      )}
                     </Typography>
                   }
                 />
@@ -269,15 +272,8 @@ export class PageToolbar extends Component {
                     onClick={this._documentActionsStartWorkflow.bind(this, 'enable')}
                     variant="contained"
                   >
-                    <FVLabel
-                      transKey="enable"
-                      defaultStr="Enable"
-                      transform="first"
-                    />
-                    {
-                      ' (' +
-                      (enableTasks.length + this.state.enableActions) +
-                      ')'}
+                    <FVLabel transKey="enable" defaultStr="Enable" transform="first" />
+                    {' (' + (enableTasks.length + this.state.enableActions) + ')'}
                   </FVButton>
                   {/* Button: Disable */}
                   <FVButton
@@ -290,15 +286,8 @@ export class PageToolbar extends Component {
                     onClick={this._documentActionsStartWorkflow.bind(this, 'disable')}
                     variant="contained"
                   >
-                    <FVLabel
-                      transKey="disable"
-                      defaultStr="Disable"
-                      transform="first"
-                    />
-                    {
-                      ' (' +
-                      (disableTasks.length + this.state.disableActions) +
-                      ')'}
+                    <FVLabel transKey="disable" defaultStr="Disable" transform="first" />
+                    {' (' + (disableTasks.length + this.state.disableActions) + ')'}
                   </FVButton>
                   {/* Button: Publish */}
                   <FVButton
@@ -308,15 +297,8 @@ export class PageToolbar extends Component {
                     onClick={this._documentActionsStartWorkflow.bind(this, 'publish')}
                     variant="contained"
                   >
-                    <FVLabel
-                      transKey="publish"
-                      defaultStr="Publish"
-                      transform="first"
-                    />
-                    {
-                      ' (' +
-                      (publishTasks.length + this.state.publishActions) +
-                      ')'}
+                    <FVLabel transKey="publish" defaultStr="Publish" transform="first" />
+                    {' (' + (publishTasks.length + this.state.publishActions) + ')'}
                   </FVButton>
                   {/* Button: Unpublish */}
                   <FVButton
@@ -326,15 +308,8 @@ export class PageToolbar extends Component {
                     onClick={this._documentActionsStartWorkflow.bind(this, 'unpublish')}
                     variant="contained"
                   >
-                    <FVLabel
-                      transKey="unpublish"
-                      defaultStr="Unpublish"
-                      transform="first"
-                    />
-                    {
-                      ' (' +
-                      (unpublishTasks.length + this.state.unpublishActions) +
-                      ')'}
+                    <FVLabel transKey="unpublish" defaultStr="Unpublish" transform="first" />
+                    {' (' + (unpublishTasks.length + this.state.unpublishActions) + ')'}
                   </FVButton>
                 </div>
               </AuthorizationFilter>
@@ -353,11 +328,7 @@ export class PageToolbar extends Component {
                     onClick={this._publishChanges}
                     variant="contained"
                   >
-                    <FVLabel
-                      transKey="publish_changes"
-                      defaultStr="Publish Changes"
-                      transform="words"
-                    />
+                    <FVLabel transKey="publish_changes" defaultStr="Publish Changes" transform="words" />
                   </FVButton>
                 </AuthorizationFilter>
               ) : null}
@@ -373,11 +344,7 @@ export class PageToolbar extends Component {
                     )}
                     variant="contained"
                   >
-                    <FVLabel
-                      transKey="edit"
-                      defaultStr="Edit"
-                      transform="first"
-                    />
+                    <FVLabel transKey="edit" defaultStr="Edit" transform="first" />
                     {' ' + this.props.intl.searchAndReplace(this.props.label)}
                   </FVButton>
                 </AuthorizationFilter>
@@ -392,11 +359,7 @@ export class PageToolbar extends Component {
                     onClick={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/create')}
                     variant="contained"
                   >
-                    <FVLabel
-                      transKey="add_new_page"
-                      defaultStr="Add New Page"
-                      transform="words"
-                    />
+                    <FVLabel transKey="add_new_page" defaultStr="Add New Page" transform="words" />
                   </FVButton>
                 </AuthorizationFilter>
               ) : null}
@@ -416,18 +379,10 @@ export class PageToolbar extends Component {
           onClick={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/reports')}
           key="reports"
         >
-          <FVLabel
-            transKey="reports"
-            defaultStr="Reports"
-            transform="first"
-          />
+          <FVLabel transKey="reports" defaultStr="Reports" transform="first" />
         </MenuItem>,
         <MenuItem onClick={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/media')} key="media">
-          <FVLabel
-            transKey="views.pages.explore.dialect.media_browser"
-            defaultStr="Media Browser"
-            transform="words"
-          />
+          <FVLabel transKey="views.pages.explore.dialect.media_browser" defaultStr="Media Browser" transform="words" />
         </MenuItem>,
         // <MenuItem
         //   key="contributors"
@@ -448,6 +403,12 @@ export class PageToolbar extends Component {
             defaultStr="Phrase books"
             transform="words"
           />
+        </MenuItem>,
+        <MenuItem
+          key="immersionPortal"
+          onClick={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/immersion')}
+        >
+          <FVLabel transKey="views.pages.explore.dialect.immersion" defaultStr="Immersion Portal" transform="words" />
         </MenuItem>,
       ]
 
@@ -510,17 +471,11 @@ export class PageToolbar extends Component {
               }
               label={
                 <Typography variant="body1">
-                  {documentPublished
-                    ? <FVLabel
-                      transKey="published"
-                      defaultStr="Published"
-                      transform="first"
-                    />
-                    : <FVLabel
-                      transKey="publishe"
-                      defaultStr="Publishe"
-                      transform="first"
-                    />}
+                  {documentPublished ? (
+                    <FVLabel transKey="published" defaultStr="Published" transform="first" />
+                  ) : (
+                    <FVLabel transKey="publishe" defaultStr="Publishe" transform="first" />
+                  )}
                 </Typography>
               }
             />
@@ -580,9 +535,4 @@ const styles = {
     backgroundColor: '#000',
   },
 }
-export default withStyles(styles)(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(PageToolbar)
-)
+export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(PageToolbar))

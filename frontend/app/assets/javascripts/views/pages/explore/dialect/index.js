@@ -426,18 +426,6 @@ export class ExploreDialect extends Component {
                   >
                     <FVLabel transKey="views.pages.explore.dialect.kids_portal" defaultStr="Kids Portal" />
                   </a>
-                  <AuthorizationFilter
-                    hideFromSections
-                    filter={{ permission: 'Write', entity: selectn('response', computeDialect2) }}
-                  >
-                    {/* TODOSL add locale translate to Immersion Portal */}
-                    <a
-                      href={this.props.windowPath + '/immersion'}
-                      onClick={this._onNavigateRequest.bind(this, this.props.windowPath + '/immersion')}
-                    >
-                      Immersion Portal
-                    </a>
-                  </AuthorizationFilter>
                 </div>
               </div>
             </div>
