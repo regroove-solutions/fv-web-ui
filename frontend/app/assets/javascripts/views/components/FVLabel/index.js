@@ -26,8 +26,8 @@ function FVLabel({
   isInHelpMode,
   labelIds,
   startEditingLabel,
-  computeLogin,
   computeDialect2,
+  routeParams,
 }) {
   const [anchorElement, setAnchorElement] = useState()
   const [audioId, setAudioId] = useState('')
@@ -37,6 +37,7 @@ function FVLabel({
     en: 'English',
     fr: 'Français',
   }
+  const actualDialect = ProviderHelpers.getEntry(computeDialect2, routeParams.dialect_path)
 
   const [translation, usedFallback, actualTransKey] = intl.fvLabelTrans(
     transKey,
@@ -47,7 +48,7 @@ function FVLabel({
     append,
     forceLocale
   )
-  const isAdmin = ProviderHelpers.isRecorderWithApproval(computeLogin) || ProviderHelpers.isAdmin(computeLogin)
+  const isAdmin = (selectn('response.contextParameters.permissions', actualDialect) || []).includes('Write')
 
   useEffect(() => {
     setIsMounted(true)
@@ -139,12 +140,11 @@ function FVLabel({
                 <div style={audioContainerStyles} />
               </ListItem>
             )}
-
-            {isAdmin && (
+            <AuthorizationFilter filter={{ permission: 'Write', entity: selectn('response', actualDialect) }}>
               <ListItem button onClick={openEdit}>
                 Edit Translation
               </ListItem>
-            )}
+            </AuthorizationFilter>
           </Menu>
         </span>
       )}
@@ -166,22 +166,23 @@ FVLabel.propTypes = {
   intl: object.isRequired,
   isInHelpMode: bool.isRequired,
   labelIds: object.isRequired,
-  computeLogin: object.isRequired,
+  computeDialect2: object.isRequired,
   startEditingLabel: func.isRequired,
+  routeParams: object.isRequired,
 }
 
 const mapStateToProps = (state /*, ownProps*/) => {
-  const { locale, nuxeo, fvDialect } = state
-  const { computeLogin } = nuxeo
+  const { locale, fvDialect, navigation } = state
   const { computeDialect2 } = fvDialect
+  const { route } = navigation
 
   return {
     intl: locale.intlService,
     locale: locale.locale,
     isInHelpMode: locale.isInHelpMode,
     labelIds: locale.labelIds,
-    computeLogin,
     computeDialect2,
+    routeParams: route.routeParams,
   }
 }
 
