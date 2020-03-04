@@ -11,6 +11,7 @@ import Typography from '@material-ui/core/Typography'
 import Preview from 'views/components/Editor/Preview'
 import ProviderHelpers from 'common/ProviderHelpers'
 import '!style-loader!css-loader!./FVLabel.css'
+import AuthorizationFilter from '../Document/AuthorizationFilter/index'
 
 function FVLabel({
   transKey,
@@ -26,6 +27,7 @@ function FVLabel({
   labelIds,
   startEditingLabel,
   computeLogin,
+  computeDialect2,
 }) {
   const [anchorElement, setAnchorElement] = useState()
   const [audioId, setAudioId] = useState('')
@@ -66,9 +68,17 @@ function FVLabel({
         setAnchorElement(event.currentTarget)
         if (translationId) {
           setisFetching(true)
-          DocumentOperations.getDocument(translationId, 'FVLabel').then((data) => {
+          DocumentOperations.getDocument(translationId, 'FVLabel', {
+            headers: {
+              'enrichers.document': 'ancestry,word,permissions',
+            },
+          }).then((data) => {
             if (isMounted) {
-              setAudioId(selectn('properties.fv:related_audio[0]', data))
+              if (data.properties.hasOwnProperty('fvproxy:proxied_audio')) {
+                setAudioId(selectn('properties.fvproxy:proxied_audio[0]', data))
+              } else {
+                setAudioId(selectn('properties.fv:related_audio[0]', data))
+              }
               setisFetching(false)
             }
           })
@@ -161,8 +171,9 @@ FVLabel.propTypes = {
 }
 
 const mapStateToProps = (state /*, ownProps*/) => {
-  const { locale, nuxeo } = state
+  const { locale, nuxeo, fvDialect } = state
   const { computeLogin } = nuxeo
+  const { computeDialect2 } = fvDialect
 
   return {
     intl: locale.intlService,
@@ -170,6 +181,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
     isInHelpMode: locale.isInHelpMode,
     labelIds: locale.labelIds,
     computeLogin,
+    computeDialect2,
   }
 }
 

@@ -324,7 +324,7 @@ const DictionaryList = (props) => {
       <div
         className={`DictionaryList DictionaryList--noData  ${props.cssModifier}`}
         dangerouslySetInnerHTML={{
-          __html: this.props.intl.translate('no_results_found_dictionary', 'No Results Found', 'title'),
+          __html: props.intl.translate('no_results_found_dictionary', 'No Results Found', 'title'),
         }}
       />
     ) : null
