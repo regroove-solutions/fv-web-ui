@@ -7,6 +7,7 @@ import {
   SET_IMMERSION_MODE,
   SET_HELP_MODE,
   SET_EDITING_LABEL,
+  ADD_NEW_LABEL,
 } from './actionTypes'
 import DirectoryOperations from 'operations/DirectoryOperations'
 
@@ -41,11 +42,27 @@ export const setIntlWorkspace = (workspace = '') => {
   }
 }
 
-export const refetchLabels = () => {
+/**
+ * Assumes you're within a workspace
+ * @param {*} label
+ * @param {*} labelKey
+ */
+export const addNewLabelToIntl = (label, labelKey, uuid) => {
   return (dispatch, getState) => {
-    if (getState().locale.immersionMode && getState().locale.workspace) {
-      getWorkspaceLabels(getState().locale.locale, getState().locale.workspace, getState().locale.immersionMode, dispatch)
+    const output = updateLabels(uuid, label, labelKey, {...getState().locale.localeLists}[getState().locale.workspace], {...getState().locale.labelIds})
+
+    const newLocales = {
+      ...getState().locale.localeLists,
+      [getState().locale.workspace]: output.locales,
     }
+
+    dispatch({
+      type: ADD_NEW_LABEL,
+      payload: {
+        locales: newLocales,
+        ids: output.ids,
+      },
+    })
   }
 }
 
@@ -56,24 +73,13 @@ function getWorkspaceLabels(locale, workspace, immersionMode, dispatch) {
       'FVLabel',
       'dc:title, fvlabel:labelKey, ecm:uuid'
     ).then((result) => {
-      const translations = {}
-      const ids = {}
+      let translations = {}
+      let ids = {}
       result.entries.forEach((entry) => {
-        const path = entry['fvlabel:labelKey'].split('.')
-        let translationTargetRef = translations
-        let idsTargetRef = ids
-        path.slice(0, -1).forEach((step) => {
-          if (!translationTargetRef[step]) {
-            translationTargetRef[step] = {}
-            idsTargetRef[step] = {}
-          }
-          translationTargetRef = translationTargetRef[step]
-          idsTargetRef = idsTargetRef[step]
-        })
-        translationTargetRef[path[path.length - 1]] = entry['dc:title']
-        idsTargetRef[path[path.length - 1]] = entry['ecm:uuid']
+        const output = updateLabels(entry['ecm:uuid'], entry['dc:title'],  entry['fvlabel:labelKey'], translations, ids)
+        translations = output.locales
+        ids = output.ids
       })
-
       return {
         translations,
         ids,
@@ -107,5 +113,27 @@ export const toggleHelpMode = () => {
       type: SET_HELP_MODE,
       payload: !getState().locale.isInHelpMode,
     })
+  }
+}
+
+function updateLabels(id, label, labelPath, locales, ids) {
+  let translationTargetRef = locales
+  let idsTargetRef = ids
+  const path = labelPath.split('.')
+
+  path.slice(0, -1).forEach((step) => {
+    if (!translationTargetRef[step]) {
+      translationTargetRef[step] = {}
+      idsTargetRef[step] = {}
+    }
+    translationTargetRef = translationTargetRef[step]
+    idsTargetRef = idsTargetRef[step]
+  })
+  translationTargetRef[path[path.length - 1]] = label
+  idsTargetRef[path[path.length - 1]] = id
+
+  return {
+    locales,
+    ids,
   }
 }

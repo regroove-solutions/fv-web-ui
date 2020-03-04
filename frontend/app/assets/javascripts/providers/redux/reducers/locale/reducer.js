@@ -7,6 +7,7 @@ import {
   SET_IMMERSION_MODE,
   SET_HELP_MODE,
   SET_EDITING_LABEL,
+  ADD_NEW_LABEL,
 } from './actionTypes'
 import IntlService from '../../../../views/services/intl'
 import en from 'views/../locale/locale.en.json'
@@ -137,7 +138,21 @@ export const localeReducer = (state = initialState, action) => {
         ...state,
         editingLabel: action.payload,
       }
+    case ADD_NEW_LABEL:
+
+      return {
+        ...state,
+        localeLists: action.payload.locales,
+        intlService: new IntlService(
+          action.payload.locales,
+          state.immersionMode ? state.workspace : state.locale,
+          state.locale
+        ),
+        labelIds: action.payload.ids,
+        isInHelpMode: false,
+      }
     default:
       return state
   }
 }
+

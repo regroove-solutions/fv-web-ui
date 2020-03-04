@@ -15,13 +15,13 @@ limitations under the License.
 */
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-
+import selectn from 'selectn'
 // REDUX
 import { connect } from 'react-redux'
 import Immutable from 'immutable'
 import { createLabel, fetchLabel, updateLabel } from 'providers/redux/reducers/fvLabel'
 import { fetchDialect, fetchDialect2 } from 'providers/redux/reducers/fvDialect'
-import { refetchLabels } from 'providers/redux/reducers/locale'
+import { addNewLabelToIntl } from 'providers/redux/reducers/locale'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import { Document } from 'nuxeo'
 import ProviderHelpers from 'common/ProviderHelpers'
@@ -62,7 +62,7 @@ class LabelModal extends Component {
     this.dictionaryPath = this.props.dialectPath + '/Label Dictionary'
   }
 
-  componentDidMount() {}
+  componentDidMount() { }
 
   componentDidUpdate(prevProps) {
     if (!prevProps.label && this.props.label && !this.props.isNew) {
@@ -73,7 +73,7 @@ class LabelModal extends Component {
   }
 
   handleCreateSave = (translation) => {
-    const { label, createLabel, handleClose, refetchLabels } = this.props
+    const { label, createLabel, handleClose, addNewLabelToIntl: updateIntl } = this.props
 
     const now = Date.now()
 
@@ -93,14 +93,14 @@ class LabelModal extends Component {
       },
       null,
       now
-    ).then(() => {
-      refetchLabels()
+    ).then((output) => {
+      updateIntl(selectn('response.properties.dc:title', output), selectn('response.properties.fvlabel:labelKey', output), selectn('response.uid', output))
       setTimeout(handleClose(true), 500)
     })
   }
 
   handleEditSave = (translation) => {
-    const { label, updateLabel, computeLabel, handleClose, refetchLabels } = this.props
+    const { label, updateLabel, computeLabel, handleClose, addNewLabelToIntl: updateIntl } = this.props
     const computeEntities = Immutable.fromJS([
       {
         id: label.uid,
@@ -122,8 +122,8 @@ class LabelModal extends Component {
 
     newDocument.set({ 'dc:title': translation.join(''), 'fv:related_audio': relatedAudio })
 
-    updateLabel(newDocument, null, null).then(() => {
-      refetchLabels()
+    updateLabel(newDocument, null, null).then((output) => {
+      updateIntl(selectn('response.properties.dc:title', output), selectn('response.properties.fvlabel:labelKey', output), selectn('response.uid', output))
       setTimeout(handleClose(true), 500)
     })
   }
@@ -148,15 +148,15 @@ class LabelModal extends Component {
     const { fullScreen, open, handleClose, label, computeLabel, isNew, dialectPath, computeDialect2 } = this.props
     const computeEntities = label
       ? Immutable.fromJS([
-          {
-            id: label.uid,
-            entity: computeLabel,
-          },
-          {
-            id: dialectPath,
-            entity: computeDialect2,
-          },
-        ])
+        {
+          id: label.uid,
+          entity: computeLabel,
+        },
+        {
+          id: dialectPath,
+          entity: computeDialect2,
+        },
+      ])
       : null
     return (
       <div>
@@ -203,7 +203,7 @@ const mapDispatchToProps = {
   updateLabel,
   fetchDialect,
   fetchDialect2,
-  refetchLabels,
+  addNewLabelToIntl,
 }
 
 export default withMobileDialog()(connect(mapStateToProps, mapDispatchToProps)(LabelModal))
