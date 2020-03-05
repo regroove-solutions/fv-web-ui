@@ -345,7 +345,9 @@ export class PageToolbar extends Component {
                     variant="contained"
                   >
                     <FVLabel transKey="edit" defaultStr="Edit" transform="first" />
-                    {' ' + this.props.intl.searchAndReplace(this.props.label)}
+                    <span style={{ whiteSpace: 'pre-wrap' }}>
+                      {' ' + this.props.intl.searchAndReplace(this.props.label)}
+                    </span>
                   </FVButton>
                 </AuthorizationFilter>
               ) : null}
@@ -474,7 +476,7 @@ export class PageToolbar extends Component {
                   {documentPublished ? (
                     <FVLabel transKey="published" defaultStr="Published" transform="first" />
                   ) : (
-                    <FVLabel transKey="publishe" defaultStr="Publishe" transform="first" />
+                    <FVLabel transKey="publish" defaultStr="Publish" transform="first" />
                   )}
                 </Typography>
               }

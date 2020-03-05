@@ -232,11 +232,7 @@ export class DialectViewWord extends Component {
       return (
         <div className="DialectViewWordPhraseContentItem">
           <h4 className="DialectViewWordPhraseContentItemTitle">
-            <FVLabel
-              transKey="acknowledgement"
-              defaultStr="Acknowledgement"
-              transform="first"
-            />
+            <FVLabel transKey="acknowledgement" defaultStr="Acknowledgement" transform="first" />
           </h4>
           <div className="DialectViewWordPhraseContentItemGroup">
             <div>{acknowledgement}</div>
@@ -275,11 +271,7 @@ export class DialectViewWord extends Component {
     return categories.length > 0 ? (
       <div className="DialectViewWordPhraseContentItem DialectViewWordPhraseCategory">
         <h4 className="DialectViewWordPhraseContentItemTitle">
-          <FVLabel
-            transKey="categories"
-            defaultStr="Categories"
-            transform="first"
-          />
+          <FVLabel transKey="categories" defaultStr="Categories" transform="first" />
         </h4>
         <ul>{categories}</ul>
       </div>
@@ -289,8 +281,7 @@ export class DialectViewWord extends Component {
   _getCulturalNotes = (computeWord) => {
     const _cultNote = selectn('response.properties.fv:cultural_note', computeWord) || []
     const culturalNotes = _cultNote.map((culturalNote, key) => {
-      return <div key={key}>
-        {this.props.intl.searchAndReplace(culturalNote)}</div>
+      return <div key={key}>{this.props.intl.searchAndReplace(culturalNote)}</div>
     })
     return culturalNotes.length > 0 ? (
       <div className="DialectViewWordPhraseContentItem DialectViewWordPhraseCulturalNote">
@@ -375,11 +366,7 @@ export class DialectViewWord extends Component {
       return (
         <div className="DialectViewWordPhraseContentItem">
           <h4 className="DialectViewWordPhraseContentItemTitle">
-            <FVLabel
-              transKey="part_of_speech"
-              defaultStr="Part of Speech"
-              transform="first"
-            />
+            <FVLabel transKey="part_of_speech" defaultStr="Part of Speech" transform="first" />
           </h4>
           <div className="DialectViewWordPhraseContentItemGroup">
             <div>{partOfSpeech}</div>
@@ -406,11 +393,7 @@ export class DialectViewWord extends Component {
     return photos.length > 0 ? (
       <div className="DialectViewWordPhraseContentItem DialectViewWordPhrasePhoto">
         <h4 className="DialectViewWordPhraseContentItemTitle">
-          <FVLabel
-            transKey="photo_s"
-            defaultStr="PHOTO(S)"
-            transform="first"
-          />
+          <FVLabel transKey="photo_s" defaultStr="PHOTO(S)" transform="first" />
         </h4>
         <MediaPanel type="FVPicture" items={photos} />
       </div>
@@ -458,11 +441,7 @@ export class DialectViewWord extends Component {
     return phrases.length > 0 ? (
       <div className="DialectViewWordPhraseContentItem DialectViewWordPhrasePhrase">
         <h3 className="DialectViewWordPhraseContentItemTitle">
-          <FVLabel
-            transKey="related_phrases"
-            defaultStr="Related Phrases"
-            transform="first"
-          />
+          <FVLabel transKey="related_phrases" defaultStr="Related Phrases" transform="first" />
         </h3>
         <div className="DialectViewWordPhraseContentItemGroup">{phrases}</div>
       </div>
@@ -476,11 +455,7 @@ export class DialectViewWord extends Component {
       return (
         <div className="DialectViewWordPhraseContentItem DialectViewWordPhrasePronounciation">
           <h3 className="DialectViewWordPhraseContentItemTitle">
-            <FVLabel
-              transKey="pronunciation"
-              defaultStr="Pronunciation"
-              transform="first"
-            />
+            <FVLabel transKey="pronunciation" defaultStr="Pronunciation" transform="first" />
           </h3>
           <div className="DialectViewWordPhraseContentItemGroup">
             <div className={dialectClassName}>{pronunciation}</div>
@@ -614,11 +589,7 @@ export class DialectViewWord extends Component {
     return videos.length > 0 ? (
       <div className="DialectViewWordPhraseContentItem DialectViewWordPhraseVideo">
         <h4 className="DialectViewWordPhraseContentItemTitle">
-          <FVLabel
-            transKey="video_s"
-            defaultStr="VIDEO(S)"
-            transform="first"
-          />
+          <FVLabel transKey="video_s" defaultStr="VIDEO(S)" transform="first" />
         </h4>
         <MediaPanel type="FVVideo" items={videos} />
       </div>
