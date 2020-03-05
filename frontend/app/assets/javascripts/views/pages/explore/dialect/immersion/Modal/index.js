@@ -19,7 +19,9 @@ import PropTypes from 'prop-types'
 // REDUX
 import { connect } from 'react-redux'
 import Immutable from 'immutable'
-import { createLabel, fetchLabel, updateLabel } from 'providers/redux/reducers/fvLabel'
+import CircularProgress from '@material-ui/core/CircularProgress'
+
+import { createLabel, fetchLabel, updateLabel, publishLabel, unpublishLabel } from 'providers/redux/reducers/fvLabel'
 import { fetchDialect, fetchDialect2 } from 'providers/redux/reducers/fvDialect'
 import { refetchLabels } from 'providers/redux/reducers/locale'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
@@ -49,6 +51,8 @@ class LabelModal extends Component {
     createLabel: func.isRequired,
     fetchLabel: func.isRequired,
     updateLabel: func.isRequired,
+    publishLabel: func.isRequired,
+    unpublishLabel: func.isRequired,
   }
   static defaultProps = {
     fullscreen: false,
@@ -60,6 +64,9 @@ class LabelModal extends Component {
 
     this.audioRef = React.createRef()
     this.dictionaryPath = this.props.dialectPath + '/Label Dictionary'
+    this.state = {
+      loading: false,
+    }
   }
 
   componentDidMount() {}
@@ -72,8 +79,9 @@ class LabelModal extends Component {
     }
   }
 
-  handleCreateSave = (translation) => {
-    const { label, createLabel, handleClose, refetchLabels } = this.props
+  handleCreateSave = (translation, isPublishing = false) => {
+    const { label, createLabel, refetchLabels, handleClose } = this.props
+    this.setState({ loading: true })
 
     const now = Date.now()
 
@@ -94,13 +102,19 @@ class LabelModal extends Component {
       null,
       now
     ).then(() => {
-      refetchLabels()
-      setTimeout(handleClose(true), 500)
+      if (isPublishing) {
+        this.handlePublish()
+      } else {
+        this.setState({ loading: false })
+        refetchLabels()
+        setTimeout(handleClose(true), 500)
+      }
     })
   }
 
-  handleEditSave = (translation) => {
-    const { label, updateLabel, computeLabel, handleClose, refetchLabels } = this.props
+  handleEditSave = (translation, isPublishing = false) => {
+    const { label, updateLabel, computeLabel, refetchLabels, handleClose } = this.props
+    this.setState({ loading: true })
     const computeEntities = Immutable.fromJS([
       {
         id: label.uid,
@@ -123,6 +137,41 @@ class LabelModal extends Component {
     newDocument.set({ 'dc:title': translation.join(''), 'fv:related_audio': relatedAudio })
 
     updateLabel(newDocument, null, null).then(() => {
+      if (isPublishing) {
+        this.handlePublish()
+      } else {
+        this.setState({ loading: false })
+        refetchLabels()
+        setTimeout(handleClose(true), 500)
+      }
+    })
+  }
+
+  handlePublish = () => {
+    const { refetchLabels, handleClose, publishLabel, label, intl } = this.props
+
+    publishLabel(
+      label.uid,
+      null,
+      null,
+      intl.trans('views.hoc.view.x_published_successfully', 'Label Published Successfully!', 'first', ['Label'])
+    ).then(() => {
+      this.setState({ loading: false })
+      refetchLabels()
+      setTimeout(handleClose(true), 500)
+    })
+  }
+
+  handleUnpublish = () => {
+    const { refetchLabels, handleClose, unpublishLabel, label, intl } = this.props
+
+    unpublishLabel(
+      label.uid,
+      null,
+      null,
+      intl.trans('views.hoc.view.x_unpublished_successfully', 'Label Unpublished Successfully!', 'first', ['Label'])
+    ).then(() => {
+      this.setState({ loading: false })
       refetchLabels()
       setTimeout(handleClose(true), 500)
     })
@@ -133,7 +182,10 @@ class LabelModal extends Component {
     return label ? (
       <ModalContent
         handleClose={() => handleClose()}
-        handleSave={(translation) => (isNew ? this.handleCreateSave(translation) : this.handleEditSave(translation))}
+        handleSave={(translation, isPublishing) =>
+          isNew ? this.handleCreateSave(translation, isPublishing) : this.handleEditSave(translation, isPublishing)
+        }
+        handleUnpublish={() => this.handleUnpublish()}
         label={label}
         type={isNew ? 'base' : 'translation'}
         audioRef={this.audioRef}
@@ -146,6 +198,7 @@ class LabelModal extends Component {
 
   render() {
     const { fullScreen, open, handleClose, label, computeLabel, isNew, dialectPath, computeDialect2 } = this.props
+    const { loading } = this.state
     const computeEntities = label
       ? Immutable.fromJS([
           {
@@ -167,7 +220,7 @@ class LabelModal extends Component {
           aria-labelledby="responsive-dialog-title"
           scroll="paper"
         >
-          {label ? (
+          {label && !loading ? (
             <>
               {isNew ? (
                 this.renderContent()
@@ -176,7 +229,10 @@ class LabelModal extends Component {
               )}
             </>
           ) : (
-            <div />
+            <div className="PromiseWrapper__spinnerContainer">
+              <CircularProgress variant="indeterminate" className="PromiseWrapper__spinner" />
+              <div className="PromiseWrapper__spinnerMessage">Loading...</div>
+            </div>
           )}
         </Dialog>
       </div>
@@ -186,13 +242,15 @@ class LabelModal extends Component {
 
 // REDUX: reducers/state
 const mapStateToProps = (state /*, ownProps*/) => {
-  const { fvLabel, fvDialect } = state
+  const { fvLabel, fvDialect, locale } = state
 
   const { computeDialect2 } = fvDialect
   const { computeLabel } = fvLabel
+  const { intlService } = locale
   return {
     computeLabel,
     computeDialect2,
+    intl: intlService,
   }
 }
 
@@ -204,6 +262,8 @@ const mapDispatchToProps = {
   fetchDialect,
   fetchDialect2,
   refetchLabels,
+  publishLabel,
+  unpublishLabel,
 }
 
 export default withMobileDialog()(connect(mapStateToProps, mapDispatchToProps)(LabelModal))

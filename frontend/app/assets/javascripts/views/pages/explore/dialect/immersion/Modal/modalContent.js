@@ -23,8 +23,12 @@ import ProviderHelpers from 'common/ProviderHelpers'
 import selectn from 'selectn'
 import options from 'models/schemas/options'
 import fields from 'models/schemas/fields'
+import FVButton from 'views/components/FVButton'
+import FVLabel from 'views/components/FVLabel/index'
+import AuthorizationFilter from 'views/components/Document/AuthorizationFilter/index'
 
-import { Button, DialogActions, DialogContent, DialogTitle, TextField } from '@material-ui/core'
+import { DialogActions, DialogContent, DialogTitle, TextField, IconButton } from '@material-ui/core'
+import CloseIcon from '@material-ui/icons/Close'
 import { withStyles } from '@material-ui/core/styles'
 
 import TranslationInput from './translationInput'
@@ -74,6 +78,7 @@ class ModalContent extends Component {
   static propTypes = {
     handleClose: func,
     handleSave: func,
+    handleUnpublish: func,
     label: object,
     type: string.isRequired,
     dialectPath: string.isRequired,
@@ -139,7 +144,7 @@ class ModalContent extends Component {
     })
   }
 
-  handleSave = () => {
+  handleSave = (publishing = false) => {
     const { handleSave } = this.props
     const { translation } = this.state
     if (
@@ -153,7 +158,7 @@ class ModalContent extends Component {
         hadError: true,
       })
     } else {
-      handleSave(translation)
+      handleSave(translation, publishing)
     }
   }
 
@@ -187,25 +192,45 @@ class ModalContent extends Component {
   }
 
   render() {
-    const { handleClose, label, audioRef, dialectPath, computeDialect2, classes } = this.props
+    const { handleClose, handleUnpublish, label, audioRef, dialectPath, computeDialect2, classes } = this.props
     const { translation, formValue, error, hadError } = this.state
 
     const _computeDialect2 = ProviderHelpers.getEntry(computeDialect2, dialectPath)
     return (
       <>
-        <DialogTitle id="responsive-dialog-title">Edit Label</DialogTitle>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingRight: '24px',
+          }}
+        >
+          <DialogTitle id="responsive-dialog-title">Edit label</DialogTitle>
+          <IconButton key="close" aria-label="Close" onClick={() => handleClose()}>
+            <CloseIcon />
+          </IconButton>
+        </div>
         <DialogContent>
           <fieldset>
             <legend>Label Information</legend>
             <label className="control-label">Base Phrase</label>
             <div style={{ padding: '15px' }}>{this.renderTranslation(label)}</div>
-            <label className="control-label">Category</label>
-            <div style={{ padding: '15px' }}>{label.category}</div>
+            <div style={{ display: 'flex' }}>
+              <div style={{ width: '50%' }}>
+                <label className="control-label">Category</label>{' '}
+                <div style={{ padding: '15px' }}>{label.category}</div>
+              </div>
+              <div style={{ width: '50%' }}>
+                <label className="control-label">State</label>
+                <div style={{ padding: '15px' }}>{label.state}</div>
+              </div>
+            </div>
           </fieldset>
           <fieldset>
             <legend>Immersive Information</legend>
             <div className="alert alert-info">
-              <i>This will show for the site's 'Immersive' experience.</i>
+              <i>This will show for the site's 'Immersion' experience.</i>
             </div>
             <div className={error || hadError ? 'has-error' : ''}>
               <label className="control-label">Translation *</label>
@@ -253,13 +278,52 @@ class ModalContent extends Component {
             </div>
           </fieldset>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => handleClose()} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={() => this.handleSave()} color="primary" autoFocus>
-            Save
-          </Button>
+        <DialogActions style={{ justifyContent: 'space-between' }}>
+          <div>
+            <FVButton variant="flat" onClick={() => handleClose()} style={{ marginRight: '10px' }}>
+              <FVLabel transKey="cancel" defaultStr="Cancel" transform="first" />
+            </FVButton>
+            {label.state === 'Published' && (
+              <FVButton variant="flat" onClick={() => handleUnpublish()} style={{ marginRight: '10px' }}>
+                <FVLabel transKey="unpublish" defaultStr="Unpublish" transform="first" />
+              </FVButton>
+            )}
+          </div>
+          {label.uid ? (
+            <div>
+              <button
+                type="submit"
+                onClick={() => {
+                  this.handleSave()
+                }}
+                className="RaisedButton"
+              >
+                <FVLabel transKey="save" defaultStr="Save" transform="first" />
+              </button>
+              <AuthorizationFilter filter={{ permission: 'Write', entity: selectn('response', _computeDialect2) }}>
+                <button
+                  style={{ marginLeft: '10px' }}
+                  type="submit"
+                  onClick={() => {
+                    this.handleSave(true)
+                  }}
+                  className="RaisedButton RaisedButton--primary"
+                >
+                  <FVLabel transKey="publish" defaultStr="Publish Changes" transform="first" />
+                </button>
+              </AuthorizationFilter>
+            </div>
+          ) : (
+            <button
+              type="submit"
+              onClick={() => {
+                this.handleSave()
+              }}
+              className="RaisedButton RaisedButton--primary"
+            >
+              <FVLabel transKey="save" defaultStr="Save" transform="first" />
+            </button>
+          )}
         </DialogActions>
       </>
     )
