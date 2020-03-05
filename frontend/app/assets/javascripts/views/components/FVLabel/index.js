@@ -11,6 +11,7 @@ import Typography from '@material-ui/core/Typography'
 import Preview from 'views/components/Editor/Preview'
 import ProviderHelpers from 'common/ProviderHelpers'
 import '!style-loader!css-loader!./FVLabel.css'
+import AuthorizationFilter from '../Document/AuthorizationFilter/index'
 
 function FVLabel({
   transKey,
@@ -25,7 +26,8 @@ function FVLabel({
   isInHelpMode,
   labelIds,
   startEditingLabel,
-  computeLogin,
+  computeDialect2,
+  routeParams,
 }) {
   const [anchorElement, setAnchorElement] = useState()
   const [audioId, setAudioId] = useState('')
@@ -35,6 +37,7 @@ function FVLabel({
     en: 'English',
     fr: 'Français',
   }
+  const actualDialect = ProviderHelpers.getEntry(computeDialect2, routeParams.dialect_path)
 
   const [translation, usedFallback, actualTransKey] = intl.fvLabelTrans(
     transKey,
@@ -45,7 +48,7 @@ function FVLabel({
     append,
     forceLocale
   )
-  const isAdmin = ProviderHelpers.isRecorderWithApproval(computeLogin) || ProviderHelpers.isAdmin(computeLogin)
+  const isAdmin = (selectn('response.contextParameters.permissions', actualDialect) || []).includes('Write')
 
   useEffect(() => {
     setIsMounted(true)
@@ -66,9 +69,17 @@ function FVLabel({
         setAnchorElement(event.currentTarget)
         if (translationId) {
           setisFetching(true)
-          DocumentOperations.getDocument(translationId, 'FVLabel').then((data) => {
+          DocumentOperations.getDocument(translationId, 'FVLabel', {
+            headers: {
+              'enrichers.document': 'ancestry,word,permissions',
+            },
+          }).then((data) => {
             if (isMounted) {
-              setAudioId(selectn('properties.fv:related_audio[0]', data))
+              if (data.properties.hasOwnProperty('fvproxy:proxied_audio')) {
+                setAudioId(selectn('properties.fvproxy:proxied_audio[0]', data))
+              } else {
+                setAudioId(selectn('properties.fv:related_audio[0]', data))
+              }
               setisFetching(false)
             }
           })
@@ -129,12 +140,11 @@ function FVLabel({
                 <div style={audioContainerStyles} />
               </ListItem>
             )}
-
-            {isAdmin && (
+            <AuthorizationFilter filter={{ permission: 'Write', entity: selectn('response', actualDialect) }}>
               <ListItem button onClick={openEdit}>
                 Edit Translation
               </ListItem>
-            )}
+            </AuthorizationFilter>
           </Menu>
         </span>
       )}
@@ -156,20 +166,23 @@ FVLabel.propTypes = {
   intl: object.isRequired,
   isInHelpMode: bool.isRequired,
   labelIds: object.isRequired,
-  computeLogin: object.isRequired,
+  computeDialect2: object.isRequired,
   startEditingLabel: func.isRequired,
+  routeParams: object.isRequired,
 }
 
 const mapStateToProps = (state /*, ownProps*/) => {
-  const { locale, nuxeo } = state
-  const { computeLogin } = nuxeo
+  const { locale, fvDialect, navigation } = state
+  const { computeDialect2 } = fvDialect
+  const { route } = navigation
 
   return {
     intl: locale.intlService,
     locale: locale.locale,
     isInHelpMode: locale.isInHelpMode,
     labelIds: locale.labelIds,
-    computeLogin,
+    computeDialect2,
+    routeParams: route.routeParams,
   }
 }
 

@@ -15,7 +15,7 @@ limitations under the License.
 */
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-
+import selectn from 'selectn'
 // REDUX
 import { connect } from 'react-redux'
 import Immutable from 'immutable'
@@ -23,7 +23,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 
 import { createLabel, fetchLabel, updateLabel, publishLabel, unpublishLabel } from 'providers/redux/reducers/fvLabel'
 import { fetchDialect, fetchDialect2 } from 'providers/redux/reducers/fvDialect'
-import { refetchLabels } from 'providers/redux/reducers/locale'
+import { addNewLabelToIntl } from 'providers/redux/reducers/locale'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import { Document } from 'nuxeo'
 import ProviderHelpers from 'common/ProviderHelpers'
@@ -53,7 +53,11 @@ class LabelModal extends Component {
     updateLabel: func.isRequired,
     publishLabel: func.isRequired,
     unpublishLabel: func.isRequired,
+    fetchDialect: func.isRequired,
+    fetchDialect2: func.isRequired,
+    addNewLabelToIntl: func.isRequired,
   }
+
   static defaultProps = {
     fullscreen: false,
     isNew: false,
@@ -80,8 +84,8 @@ class LabelModal extends Component {
   }
 
   handleCreateSave = (translation, isPublishing = false) => {
-    const { label, createLabel, refetchLabels, handleClose } = this.props
-    this.setState({ loading: true })
+    const { label, createLabel, handleClose, addNewLabelToIntl: updateIntl } = this.props
+    this.this.setState({ loading: true })
 
     const now = Date.now()
 
@@ -101,19 +105,22 @@ class LabelModal extends Component {
       },
       null,
       now
-    ).then(() => {
+    ).then((output) => {
       if (isPublishing) {
-        this.handlePublish()
+        this.handlePublish(output)
       } else {
-        this.setState({ loading: false })
-        refetchLabels()
+        updateIntl(
+          selectn('response.properties.dc:title', output),
+          selectn('response.properties.fvlabel:labelKey', output),
+          selectn('response.uid', output)
+        )
         setTimeout(handleClose(true), 500)
       }
     })
   }
 
   handleEditSave = (translation, isPublishing = false) => {
-    const { label, updateLabel, computeLabel, refetchLabels, handleClose } = this.props
+    const { label, updateLabel, computeLabel, handleClose, addNewLabelToIntl: updateIntl } = this.props
     this.setState({ loading: true })
     const computeEntities = Immutable.fromJS([
       {
@@ -141,14 +148,18 @@ class LabelModal extends Component {
         this.handlePublish()
       } else {
         this.setState({ loading: false })
-        refetchLabels()
+        updateIntl(
+          selectn('response.properties.dc:title', output),
+          selectn('response.properties.fvlabel:labelKey', output),
+          selectn('response.uid', output)
+        )
         setTimeout(handleClose(true), 500)
       }
     })
   }
 
-  handlePublish = () => {
-    const { refetchLabels, handleClose, publishLabel, label, intl } = this.props
+  handlePublish = (output) => {
+    const { addNewLabelToIntl: updateIntl, handleClose, publishLabel, label, intl } = this.props
 
     publishLabel(
       label.uid,
@@ -157,13 +168,17 @@ class LabelModal extends Component {
       intl.trans('views.hoc.view.x_published_successfully', 'Label Published Successfully!', 'first', ['Label'])
     ).then(() => {
       this.setState({ loading: false })
-      refetchLabels()
+      updateIntl(
+        selectn('response.properties.dc:title', output),
+        selectn('response.properties.fvlabel:labelKey', output),
+        selectn('response.uid', output)
+      )
       setTimeout(handleClose(true), 500)
     })
   }
 
   handleUnpublish = () => {
-    const { refetchLabels, handleClose, unpublishLabel, label, intl } = this.props
+    const { handleClose, unpublishLabel, label, intl } = this.props
 
     unpublishLabel(
       label.uid,
@@ -172,7 +187,6 @@ class LabelModal extends Component {
       intl.trans('views.hoc.view.x_unpublished_successfully', 'Label Unpublished Successfully!', 'first', ['Label'])
     ).then(() => {
       this.setState({ loading: false })
-      refetchLabels()
       setTimeout(handleClose(true), 500)
     })
   }
@@ -261,9 +275,9 @@ const mapDispatchToProps = {
   updateLabel,
   fetchDialect,
   fetchDialect2,
-  refetchLabels,
   publishLabel,
   unpublishLabel,
+  addNewLabelToIntl,
 }
 
 export default withMobileDialog()(connect(mapStateToProps, mapDispatchToProps)(LabelModal))
