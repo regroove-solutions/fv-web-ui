@@ -221,7 +221,7 @@ class PageDialectImmersionList extends PageDialectLearnBase {
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <div className="row">
-          <div className={classNames('col-xs-12', 'col-md-3', categoriesSize === 0 ? 'hidden' : null, 'PrintHide')}>
+          <div className={classNames('col-xs-12', 'col-md-2', categoriesSize === 0 ? 'hidden' : null, 'PrintHide')}>
             <div>
               <FormControl>
                 <h2>Translation</h2>
@@ -263,7 +263,7 @@ class PageDialectImmersionList extends PageDialectLearnBase {
               />
             </div>
           </div>
-          <div className={classNames('col-xs-12', categoriesSize === 0 ? 'col-md-12' : 'col-md-9')}>
+          <div className={classNames('col-xs-12', categoriesSize === 0 ? 'col-md-12' : 'col-md-10')}>
             <h1 className="DialectPageTitle">{pageTitle}</h1>
             <div className={dialectClassName}>{wordListView}</div>
           </div>

@@ -156,6 +156,7 @@ class ImmersionListView extends Component {
         editClick: () => {},
         uid: undefined,
         relatedAudio: undefined,
+        state: 'N/A',
       }
       const category = allCategories.find((c) => {
         return c.id === v.category
@@ -165,6 +166,7 @@ class ImmersionListView extends Component {
         return l.properties['fvlabel:labelKey'] === v.id
       })
       if (translatedLabel) {
+        label.state = translatedLabel.state
         label.translation = translatedLabel.properties['dc:title']
         label.uid = translatedLabel.uid
         label.relatedAudio = translatedLabel.properties['fv:related_audio'][0]

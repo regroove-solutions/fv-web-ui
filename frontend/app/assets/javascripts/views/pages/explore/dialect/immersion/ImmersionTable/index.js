@@ -194,8 +194,9 @@ class ImmersionTable extends Component {
               { id: 'translation', label: 'Translation' },
               { id: 'base', label: 'Base' },
               { id: 'audio', label: 'Audio', noSort: true },
-              { id: 'type', label: 'Type' },
               { id: 'category', label: 'Category' },
+              { id: 'state', label: 'State' },
+              { id: 'type', label: 'Type' },
             ]}
           />
           <TableBody>
@@ -242,10 +243,11 @@ class ImmersionTable extends Component {
                             />
                           )}
                         </TableCell>
-                        <TableCell className="DictionaryList__data DictionaryList__data--type"> {row.type}</TableCell>
                         <TableCell className="DictionaryList__data DictionaryList__data--category">
                           {row.category || 'UNCATEGORIZED'}
                         </TableCell>
+                        <TableCell className="DictionaryList__data DictionaryList__data--state"> {row.state}</TableCell>
+                        <TableCell className="DictionaryList__data DictionaryList__data--type"> {row.type}</TableCell>
                       </TableRow>
                     )
                   })}

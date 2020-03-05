@@ -64,11 +64,13 @@ const HelperModeToggle = ({
         translation: undefined,
         uid,
         relatedAudio: undefined,
+        state: 'N/A',
       }
       if (uid) {
         DocumentOperations.getDocument(uid, 'FVLabel').then((data) => {
           label.relatedAudio = selectn('properties.fv:related_audio[0]', data)
           label.translation = selectn('properties.dc:title', data)
+          label.state = selectn('state', data)
           setLabel(label)
           setIsOpen(true)
         })
