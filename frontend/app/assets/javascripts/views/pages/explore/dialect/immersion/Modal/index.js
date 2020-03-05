@@ -143,9 +143,9 @@ class LabelModal extends Component {
 
     newDocument.set({ 'dc:title': translation.join(''), 'fv:related_audio': relatedAudio })
 
-    updateLabel(newDocument, null, null).then(() => {
+    updateLabel(newDocument, null, null).then((output) => {
       if (isPublishing) {
-        this.handlePublish()
+        this.handlePublish(output)
       } else {
         this.setState({ loading: false })
         updateIntl(
