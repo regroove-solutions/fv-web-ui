@@ -85,7 +85,7 @@ class LabelModal extends Component {
 
   handleCreateSave = (translation, isPublishing = false) => {
     const { label, createLabel, handleClose, addNewLabelToIntl: updateIntl } = this.props
-    this.this.setState({ loading: true })
+    this.setState({ loading: true })
 
     const now = Date.now()
 
