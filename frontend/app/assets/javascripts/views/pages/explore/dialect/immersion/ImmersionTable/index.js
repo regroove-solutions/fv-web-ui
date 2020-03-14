@@ -17,7 +17,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import selectn from 'selectn'
 
-import { Table, TableBody, TableCell, TableRow, TableFooter, TablePagination, Chip } from '@material-ui/core'
+import { Table, TableBody, TableCell, TableRow, TableFooter, TablePagination } from '@material-ui/core'
 import { Error } from '@material-ui/icons'
 import TablePaginationActions from './tablepagination'
 import SortingHeader from './sortingheader'
