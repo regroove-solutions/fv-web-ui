@@ -23,6 +23,7 @@ import TablePaginationActions from './tablepagination'
 import SortingHeader from './sortingheader'
 
 import Preview from 'views/components/Editor/Preview'
+import FVLabel from 'views/components/FVLabel/index'
 import { windowLocationPathnameWithoutPagination } from 'common/NavigationHelpers'
 import { withStyles } from '@material-ui/core/styles'
 import '!style-loader!css-loader!./immersiontable.css'
@@ -191,12 +192,24 @@ class ImmersionTable extends Component {
             orderBy={orderBy}
             onRequestSort={this.handleRequestSort}
             columns={[
-              { id: 'translation', label: 'Translation' },
-              { id: 'base', label: 'Base' },
-              { id: 'audio', label: 'Audio', noSort: true },
-              { id: 'category', label: 'Category' },
-              { id: 'state', label: 'State' },
-              { id: 'type', label: 'Type' },
+              {
+                id: 'translation',
+                label: <FVLabel transKey="translation" defaultStr="Translation" transform="words" />,
+              },
+              {
+                id: 'base',
+                label: (
+                  <FVLabel
+                    transKey="original_associated_word_phrase"
+                    defaultStr="Original Associated Word/Phrase"
+                    transform="words"
+                  />
+                ),
+              },
+              { id: 'audio', label: <FVLabel transKey="audio" defaultStr="Audio" transform="words" />, noSort: true },
+              { id: 'category', label: <FVLabel transKey="category" defaultStr="Category" transform="words" /> },
+              { id: 'state', label: <FVLabel transKey="state" defaultStr="State" transform="words" /> },
+              { id: 'type', label: <FVLabel transKey="type" defaultStr="Type" transform="words" /> },
             ]}
           />
           <TableBody>
@@ -222,7 +235,7 @@ class ImmersionTable extends Component {
                             ) : (
                               <div>
                                 <Error className={classes.icon} />
-                                <div className="untranslated">UNTRANSLATED</div>
+                                <div className="untranslated">UNTRANSLATED</div> {/* need locale key for this */}
                               </div>
                             )}
                           </a>
@@ -244,7 +257,7 @@ class ImmersionTable extends Component {
                           )}
                         </TableCell>
                         <TableCell className="DictionaryList__data DictionaryList__data--category">
-                          {row.category || 'UNCATEGORIZED'}
+                          {row.category || 'UNCATEGORIZED'} {/* need locale key for this */}
                         </TableCell>
                         <TableCell className="DictionaryList__data DictionaryList__data--state"> {row.state}</TableCell>
                         <TableCell className="DictionaryList__data DictionaryList__data--type"> {row.type}</TableCell>
@@ -255,7 +268,7 @@ class ImmersionTable extends Component {
             ) : (
               <TableRow style={{ background: 'white', height: '69px' }}>
                 <TableCell colSpan={5} className="DictionaryList__data">
-                  No results found.
+                  <FVLabel transKey="no_results_found" defaultStr="No Results Found" transform="words" />
                 </TableCell>
               </TableRow>
             )}
@@ -277,7 +290,7 @@ class ImmersionTable extends Component {
                 onChangeRowsPerPage={this.handleChangeRowsPerPage}
                 ActionsComponent={TablePaginationActions}
                 labelDisplayedRows={({ from, to, count }) => {
-                  return `Results: ${from}-${to} of ${count}`
+                  return `Results: ${from}-${to} of ${count}` // need locale key for this
                 }}
               />
             </TableRow>
